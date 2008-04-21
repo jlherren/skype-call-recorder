@@ -1,0 +1,5 @@
+Makefile
+skype-call-recorder
+*.o
+moc_*.cpp
+qrc_resources.cpp
