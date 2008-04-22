@@ -127,6 +127,8 @@ void Recorder::about() {
 void Recorder::openSettings() {
 	debug("Show preferences dialog");
 	preferencesDialog->show();
+	preferencesDialog->raise();
+	preferencesDialog->activateWindow();
 }
 
 void Recorder::browseCalls() {
