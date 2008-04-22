@@ -308,7 +308,7 @@ bool Preferences::load(const QString &filename) {
 		debug(QString("Can't open '%1' for loading preferences").arg(filename));
 		return false;
 	}
-	char buf[4096];
+	char buf[65536];
 	while (!file.atEnd()) {
 		qint64 len = file.readLine(buf, sizeof(buf));
 		if (len == -1)
