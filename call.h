@@ -55,6 +55,7 @@ private:
 	Skype *skype;
 	CallID id;
 	QString skypeName;
+	QString displayName;
 	AudioFileWriter *writer;
 	bool isRecording;
 	int channelMode;

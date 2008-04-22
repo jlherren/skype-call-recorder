@@ -64,6 +64,12 @@ Call::Call(Skype *sk, CallID i) :
 		debug(QString("Call %1: cannot get partner handle").arg(id));
 		skypeName = "UnknownCaller";
 	}
+
+	displayName = skype->getObject(QString("CALL %1 PARTNER_DISPNAME").arg(id));
+	if (displayName.isEmpty()) {
+		debug(QString("Call %1: cannot get partner display name").arg(id));
+		displayName = "Unnamed Caller";
+	}
 }
 
 Call::~Call() {
