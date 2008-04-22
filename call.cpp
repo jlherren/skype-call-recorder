@@ -283,7 +283,7 @@ void Call::tryToWrite(bool flush) {
 	// ahead.
 }
 
-void Call::stopRecording(bool flush) {
+void Call::stopRecording(bool flush, bool removeFile) {
 	if (!isRecording)
 		return;
 
@@ -302,6 +302,9 @@ void Call::stopRecording(bool flush) {
 	if (flush)
 		tryToWrite(true);
 	writer->close();
+
+	if (removeFile)
+		writer->remove();
 
 	delete writer;
 

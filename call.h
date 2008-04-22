@@ -45,7 +45,7 @@ public:
 	Call(Skype *, CallID);
 	~Call();
 	void startRecording();
-	void stopRecording(bool = true);
+	void stopRecording(bool = true, bool = false);
 
 private:
 	QString getFileName() const;
