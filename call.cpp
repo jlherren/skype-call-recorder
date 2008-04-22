@@ -50,7 +50,8 @@ Call::Call(Skype *sk, CallID i) :
 	id(i),
 	status("UNKNOWN"),
 	writer(NULL),
-	isRecording(false)
+	isRecording(false),
+	shouldRecord(1)
 {
 	debug(QString("Call %1: Call object contructed").arg(id));
 
@@ -80,6 +81,22 @@ Call::~Call() {
 		stopRecording();
 
 	// QT takes care of deleting servers and sockets
+}
+
+bool Call::okToDelete() const {
+	// this is used for checking whether past calls may now be deleted.
+	// when a past call hasn't been decided yet whether it should have been
+	// recorded, then it may not be deleted until the decision has been
+	// made by the user.
+
+	if (isRecording)
+		return false;
+
+	if (shouldRecord == 1)
+		/* confirmation dialog still open */
+		return false;
+
+	return true;
 }
 
 namespace {
@@ -115,11 +132,13 @@ QString Call::getFileName() const {
 	return path + '/' + fileName;
 }
 
-int Call::shouldRecord() {
-	// returns 0 if call should not be recorded, 1 if we're unsure and 2 if
-	// we should record
+void Call::setShouldRecord() {
+	// this sets shouldRecord based on preferences.  shouldRecord is 0 if
+	// the call should not be recorded, 1 if we should ask and 2 if we
+	// should record
+
 	// TODO
-	return 1;
+	shouldRecord = 1;
 }
 
 void Call::ask() {
@@ -129,10 +148,11 @@ void Call::ask() {
 }
 
 void Call::confirmRecording() {
-	// nothing to do for now
+	shouldRecord = 2;
 }
 
 void Call::denyRecording() {
+	shouldRecord = 0;
 	stopRecording(true, true);
 }
 
@@ -140,11 +160,13 @@ void Call::startRecording(bool force) {
 	if (isRecording)
 		return;
 
-	if (!force) {
-		int sr = shouldRecord();
-		if (sr == 0)
+	if (force) {
+		shouldRecord = 2;
+	} else {
+		setShouldRecord();
+		if (shouldRecord == 0)
 			return;
-		if (sr == 1)
+		if (shouldRecord == 1)
 			ask();
 	}
 

@@ -46,13 +46,14 @@ public:
 	~Call();
 	void startRecording(bool = false);
 	void stopRecording(bool = true, bool = false);
+	bool okToDelete() const;
 	void setStatus(const QString &s) { status = s; }
 	QString getStatus() const { return status; }
 
 private:
 	QString getFileName() const;
 	void mixToMono(int);
-	int shouldRecord();
+	void setShouldRecord();
 	void ask();
 
 private:
@@ -64,6 +65,7 @@ private:
 	AudioFileWriter *writer;
 	bool isRecording;
 	int channelMode;
+	int shouldRecord;
 
 	QTcpServer *serverLocal, *serverRemote;
 	QTcpSocket *socketLocal, *socketRemote;
