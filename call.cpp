@@ -104,6 +104,15 @@ void Call::startRecording() {
 
 	QString fileName = getFileName();
 
+	QString sm = preferences.get("output.channelmode").toString();
+
+	if (sm == "mono")
+		channelMode = 0;
+	else if (sm == "oerets")
+		channelMode = 2;
+	else /* if (sm == "stereo") */
+		channelMode = 1;
+
 	QString format = preferences.get("output.format").toString();
 
 	//if (format == "wav")
@@ -114,7 +123,7 @@ void Call::startRecording() {
 	//	writer = new Mp3Writer;
 
 	writer = new WaveWriter;
-	bool b = writer->open(fileName, 16000, true);
+	bool b = writer->open(fileName, 16000, channelMode != 0);
 
 	if (!b) {
 		QMessageBox *box = new QMessageBox(QMessageBox::Critical, PROGRAM_NAME " - Error",
@@ -187,6 +196,27 @@ void Call::checkConnections() {
 	}
 }
 
+void Call::mixToMono(int samples) {
+	long offset = bufferMono.size();
+	bufferMono.resize(offset + samples * 2);
+
+	qint16 *monoData = reinterpret_cast<qint16 *>(bufferMono.data()) + offset;
+	qint16 *localData = reinterpret_cast<qint16 *>(bufferLocal.data());
+	qint16 *remoteData = reinterpret_cast<qint16 *>(bufferRemote.data());
+
+	for (int i = 0; i < samples; i++) {
+		long sum = localData[i] + remoteData[i];
+		if (sum < -32768)
+			sum = -32768;
+		else if (sum > 32767)
+			sum = 32767;
+		monoData[i] = sum;
+	}
+
+	bufferLocal.remove(0, samples * 2);
+	bufferRemote.remove(0, samples * 2);
+}
+
 void Call::tryToWrite(bool flush) {
 	//debug(QString("Situation: %3, %4").arg(bufferLocal.size()).arg(bufferRemote.size()));
 
@@ -197,12 +227,25 @@ void Call::tryToWrite(bool flush) {
 	if (!samples)
 		return;
 
-	// encode our samples
-	// yes yes, our copying around of arrays might not be very efficient
+	// got new samples to write to file
 
-	bool b = writer->write(bufferLocal, bufferRemote, samples, flush);
+	bool success;
 
-	if (!b) {
+	if (channelMode == 0) {
+		// mono
+		mixToMono(samples);
+		success = writer->write(bufferMono, bufferMono, samples, flush);
+	} else if (channelMode == 1) {
+		// stereo
+		success = writer->write(bufferLocal, bufferRemote, samples, flush);
+	} else if (channelMode == 2) {
+		// oerets
+		success = writer->write(bufferRemote, bufferLocal, samples, flush);
+	} else {
+		success = false;
+	}
+
+	if (!success) {
 		QMessageBox *box = new QMessageBox(QMessageBox::Critical, PROGRAM_NAME " - Error",
 			QString(PROGRAM_NAME " encountered an error while writing this call to disk.  Recording terminated."));
 		box->setWindowModality(Qt::NonModal);

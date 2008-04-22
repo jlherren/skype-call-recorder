@@ -48,6 +48,7 @@ public:
 
 private:
 	QString getFileName() const;
+	void mixToMono(int);
 
 private:
 	Skype *skype;
@@ -55,10 +56,12 @@ private:
 	CallID id;
 	AudioFileWriter *writer;
 	bool isRecording;
+	int channelMode;
 
 	QTcpServer *serverLocal, *serverRemote;
 	QTcpSocket *socketLocal, *socketRemote;
 	QByteArray bufferLocal, bufferRemote;
+	QByteArray bufferMono;
 
 private slots:
 	void acceptLocal();

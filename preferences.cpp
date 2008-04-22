@@ -148,9 +148,9 @@ PreferencesDialog::PreferencesDialog() {
 	hbox->addWidget(combo);
 
 	combo = new SmartComboBox(preferences.get("output.channelmode"));
-	//combo->addItem("Mix to mono", "mono");
+	combo->addItem("Mix to mono", "mono");
 	combo->addItem("Stereo, local left, remote right", "stereo");
-	//combo->addItem("Stereo, local right, remote left", "oerets");
+	combo->addItem("Stereo, local right, remote left", "oerets");
 	combo->setupDone();
 	hbox->addWidget(combo);
 
