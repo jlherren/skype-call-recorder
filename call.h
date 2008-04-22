@@ -44,12 +44,14 @@ class Call : public QObject {
 public:
 	Call(Skype *, CallID);
 	~Call();
-	void startRecording();
+	void startRecording(bool = false);
 	void stopRecording(bool = true, bool = false);
 
 private:
 	QString getFileName() const;
 	void mixToMono(int);
+	int shouldRecord();
+	void ask();
 
 private:
 	Skype *skype;
@@ -72,6 +74,8 @@ private slots:
 	void readRemote();
 	void checkConnections();
 	void tryToWrite(bool = false);
+	void confirmRecording();
+	void denyRecording();
 
 private:
 	// disabled

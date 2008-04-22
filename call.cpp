@@ -114,9 +114,38 @@ QString Call::getFileName() const {
 	return path + '/' + fileName;
 }
 
-void Call::startRecording() {
+int Call::shouldRecord() {
+	// returns 0 if call should not be recorded, 1 if we're unsure and 2 if
+	// we should record
+	// TODO
+	return 1;
+}
+
+void Call::ask() {
+	RecordConfirmationDialog *dialog = new RecordConfirmationDialog(skypeName, displayName);
+	connect(dialog, SIGNAL(yes()), this, SLOT(confirmRecording()));
+	connect(dialog, SIGNAL(no()), this, SLOT(denyRecording()));
+}
+
+void Call::confirmRecording() {
+	// nothing to do for now
+}
+
+void Call::denyRecording() {
+	stopRecording(true, true);
+}
+
+void Call::startRecording(bool force) {
 	if (isRecording)
 		return;
+
+	if (!force) {
+		int sr = shouldRecord();
+		if (sr == 0)
+			return;
+		if (sr == 1)
+			ask();
+	}
 
 	debug(QString("Call %1: start recording").arg(id));
 
