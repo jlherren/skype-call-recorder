@@ -241,10 +241,10 @@ void Call::tryToWrite(bool flush) {
 	int r = bufferRemote.size();
 	int samples = (l < r ? l : r) / 2;
 
-	if (!samples)
+	if (!samples && !flush)
 		return;
 
-	// got new samples to write to file
+	// got new samples to write to file, or have to flush
 
 	bool success;
 
