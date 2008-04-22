@@ -198,12 +198,14 @@ void Call::acceptRemote() {
 
 void Call::readLocal() {
 	bufferLocal += socketLocal->readAll();
-	tryToWrite();
+	if (isRecording)
+		tryToWrite();
 }
 
 void Call::readRemote() {
 	bufferRemote += socketRemote->readAll();
-	tryToWrite();
+	if (isRecording)
+		tryToWrite();
 }
 
 void Call::checkConnections() {
