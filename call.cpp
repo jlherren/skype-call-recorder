@@ -251,7 +251,7 @@ void Call::tryToWrite(bool flush) {
 		box->setWindowModality(Qt::NonModal);
 		box->setAttribute(Qt::WA_DeleteOnClose);
 		box->show();
-		stopRecording();
+		stopRecording(false);
 		return;
 	}
 
@@ -266,7 +266,7 @@ void Call::tryToWrite(bool flush) {
 	// ahead.
 }
 
-void Call::stopRecording() {
+void Call::stopRecording(bool flush) {
 	if (!isRecording)
 		return;
 
@@ -282,7 +282,8 @@ void Call::stopRecording() {
 	// than acceptable.
 
 	// flush data to writer
-	tryToWrite(true);
+	if (flush)
+		tryToWrite(true);
 	writer->close();
 
 	delete writer;
