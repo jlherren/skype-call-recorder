@@ -46,6 +46,8 @@ public:
 	~Call();
 	void startRecording(bool = false);
 	void stopRecording(bool = true, bool = false);
+	void setStatus(const QString &s) { status = s; }
+	QString getStatus() const { return status; }
 
 private:
 	QString getFileName() const;
@@ -56,6 +58,7 @@ private:
 private:
 	Skype *skype;
 	CallID id;
+	QString status;
 	QString skypeName;
 	QString displayName;
 	AudioFileWriter *writer;

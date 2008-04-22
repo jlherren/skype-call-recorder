@@ -48,6 +48,7 @@
 Call::Call(Skype *sk, CallID i) :
 	skype(sk),
 	id(i),
+	status("UNKNOWN"),
 	writer(NULL),
 	isRecording(false)
 {
@@ -374,6 +375,8 @@ void CallHandler::callCmd(const QStringList &args) {
 
 	if (subCmd == "STATUS") {
 		QString a = args.at(2);
+		call->setStatus(a);
+
 		if (a == "INPROGRESS")
 			call->startRecording();
 		else if (a == "DURATION") {
