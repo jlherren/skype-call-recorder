@@ -99,27 +99,34 @@ bool WaveWriter::open(const QString &fn, long sr, bool s) {
 }
 
 bool WaveWriter::write(QByteArray &left, QByteArray &right, int samples, bool flush) {
-	// interleave data... TODO: is this something that advanced processors
-	// instructions can handle faster?
+	QByteArray output;
 
-	QByteArray interleaved;
-	interleaved.resize(samples * 4);
-	qint16 *interleavedData = reinterpret_cast<qint16 *>(interleaved.data());
-	qint16 *leftData = reinterpret_cast<qint16 *>(left.data());
-	qint16 *rightData = reinterpret_cast<qint16 *>(right.data());
+	if (stereo) {
+		// interleave data... TODO: is this something that advanced
+		// processors instructions can handle faster?
 
-	for (int i = 0; i < samples; i++) {
-		interleavedData[i * 2] = leftData[i];
-		interleavedData[i * 2 + 1] = rightData[i];
+		output.resize(samples * 4);
+		qint16 *outputData = reinterpret_cast<qint16 *>(output.data());
+		qint16 *leftData = reinterpret_cast<qint16 *>(left.data());
+		qint16 *rightData = reinterpret_cast<qint16 *>(right.data());
+
+		for (int i = 0; i < samples; i++) {
+			outputData[i * 2] = leftData[i];
+			outputData[i * 2 + 1] = rightData[i];
+		}
+	} else {
+		output = left;
+		output.truncate(samples * 2);
 	}
 
-	bool ret = file.write(interleaved);
+	bool ret = file.write(output);
 
-	fileSize += interleaved.size();
-	dataSize += interleaved.size();
+	fileSize += output.size();
+	dataSize += output.size();
 
 	left.remove(0, samples * 2);
-	right.remove(0, samples * 2);
+	if (stereo)
+		right.remove(0, samples * 2);
 
 	if (!ret)
 		return false;
