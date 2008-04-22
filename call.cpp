@@ -45,9 +45,8 @@
 #include "preferences.h"
 
 
-Call::Call(Skype *sk, const QString &sn, CallID i) :
+Call::Call(Skype *sk, CallID i) :
 	skype(sk),
-	skypeName(sn),
 	id(i),
 	writer(NULL),
 	isRecording(false)
@@ -59,6 +58,12 @@ Call::Call(Skype *sk, const QString &sn, CallID i) :
 
 	// TODO check if we actually should record this call here
 	// and ask if we're unsure
+
+	skypeName = skype->getObject(QString("CALL %1 PARTNER_HANDLE").arg(id));
+	if (skypeName.isEmpty()) {
+		debug(QString("Call %1: cannot get partner handle").arg(id));
+		skypeName = "UnknownCaller";
+	}
 }
 
 Call::~Call() {
@@ -319,14 +324,7 @@ void CallHandler::callCmd(const QStringList &args) {
 	bool newCall = false;
 
 	if (!calls.contains(id)) {
-		QString skypeName = skype->getObject(QString("CALL %1 PARTNER_HANDLE").arg(id));
-		if (skypeName.isEmpty()) {
-			debug(QString("Call %1: cannot get partner handle").arg(id));
-			ignore.insert(id);
-			return;
-		}
-
-		calls[id] = new Call(skype, skypeName, id);
+		calls[id] = new Call(skype, id);
 		newCall = true;
 	}
 

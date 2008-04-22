@@ -42,7 +42,7 @@ typedef int CallID;
 class Call : public QObject {
 	Q_OBJECT
 public:
-	Call(Skype *, const QString &, CallID id);
+	Call(Skype *, CallID);
 	~Call();
 	void startRecording();
 	void stopRecording(bool = true);
@@ -53,8 +53,8 @@ private:
 
 private:
 	Skype *skype;
-	QString skypeName;
 	CallID id;
+	QString skypeName;
 	AudioFileWriter *writer;
 	bool isRecording;
 	int channelMode;
