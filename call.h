@@ -38,7 +38,7 @@ class QTcpSocket;
 
 typedef int CallID;
 
-class Call : QObject {
+class Call : public QObject {
 	Q_OBJECT
 public:
 	Call(Skype *, const QString &, CallID id);
