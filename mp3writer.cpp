@@ -59,25 +59,33 @@ bool Mp3Writer::open(const QString &fn, long sr, bool s) {
 bool Mp3Writer::write(QByteArray &left, QByteArray &right, int samples, bool flush) {
 	int ret;
 	QByteArray output;
+	// rough upper bound formula taken from lame.h
+	int size = samples + samples / 4 + 7200;
 
-	// rough formula taken from lame.h
-	output.resize((samples + 2304) * bitRate / (8 * sampleRate) + 1024);
+	do {
+		output.resize(size);
 
-	if (stereo) {
-		ret = lame_encode_buffer(lame, reinterpret_cast<const short *>(left.constData()),
-			reinterpret_cast<const short *>(right.constData()), samples,
-			reinterpret_cast<unsigned char *>(output.data()), output.size());
-	} else {
-		// lame.h claims to write to the buffers, even though they're declared const, be safe
-		// TODO: this mixes both channels again!  can lame take only mono samples?
-		ret = lame_encode_buffer(lame, reinterpret_cast<const short *>(left.data()),
-			reinterpret_cast<const short *>(left.data()), samples,
-			reinterpret_cast<unsigned char *>(output.data()), output.size());
-	}
+		if (stereo) {
+			ret = lame_encode_buffer(lame, reinterpret_cast<const short *>(left.constData()),
+				reinterpret_cast<const short *>(right.constData()), samples,
+				reinterpret_cast<unsigned char *>(output.data()), output.size());
+		} else {
+			// lame.h claims to write to the buffers, even though they're declared const, be safe
+			// TODO: this mixes both channels again!  can lame take only mono samples?
+			ret = lame_encode_buffer(lame, reinterpret_cast<const short *>(left.data()),
+				reinterpret_cast<const short *>(left.data()), samples,
+				reinterpret_cast<unsigned char *>(output.data()), output.size());
+		}
+
+		if (ret == -1) {
+			// there wasn't enough space in output
+			size *= 2;
+			continue;
+		}
+	} while (false);
 
 	if (ret < 0) {
 		debug(QString("Error while writing MP3 file, code = %1").arg(ret));
-		// TODO: check for -1, that means the buffer was too small
 		return false;
 	}
 
