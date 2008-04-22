@@ -33,6 +33,7 @@
 #include "common.h"
 #include "skype.h"
 #include "wavewriter.h"
+#include "mp3writer.h"
 #include "preferences.h"
 
 
@@ -115,14 +116,11 @@ void Call::startRecording() {
 
 	QString format = preferences.get("output.format").toString();
 
-	//if (format == "wav")
-	//	writer = new WaveWriter;
-	//else if (format == "mp3")
-	//	writer = new Mp3Writer;
-	//else
-	//	writer = new Mp3Writer;
+	if (format == "wav")
+		writer = new WaveWriter;
+	else /* if (format == "mp3") */
+		writer = new Mp3Writer;
 
-	writer = new WaveWriter;
 	bool b = writer->open(fileName, 16000, channelMode != 0);
 
 	if (!b) {

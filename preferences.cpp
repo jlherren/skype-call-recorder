@@ -123,7 +123,7 @@ PreferencesDialog::PreferencesDialog() {
 
 	formatWidget = combo = new SmartComboBox(preferences.get("output.format"));
 	combo->addItem("WAV PCM", "wav");
-	//combo->addItem("MP3", "mp3");
+	combo->addItem("MP3", "mp3");
 	combo->setupDone();
 	connect(combo, SIGNAL(currentIndexChanged(int)), this, SLOT(enableMp3Settings()));
 	hbox->addWidget(combo);
@@ -157,7 +157,8 @@ PreferencesDialog::PreferencesDialog() {
 	vbox->addLayout(hbox);
 
 	check = new SmartCheckBox("Save call &information in MP3 files", preferences.get("output.savetags"));
-	mp3Settings.append(check);
+	//mp3Settings.append(check);
+	check->setEnabled(false);
 	vbox->addWidget(check);
 
 	// ---- buttons ----
