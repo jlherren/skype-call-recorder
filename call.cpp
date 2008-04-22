@@ -411,6 +411,16 @@ void CallHandler::callCmd(const QStringList &args) {
 		// don't stop recording when we get "FINISHED".  just wait for
 		// the connections to close so that we really get all the data
 	}
+
+	QList<Call *> list = calls.values();
+	for (int i = 0; i < list.size(); i++) {
+		Call *c = list.at(i);
+		QString status = c->getStatus();
+		if ((status == "FINISHED" || status == "CANCELLED") && c->okToDelete()) {
+			calls.remove(c->getID());
+			delete c;
+		}
+	}
 }
 
 // ---- RecordConfirmationDialog ----

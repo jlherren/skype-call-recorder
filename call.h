@@ -49,6 +49,7 @@ public:
 	bool okToDelete() const;
 	void setStatus(const QString &s) { status = s; }
 	QString getStatus() const { return status; }
+	CallID getID() const { return id; }
 
 private:
 	QString getFileName() const;
