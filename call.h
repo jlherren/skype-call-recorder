@@ -45,17 +45,18 @@ public:
 	Call(Skype *, CallID);
 	~Call();
 	void startRecording(bool = false);
-	void stopRecording(bool = true, bool = false);
+	void stopRecording(bool = true);
 	bool okToDelete() const;
 	void setStatus(const QString &s) { status = s; }
 	QString getStatus() const { return status; }
 	CallID getID() const { return id; }
 
 private:
-	QString getFileName() const;
+	QString constructFileName() const;
 	void mixToMono(int);
 	void setShouldRecord();
 	void ask();
+	void removeFile();
 
 private:
 	Skype *skype;
@@ -67,6 +68,7 @@ private:
 	bool isRecording;
 	int channelMode;
 	int shouldRecord;
+	QString fileName;
 
 	QTcpServer *serverLocal, *serverRemote;
 	QTcpSocket *socketLocal, *socketRemote;

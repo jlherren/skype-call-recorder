@@ -47,8 +47,3 @@ void AudioFileWriter::close() {
 	return file.close();
 }
 
-bool AudioFileWriter::remove() {
-	debug(QString("Removing '%1'").arg(file.fileName()));
-	return file.remove();
-}
-

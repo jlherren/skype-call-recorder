@@ -38,7 +38,7 @@ public:
 	virtual bool open(const QString &, long, bool);
 	virtual void close();
 	virtual bool write(QByteArray &, QByteArray &, int, bool = false) = 0;
-	bool remove();
+	QString fileName() const { return file.fileName(); }
 
 protected:
 	QFile file;

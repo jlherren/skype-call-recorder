@@ -108,7 +108,7 @@ QString escape(const QString &s) {
 }
 }
 
-QString Call::getFileName() const {
+QString Call::constructFileName() const {
 	QString path = preferences.get("output.path").toString();
 	QString fileName = preferences.get("output.pattern").toString();
 
@@ -152,8 +152,15 @@ void Call::confirmRecording() {
 }
 
 void Call::denyRecording() {
+	// note that the call might already be finished by now
 	shouldRecord = 0;
-	stopRecording(true, true);
+	stopRecording(true);
+	removeFile();
+}
+
+void Call::removeFile() {
+	debug(QString("Removing '%1'").arg(fileName));
+	QFile::remove(fileName);
 }
 
 void Call::startRecording(bool force) {
@@ -174,7 +181,7 @@ void Call::startRecording(bool force) {
 
 	// set up encoder for appropriate format
 
-	QString fileName = getFileName();
+	QString fn = constructFileName();
 
 	QString sm = preferences.get("output.channelmode").toString();
 
@@ -192,7 +199,8 @@ void Call::startRecording(bool force) {
 	else /* if (format == "mp3") */
 		writer = new Mp3Writer;
 
-	bool b = writer->open(fileName, 16000, channelMode != 0);
+	bool b = writer->open(fn, 16000, channelMode != 0);
+	fileName = writer->fileName();
 
 	if (!b) {
 		QMessageBox *box = new QMessageBox(QMessageBox::Critical, PROGRAM_NAME " - Error",
@@ -200,7 +208,7 @@ void Call::startRecording(bool force) {
 		box->setWindowModality(Qt::NonModal);
 		box->setAttribute(Qt::WA_DeleteOnClose);
 		box->show();
-		writer->remove();
+		removeFile();
 		delete writer;
 		return;
 	}
@@ -222,7 +230,7 @@ void Call::startRecording(bool force) {
 		box->setWindowModality(Qt::NonModal);
 		box->setAttribute(Qt::WA_DeleteOnClose);
 		box->show();
-		writer->remove();
+		removeFile();
 		delete writer;
 		delete serverRemote;
 		delete serverLocal;
@@ -337,7 +345,7 @@ void Call::tryToWrite(bool flush) {
 	// ahead.
 }
 
-void Call::stopRecording(bool flush, bool removeFile) {
+void Call::stopRecording(bool flush) {
 	if (!isRecording)
 		return;
 
@@ -356,10 +364,6 @@ void Call::stopRecording(bool flush, bool removeFile) {
 	if (flush)
 		tryToWrite(true);
 	writer->close();
-
-	if (removeFile)
-		writer->remove();
-
 	delete writer;
 
 	isRecording = false;
