@@ -310,13 +310,6 @@ void CallHandler::closeAll() {
 
 // ---- CallHandler ----
 
-QString CallHandler::getObject(const QString &object) {
-	QString ret = skype->sendWithReply("GET " + object);
-	if (!ret.startsWith(object))
-		return QString();
-	return ret.mid(object.size() + 1);
-}
-
 void CallHandler::callCmd(const QStringList &args) {
 	CallID id = args.at(0).toInt();
 
@@ -326,7 +319,7 @@ void CallHandler::callCmd(const QStringList &args) {
 	bool newCall = false;
 
 	if (!calls.contains(id)) {
-		QString skypeName = getObject(QString("CALL %1 PARTNER_HANDLE").arg(id));
+		QString skypeName = skype->getObject(QString("CALL %1 PARTNER_HANDLE").arg(id));
 		if (skypeName.isEmpty()) {
 			debug(QString("Call %1: cannot get partner handle").arg(id));
 			ignore.insert(id);

@@ -85,9 +85,6 @@ public:
 	void closeAll();
 
 private:
-	QString getObject(const QString &);
-
-private:
 	typedef QMap<CallID, Call *> CallMap;
 	typedef QSet<CallID> CallSet;
 

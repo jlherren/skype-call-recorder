@@ -26,6 +26,7 @@
 
 #include <QObject>
 #include <QtDBus>
+#include <QString>
 
 class SkypeExport;
 
@@ -37,6 +38,7 @@ public:
 	Skype();
 	QString sendWithReply(const QString &);
 	void send(const QString &);
+	QString getObject(const QString &);
 
 signals:
 	void notify(const QString &) const;

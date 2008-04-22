@@ -88,6 +88,13 @@ void Skype::send(const QString &s) {
 	dbus.call(msg, QDBus::NoBlock);
 }
 
+QString Skype::getObject(const QString &object) {
+	QString ret = sendWithReply("GET " + object);
+	if (!ret.startsWith(object))
+		return QString();
+	return ret.mid(object.size() + 1);
+}
+
 void Skype::methodCallback(const QDBusMessage &msg) {
 	if (msg.type() != QDBusMessage::ReplyMessage) {
 		connectionState = 0;
