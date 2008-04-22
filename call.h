@@ -29,6 +29,7 @@
 #include <QByteArray>
 #include <QMap>
 #include <QSet>
+#include <QDialog>
 
 class QStringList;
 class Skype;
@@ -93,6 +94,20 @@ private:
 	CallMap calls;
 	CallSet ignore;
 	Skype *skype;
+};
+
+class RecordConfirmationDialog : public QDialog {
+	Q_OBJECT
+public:
+	RecordConfirmationDialog(const QString &, const QString &);
+
+signals:
+	void yes();
+	void no();
+
+private slots:
+	void yesClicked();
+	void noClicked();
 };
 
 #endif
