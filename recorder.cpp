@@ -58,8 +58,14 @@ Recorder::~Recorder() {
 }
 
 void Recorder::setupGUI() {
-	trayIcon = new TrayIcon(this);
 	setQuitOnLastWindowClosed(false);
+
+	trayIcon = new TrayIcon(this);
+	connect(trayIcon, SIGNAL(requestQuit()),               this, SLOT(quitConfirmation()));
+	connect(trayIcon, SIGNAL(requestQuitNoConfirmation()), this, SLOT(quit()));
+	connect(trayIcon, SIGNAL(requestAbout()),              this, SLOT(about()));
+	connect(trayIcon, SIGNAL(requestOpenSettings()),       this, SLOT(openSettings()));
+	connect(trayIcon, SIGNAL(requestBrowseCalls()),        this, SLOT(browseCalls()));
 
 	// TODO: temporary
 	debugWidget = new QTextEdit;

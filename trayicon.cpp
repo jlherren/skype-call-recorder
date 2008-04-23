@@ -28,15 +28,14 @@
 
 #include "trayicon.h"
 #include "skype.h"
-#include "recorder.h"
 #include "common.h"
 
-TrayIcon::TrayIcon(Recorder *r) : QSystemTrayIcon(r), recorder(r) {
+TrayIcon::TrayIcon(QObject *p) : QSystemTrayIcon(p) {
 	if (!QSystemTrayIcon::isSystemTrayAvailable()) {
 		QMessageBox::critical(NULL, PROGRAM_NAME " - Error",
 			PROGRAM_NAME " cannot start, because it requires a system tray.  None was detected.  "
 			"(TODO: Make this work even without a system tray.)");
-		recorder->quit();
+		emit requestQuitNoConfirmation();
 		return;
 	}
 
@@ -45,14 +44,14 @@ TrayIcon::TrayIcon(Recorder *r) : QSystemTrayIcon(r), recorder(r) {
 	menu = new QMenu;
 	QAction *action = menu->addAction("About " PROGRAM_NAME);
 	action->setEnabled(false);
-	connect(action, SIGNAL(triggered()), recorder, SLOT(about()));
+	connect(action, SIGNAL(triggered()), this, SIGNAL(requestAbout()));
 	action = menu->addAction("Open preferences...");
-	connect(action, SIGNAL(triggered()), recorder, SLOT(openSettings()));
+	connect(action, SIGNAL(triggered()), this, SIGNAL(requestOpenSettings()));
 	action = menu->addAction("Browse previous calls");
 	action->setEnabled(false);
-	connect(action, SIGNAL(triggered()), recorder, SLOT(browseCalls()));
+	connect(action, SIGNAL(triggered()), this, SIGNAL(requestBrowseCalls()));
 	action = menu->addAction("Exit");
-	connect(action, SIGNAL(triggered()), recorder, SLOT(quitConfirmation()));
+	connect(action, SIGNAL(triggered()), this, SIGNAL(requestQuit()));
 	setContextMenu(menu);
 
 	setToolTip(PROGRAM_NAME);

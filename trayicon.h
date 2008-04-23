@@ -27,15 +27,20 @@
 #include <QSystemTrayIcon>
 
 class QMenu;
-class Recorder;
 
 class TrayIcon : public QSystemTrayIcon {
 	Q_OBJECT
 public:
-	TrayIcon(Recorder *);
+	TrayIcon(QObject *);
+
+signals:
+	void requestQuit();
+	void requestQuitNoConfirmation();
+	void requestAbout();
+	void requestOpenSettings();
+	void requestBrowseCalls();
 
 private:
-	Recorder *recorder;
 	QMenu *menu;
 
 private slots:
