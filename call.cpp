@@ -35,6 +35,7 @@
 #include <QApplication>
 #include <QStyle>
 #include <QIcon>
+#include <QTimer>
 #include <ctime>
 
 #include "call.h"
@@ -472,21 +473,34 @@ RecordConfirmationDialog::RecordConfirmationDialog(const QString &skypeName, con
 
 	QVBoxLayout *vbox = new QVBoxLayout;
 	bighbox->addLayout(vbox);
+
 	QLabel *label = new QLabel(QString("Do you wish to record this call with <b>%1</b> (%2)?").arg(skypeName).arg(displayName));
 	vbox->addWidget(label);
+
 	QCheckBox *check = new QCheckBox("Automatically perform this action on the next call with this person");
 	check->setEnabled(false);
+	//widgets.append(check);
 	vbox->addWidget(check);
+
 	QHBoxLayout *hbox = new QHBoxLayout;
+
 	QPushButton *button = new QPushButton("Yes, record this call");
+	button->setEnabled(false);
+	button->setDefault(true);
+	widgets.append(button);
 	connect(button, SIGNAL(clicked()), this, SLOT(yesClicked()));
 	hbox->addWidget(button);
+
 	button = new QPushButton("Do not record this call");
+	button->setEnabled(false);
+	widgets.append(button);
 	connect(button, SIGNAL(clicked()), this, SLOT(noClicked()));
 	hbox->addWidget(button);
+
 	vbox->addLayout(hbox);
 
 	connect(this, SIGNAL(rejected()), this, SIGNAL(no()));
+	QTimer::singleShot(1000, this, SLOT(enableWidgets()));
 
 	show();
 	raise();
@@ -503,5 +517,10 @@ void RecordConfirmationDialog::noClicked() {
 	emit no();
 	// TODO update preferences depending on checkbox
 	accept();
+}
+
+void RecordConfirmationDialog::enableWidgets() {
+	for (int i = 0; i < widgets.size(); i++)
+		widgets.at(i)->setEnabled(true);
 }
 

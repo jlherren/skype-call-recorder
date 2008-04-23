@@ -30,12 +30,14 @@
 #include <QMap>
 #include <QSet>
 #include <QDialog>
+#include <QList>
 
 class QStringList;
 class Skype;
 class AudioFileWriter;
 class QTcpServer;
 class QTcpSocket;
+class QWidget;
 
 typedef int CallID;
 
@@ -115,9 +117,13 @@ signals:
 	void yes();
 	void no();
 
+private:
+	QList<QWidget *> widgets;
+
 private slots:
 	void yesClicked();
 	void noClicked();
+	void enableWidgets();
 };
 
 #endif
