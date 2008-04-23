@@ -399,6 +399,14 @@ void Call::stopRecording(bool flush) {
 	writer->close();
 	delete writer;
 
+	// we must disconnect all signals from the sockets first, so that upon
+	// closing them it won't call checkConnections() and we don't land here
+	// recursively again
+	disconnect(socketLocal, 0, this, 0);
+	disconnect(socketRemote, 0, this, 0);
+	socketLocal->close();
+	socketRemote->close();
+
 	isRecording = false;
 }
 
