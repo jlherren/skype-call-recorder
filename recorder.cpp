@@ -97,9 +97,10 @@ void Recorder::loadSettings() {
 
 	#define X(n, v) preferences.get(#n).setIfNotSet(v);
 	// default preferences
-	X(autostartmode,             "none");        // "all", "friends", "none"
-	X(friendlist,                "echo123");     // comma separated list
-	X(exceptionlist,             "");            // comma separated list
+	X(autorecord.default,        "ask");         // "yes", "ask", "no"
+	X(autorecord.ask,            "");            // comma separated skypenames to always ask for
+	X(autorecord.yes,            "");            // comma separated skypenames to always record
+	X(autorecord.no,             "");            // comma separated skypenames to never record
 	X(output.path,               "~/Skype Calls");
 	X(output.pattern,            "%Y, %B/Skype call with &s, %A %B %d, %Y, %H:%M:%S");
 	X(output.format,             "mp3");         // "mp3" or "wav"

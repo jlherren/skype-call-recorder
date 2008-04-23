@@ -76,13 +76,10 @@ PreferencesDialog::PreferencesDialog() {
 	vbox = new QVBoxLayout;
 	Preference &preference = preferences.get("autorecord.default");
 	radio = new SmartRadioButton("&Automatically record calls", preference, "yes");
-	radio->setEnabled(false);
 	vbox->addWidget(radio);
 	radio = new SmartRadioButton("Ask every time", preference, "ask");
-	radio->setEnabled(false);
 	vbox->addWidget(radio);
 	radio = new SmartRadioButton("Do not automatically record calls", preference, "no");
-	radio->setEnabled(false);
 	vbox->addWidget(radio);
 
 	hbox->addLayout(vbox);

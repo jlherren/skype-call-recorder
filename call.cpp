@@ -137,8 +137,33 @@ void Call::setShouldRecord() {
 	// the call should not be recorded, 1 if we should ask and 2 if we
 	// should record
 
-	// TODO
-	shouldRecord = 1;
+	QStringList list = preferences.get("autorecord.yes").toList();
+	if (list.contains(skypeName)) {
+		shouldRecord = 2;
+		return;
+	}
+
+	list = preferences.get("autorecord.ask").toList();
+	if (list.contains(skypeName)) {
+		shouldRecord = 1;
+		return;
+	}
+
+	list = preferences.get("autorecord.no").toList();
+	if (list.contains(skypeName)) {
+		shouldRecord = 0;
+		return;
+	}
+
+	QString def = preferences.get("autorecord.default").toString();
+	if (def == "yes")
+		shouldRecord = 2;
+	else if (def == "ask")
+		shouldRecord = 1;
+	else if (def == "no")
+		shouldRecord = 0;
+	else
+		shouldRecord = 1;
 }
 
 void Call::ask() {
