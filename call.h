@@ -54,6 +54,7 @@ public:
 	QString getStatus() const { return status; }
 	CallID getID() const { return id; }
 	void removeFile();
+	void hideConfirmation(int);
 
 private:
 	QString constructFileName() const;

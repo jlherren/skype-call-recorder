@@ -82,6 +82,8 @@ Call::~Call() {
 	if (isRecording)
 		stopRecording();
 
+	delete confirmation;
+
 	// QT takes care of deleting servers and sockets
 }
 
@@ -94,7 +96,7 @@ bool Call::okToDelete() const {
 	if (isRecording)
 		return false;
 
-	if (shouldRecord == 1)
+	if (confirmation)
 		/* confirmation dialog still open */
 		return false;
 
@@ -174,6 +176,14 @@ void Call::ask() {
 	connect(confirmation, SIGNAL(no()), this, SLOT(denyRecording()));
 }
 
+void Call::hideConfirmation(int should) {
+	if (!confirmation)
+		return;
+	delete confirmation;
+	confirmation = NULL;
+	shouldRecord = should;
+}
+
 void Call::confirmRecording() {
 	shouldRecord = 2;
 	confirmation = NULL;
@@ -193,16 +203,13 @@ void Call::removeFile() {
 }
 
 void Call::startRecording(bool force) {
+	if (force)
+		hideConfirmation(2);
+
 	if (isRecording)
 		return;
 
-	if (force) {
-		if (confirmation) {
-			delete confirmation;
-			confirmation = NULL;
-		}
-		shouldRecord = 2;
-	} else {
+	if (!force) {
 		setShouldRecord();
 		if (shouldRecord == 0)
 			return;
@@ -482,7 +489,9 @@ void CallHandler::stopRecording() {
 	if (!calls.contains(currentCall))
 		return;
 
-	calls[currentCall]->stopRecording();
+	Call *call = calls[currentCall];
+	call->stopRecording();
+	call->hideConfirmation(2);
 }
 
 void CallHandler::stopRecordingAndDelete() {
@@ -492,6 +501,7 @@ void CallHandler::stopRecordingAndDelete() {
 	Call *call = calls[currentCall];
 	call->stopRecording();
 	call->removeFile();
+	call->hideConfirmation(0);
 }
 
 // ---- RecordConfirmationDialog ----
