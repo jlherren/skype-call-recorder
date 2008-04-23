@@ -474,24 +474,27 @@ RecordConfirmationDialog::RecordConfirmationDialog(const QString &skypeName, con
 	QVBoxLayout *vbox = new QVBoxLayout;
 	bighbox->addLayout(vbox);
 
-	QLabel *label = new QLabel(QString("Do you wish to record this call with <b>%1</b> (%2)?").arg(skypeName).arg(displayName));
+	QLabel *label = new QLabel(QString(PROGRAM_NAME " has started recording the call with <b>%1</b> (%2).<br>"
+		"Do you wish to continue recording or shall it stop and delete the file?").arg(skypeName).arg(displayName));
 	vbox->addWidget(label);
 
-	QCheckBox *check = new QCheckBox("Automatically perform this action on the next call with this person");
+	vbox->addSpacing(10);
+
+	QCheckBox *check = new QCheckBox(QString("&Automatically perform this action on the next call with %1").arg(skypeName));
 	check->setEnabled(false);
 	//widgets.append(check);
 	vbox->addWidget(check);
 
 	QHBoxLayout *hbox = new QHBoxLayout;
 
-	QPushButton *button = new QPushButton("Yes, record this call");
+	QPushButton *button = new QPushButton("&Continue recording");
 	button->setEnabled(false);
 	button->setDefault(true);
 	widgets.append(button);
 	connect(button, SIGNAL(clicked()), this, SLOT(yesClicked()));
 	hbox->addWidget(button);
 
-	button = new QPushButton("Do not record this call");
+	button = new QPushButton("&Stop recording and delete");
 	button->setEnabled(false);
 	widgets.append(button);
 	connect(button, SIGNAL(clicked()), this, SLOT(noClicked()));
