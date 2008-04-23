@@ -40,6 +40,11 @@ signals:
 	void requestOpenSettings();
 	void requestBrowseCalls();
 
+signals:
+	void startRecording();
+	void stopRecordingAndDelete();
+	void stopRecording();
+
 private:
 	QMenu *menu;
 

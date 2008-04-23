@@ -41,19 +41,22 @@ TrayIcon::TrayIcon(QObject *p) : QSystemTrayIcon(p) {
 
 	setIcon(QIcon(":/icon.png"));
 
-	menu = new QMenu;
-	QAction *action = menu->addAction("About " PROGRAM_NAME);
-	action->setEnabled(false);
-	connect(action, SIGNAL(triggered()), this, SIGNAL(requestAbout()));
-	action = menu->addAction("Open preferences...");
-	connect(action, SIGNAL(triggered()), this, SIGNAL(requestOpenSettings()));
-	action = menu->addAction("Browse previous calls");
-	action->setEnabled(false);
-	connect(action, SIGNAL(triggered()), this, SIGNAL(requestBrowseCalls()));
-	action = menu->addAction("Exit");
-	connect(action, SIGNAL(triggered()), this, SIGNAL(requestQuit()));
-	setContextMenu(menu);
+	// current call submenu
+	QMenu *subMenu = new QMenu("Current call");
+	subMenu->addAction("&Start recording", this, SIGNAL(startRecording()));
+	subMenu->addAction("S&top recording", this, SIGNAL(stopRecording()));
+	subMenu->addAction("Stop recording and &delete file", this, SIGNAL(stopRecordingAndDelete()));
 
+	menu = new QMenu;
+
+	menu->addAction("&About " PROGRAM_NAME, this, SIGNAL(requestAbout()));
+	menu->addMenu(subMenu);
+	menu->addAction("Open &preferences...", this, SIGNAL(requestOpenSettings()));
+	menu->addAction("&Browse previous calls", this, SIGNAL(requestBrowseCalls()));
+	menu->addSeparator();
+	menu->addAction("&Exit", this, SIGNAL(requestQuit()));
+
+	setContextMenu(menu);
 	setToolTip(PROGRAM_NAME);
 
 	connect(this, SIGNAL(activated(QSystemTrayIcon::ActivationReason)), this, SLOT(activate(QSystemTrayIcon::ActivationReason)));
