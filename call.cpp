@@ -52,7 +52,8 @@ Call::Call(Skype *sk, CallID i) :
 	status("UNKNOWN"),
 	writer(NULL),
 	isRecording(false),
-	shouldRecord(1)
+	shouldRecord(1),
+	confirmation(NULL)
 {
 	debug(QString("Call %1: Call object contructed").arg(id));
 
@@ -168,18 +169,20 @@ void Call::setShouldRecord() {
 }
 
 void Call::ask() {
-	RecordConfirmationDialog *dialog = new RecordConfirmationDialog(skypeName, displayName);
-	connect(dialog, SIGNAL(yes()), this, SLOT(confirmRecording()));
-	connect(dialog, SIGNAL(no()), this, SLOT(denyRecording()));
+	confirmation = new RecordConfirmationDialog(skypeName, displayName);
+	connect(confirmation, SIGNAL(yes()), this, SLOT(confirmRecording()));
+	connect(confirmation, SIGNAL(no()), this, SLOT(denyRecording()));
 }
 
 void Call::confirmRecording() {
 	shouldRecord = 2;
+	confirmation = NULL;
 }
 
 void Call::denyRecording() {
 	// note that the call might already be finished by now
 	shouldRecord = 0;
+	confirmation = NULL;
 	stopRecording(true);
 	removeFile();
 }
@@ -194,6 +197,10 @@ void Call::startRecording(bool force) {
 		return;
 
 	if (force) {
+		if (confirmation) {
+			delete confirmation;
+			confirmation = NULL;
+		}
 		shouldRecord = 2;
 	} else {
 		setShouldRecord();
@@ -395,8 +402,9 @@ void Call::stopRecording(bool flush) {
 	isRecording = false;
 }
 
+// ---- CallHandler ----
 
-CallHandler::CallHandler(Skype *s) : skype(s) {
+CallHandler::CallHandler(Skype *s) : skype(s), currentCall(-1) {
 }
 
 void CallHandler::closeAll() {
@@ -405,8 +413,6 @@ void CallHandler::closeAll() {
 	for (int i = 0; i < list.size(); i++)
 		list.at(i)->stopRecording();
 }
-
-// ---- CallHandler ----
 
 void CallHandler::callCmd(const QStringList &args) {
 	CallID id = args.at(0).toInt();
@@ -422,6 +428,10 @@ void CallHandler::callCmd(const QStringList &args) {
 	}
 
 	Call *call = calls[id];
+
+	// this holds the current call.  skype currently only allows for one
+	// call at any time, so this should work ok
+	currentCall = id;
 
 	QString subCmd = args.at(1);
 
@@ -451,6 +461,29 @@ void CallHandler::callCmd(const QStringList &args) {
 			delete c;
 		}
 	}
+}
+
+void CallHandler::startRecording() {
+	if (!calls.contains(currentCall))
+		return;
+
+	calls[currentCall]->startRecording(true);
+}
+
+void CallHandler::stopRecording() {
+	if (!calls.contains(currentCall))
+		return;
+
+	calls[currentCall]->stopRecording();
+}
+
+void CallHandler::stopRecordingAndDelete() {
+	if (!calls.contains(currentCall))
+		return;
+
+	Call *call = calls[currentCall];
+	call->stopRecording();
+	call->removeFile();
 }
 
 // ---- RecordConfirmationDialog ----

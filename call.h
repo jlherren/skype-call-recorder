@@ -38,6 +38,7 @@ class AudioFileWriter;
 class QTcpServer;
 class QTcpSocket;
 class QWidget;
+class RecordConfirmationDialog;
 
 typedef int CallID;
 
@@ -52,13 +53,13 @@ public:
 	void setStatus(const QString &s) { status = s; }
 	QString getStatus() const { return status; }
 	CallID getID() const { return id; }
+	void removeFile();
 
 private:
 	QString constructFileName() const;
 	void mixToMono(int);
 	void setShouldRecord();
 	void ask();
-	void removeFile();
 
 private:
 	Skype *skype;
@@ -71,6 +72,7 @@ private:
 	int channelMode;
 	int shouldRecord;
 	QString fileName;
+	RecordConfirmationDialog *confirmation;
 
 	QTcpServer *serverLocal, *serverRemote;
 	QTcpSocket *socketLocal, *socketRemote;
@@ -93,11 +95,17 @@ private:
 	Call &operator=(const Call &);
 };
 
-class CallHandler {
+class CallHandler : public QObject {
+	Q_OBJECT
 public:
 	CallHandler(Skype *);
 	void callCmd(const QStringList &);
 	void closeAll();
+
+public slots:
+	void startRecording();
+	void stopRecording();
+	void stopRecordingAndDelete();
 
 private:
 	typedef QMap<CallID, Call *> CallMap;
@@ -106,6 +114,7 @@ private:
 	CallMap calls;
 	CallSet ignore;
 	Skype *skype;
+	CallID currentCall;
 };
 
 class RecordConfirmationDialog : public QDialog {
