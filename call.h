@@ -45,7 +45,7 @@ typedef int CallID;
 class Call : public QObject {
 	Q_OBJECT
 public:
-	Call(Skype *, CallID);
+	Call(QObject *, Skype *, CallID);
 	~Call();
 	void startRecording(bool = false);
 	void stopRecording(bool = true);
@@ -101,7 +101,6 @@ class CallHandler : public QObject {
 public:
 	CallHandler(Skype *);
 	void callCmd(const QStringList &);
-	void closeAll();
 
 public slots:
 	void startRecording();

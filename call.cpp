@@ -46,7 +46,8 @@
 #include "preferences.h"
 
 
-Call::Call(Skype *sk, CallID i) :
+Call::Call(QObject *p, Skype *sk, CallID i) :
+	QObject(p),
 	skype(sk),
 	id(i),
 	status("UNKNOWN"),
@@ -422,13 +423,6 @@ void Call::stopRecording(bool flush) {
 CallHandler::CallHandler(Skype *s) : skype(s), currentCall(-1) {
 }
 
-void CallHandler::closeAll() {
-	debug("closing all calls");
-	QList<Call *> list = calls.values();
-	for (int i = 0; i < list.size(); i++)
-		list.at(i)->stopRecording();
-}
-
 void CallHandler::callCmd(const QStringList &args) {
 	CallID id = args.at(0).toInt();
 
@@ -438,7 +432,7 @@ void CallHandler::callCmd(const QStringList &args) {
 	bool newCall = false;
 
 	if (!calls.contains(id)) {
-		calls[id] = new Call(skype, id);
+		calls[id] = new Call(this, skype, id);
 		newCall = true;
 	}
 
