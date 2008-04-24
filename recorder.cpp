@@ -91,9 +91,15 @@ void Recorder::setupSkype() {
 
 void Recorder::setupCallHandler() {
 	callHandler = new CallHandler(skype);
+
 	connect(trayIcon, SIGNAL(startRecording()),         callHandler, SLOT(startRecording()));
 	connect(trayIcon, SIGNAL(stopRecording()),          callHandler, SLOT(stopRecording()));
 	connect(trayIcon, SIGNAL(stopRecordingAndDelete()), callHandler, SLOT(stopRecordingAndDelete()));
+
+	connect(callHandler, SIGNAL(startedCall(const QString &)), trayIcon, SLOT(startedCall(const QString &)));
+	connect(callHandler, SIGNAL(stoppedCall()),                trayIcon, SLOT(stoppedCall()));
+	connect(callHandler, SIGNAL(startedRecording()),           trayIcon, SLOT(startedRecording()));
+	connect(callHandler, SIGNAL(stoppedRecording()),           trayIcon, SLOT(stoppedRecording()));
 }
 
 QString Recorder::getConfigFile() const {
