@@ -358,7 +358,10 @@ void Call::tryToWrite(bool flush) {
 	int r = bufferRemote.size();
 	int samples = (l < r ? l : r) / 2;
 
-	if (!samples && !flush)
+	// skype usually sends us more PCM data every 10ms, i.e. 160 samples.
+	// (skype operates at 16kHz) let's accumulate at least 100ms of data
+	// before bothering to write it to disk
+	if (samples < 1600 && !flush)
 		return;
 
 	// got new samples to write to file, or have to flush
