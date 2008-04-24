@@ -26,7 +26,7 @@
 
 #include <QSystemTrayIcon>
 
-class QMenu;
+class QAction;
 
 class TrayIcon : public QSystemTrayIcon {
 	Q_OBJECT
@@ -45,8 +45,17 @@ signals:
 	void stopRecordingAndDelete();
 	void stopRecording();
 
+public slots:
+	void startedCall(const QString &);
+	void stoppedCall();
+	void startedRecording();
+	void stoppedRecording();
+
 private:
-	QMenu *menu;
+	QAction *currentCallAction;
+	QAction *startAction;
+	QAction *stopAction;
+	QAction *stopAndDeleteAction;
 
 private slots:
 	void activate(QSystemTrayIcon::ActivationReason);

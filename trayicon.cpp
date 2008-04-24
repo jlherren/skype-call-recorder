@@ -42,15 +42,16 @@ TrayIcon::TrayIcon(QObject *p) : QSystemTrayIcon(p) {
 	setIcon(QIcon(":/icon.png"));
 
 	// current call submenu
-	QMenu *subMenu = new QMenu("Current call");
-	subMenu->addAction("&Start recording", this, SIGNAL(startRecording()));
-	subMenu->addAction("S&top recording", this, SIGNAL(stopRecording()));
-	subMenu->addAction("Stop recording and &delete file", this, SIGNAL(stopRecordingAndDelete()));
+	QMenu *subMenu = new QMenu("Call with unknown");
+	startAction = subMenu->addAction("&Start recording", this, SIGNAL(startRecording()));
+	stopAction = subMenu->addAction("S&top recording", this, SIGNAL(stopRecording()));
+	stopAndDeleteAction = subMenu->addAction("Stop recording and &delete file", this, SIGNAL(stopRecordingAndDelete()));
 
-	menu = new QMenu;
+	QMenu *menu = new QMenu;
 
 	menu->addAction("&About " PROGRAM_NAME, this, SIGNAL(requestAbout()));
-	menu->addMenu(subMenu);
+	currentCallAction = menu->addMenu(subMenu);
+	currentCallAction->setVisible(false);
 	menu->addAction("Open &preferences...", this, SIGNAL(requestOpenSettings()));
 	menu->addAction("&Browse previous calls", this, SIGNAL(requestBrowseCalls()));
 	menu->addSeparator();
@@ -66,5 +67,29 @@ TrayIcon::TrayIcon(QObject *p) : QSystemTrayIcon(p) {
 
 void TrayIcon::activate(QSystemTrayIcon::ActivationReason) {
 	contextMenu()->popup(QCursor::pos());
+}
+
+void TrayIcon::startedCall(const QString &skypeName) {
+	currentCallAction->setText("Call with " + skypeName);
+	currentCallAction->setVisible(true);
+	startAction->setEnabled(true);
+	stopAction->setEnabled(false);
+	stopAndDeleteAction->setEnabled(false);
+}
+
+void TrayIcon::stoppedCall() {
+	currentCallAction->setVisible(false);
+}
+
+void TrayIcon::startedRecording() {
+	startAction->setEnabled(false);
+	stopAction->setEnabled(true);
+	stopAndDeleteAction->setEnabled(true);
+}
+
+void TrayIcon::stoppedRecording() {
+	startAction->setEnabled(true);
+	stopAction->setEnabled(false);
+	stopAndDeleteAction->setEnabled(false);
 }
 
