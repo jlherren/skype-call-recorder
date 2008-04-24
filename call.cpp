@@ -85,6 +85,8 @@ Call::~Call() {
 
 	delete confirmation;
 
+	setStatus("UNKNOWN");
+
 	// QT takes care of deleting servers and sockets
 }
 
@@ -102,6 +104,17 @@ bool Call::okToDelete() const {
 		return false;
 
 	return true;
+}
+
+void Call::setStatus(const QString &s) {
+	bool wasInProgress = status == "INPROGRESS";
+	status = s;
+	bool nowInProgress = status == "INPROGRESS";
+
+	if (!wasInProgress && nowInProgress)
+		emit startedCall(skypeName);
+	else if (wasInProgress && !nowInProgress)
+		emit stoppedCall();
 }
 
 namespace {
@@ -279,6 +292,7 @@ void Call::startRecording(bool force) {
 	}
 
 	isRecording = true;
+	emit startedRecording();
 }
 
 void Call::acceptLocal() {
@@ -416,6 +430,7 @@ void Call::stopRecording(bool flush) {
 	socketRemote->close();
 
 	isRecording = false;
+	emit stoppedRecording();
 }
 
 // ---- CallHandler ----
@@ -431,12 +446,20 @@ void CallHandler::callCmd(const QStringList &args) {
 
 	bool newCall = false;
 
-	if (!calls.contains(id)) {
-		calls[id] = new Call(this, skype, id);
-		newCall = true;
-	}
+	Call *call;
 
-	Call *call = calls[id];
+	if (calls.contains(id)) {
+		call = calls[id];
+	} else {
+		call = new Call(this, skype, id);
+		calls[id] = call;
+		newCall = true;
+
+		connect(call, SIGNAL(startedCall(const QString &)), this, SIGNAL(startedCall(const QString &)));
+		connect(call, SIGNAL(stoppedCall()),                this, SIGNAL(stoppedCall()));
+		connect(call, SIGNAL(startedRecording()),           this, SIGNAL(startedRecording()));
+		connect(call, SIGNAL(stoppedRecording()),           this, SIGNAL(stoppedRecording()));
+	}
 
 	// this holds the current call.  skype currently only allows for one
 	// call at any time, so this should work ok

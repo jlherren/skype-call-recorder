@@ -50,11 +50,17 @@ public:
 	void startRecording(bool = false);
 	void stopRecording(bool = true);
 	bool okToDelete() const;
-	void setStatus(const QString &s) { status = s; }
+	void setStatus(const QString &);
 	QString getStatus() const { return status; }
 	CallID getID() const { return id; }
 	void removeFile();
 	void hideConfirmation(int);
+
+signals:
+	void startedCall(const QString &);
+	void stoppedCall();
+	void startedRecording();
+	void stoppedRecording();
 
 private:
 	QString constructFileName() const;
@@ -101,6 +107,12 @@ class CallHandler : public QObject {
 public:
 	CallHandler(Skype *);
 	void callCmd(const QStringList &);
+
+signals:
+	void startedCall(const QString &);
+	void stoppedCall();
+	void startedRecording();
+	void stoppedRecording();
 
 public slots:
 	void startRecording();
