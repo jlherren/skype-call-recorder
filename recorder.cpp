@@ -27,6 +27,8 @@
 #include <QTextEdit>
 #include <QTimer>
 #include <QDir>
+#include <QProcess>
+#include <cstdlib>
 
 #include "recorder.h"
 #include "common.h"
@@ -148,8 +150,29 @@ void Recorder::openSettings() {
 }
 
 void Recorder::browseCalls() {
-	QMessageBox::information(NULL, PROGRAM_NAME,
-		"This feature not implemented yet.");
+	QString program;
+	QStringList arguments;
+
+	const char *v = std::getenv("GNOME_DESKTOP_SESSION_ID");
+	if (v && *v) {
+		// GNOME is running
+		program = "gnome-open";
+	} else {
+		// otherwise, just launch kfmclient.  KDE could be detected via
+		// KDE_FULL_SESSION=true
+		program = "kfmclient";
+		arguments << "exec";
+	}
+
+	QString path = getOutputPath();
+	QDir().mkpath(path);
+	arguments << path;
+	int ret = QProcess::execute(program, arguments);
+
+	if (ret != 0) {
+		QMessageBox::information(NULL, PROGRAM_NAME, QString("Failed to launch '%1 %2', exit code %3").
+			arg(program, arguments.join(" ")).arg(ret));
+	}
 }
 
 void Recorder::quitConfirmation() {
