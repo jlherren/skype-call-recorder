@@ -29,16 +29,12 @@
 #include <QByteArray>
 #include <QMap>
 #include <QSet>
-#include <QDialog>
-#include <QList>
 
 class QStringList;
 class Skype;
 class AudioFileWriter;
 class QTcpServer;
 class QTcpSocket;
-class QWidget;
-class RecordConfirmationDialog;
 
 typedef int CallID;
 
@@ -79,7 +75,7 @@ private:
 	int channelMode;
 	int shouldRecord;
 	QString fileName;
-	RecordConfirmationDialog *confirmation;
+	QObject *confirmation;
 
 	QTcpServer *serverLocal, *serverRemote;
 	QTcpSocket *socketLocal, *socketRemote;
@@ -127,24 +123,6 @@ private:
 	CallSet ignore;
 	Skype *skype;
 	CallID currentCall;
-};
-
-class RecordConfirmationDialog : public QDialog {
-	Q_OBJECT
-public:
-	RecordConfirmationDialog(const QString &, const QString &);
-
-signals:
-	void yes();
-	void no();
-
-private:
-	QList<QWidget *> widgets;
-
-private slots:
-	void yesClicked();
-	void noClicked();
-	void enableWidgets();
 };
 
 #endif

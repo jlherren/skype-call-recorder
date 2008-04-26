@@ -26,16 +26,7 @@
 #include <QTcpServer>
 #include <QTcpSocket>
 #include <QMessageBox>
-#include <QHBoxLayout>
-#include <QVBoxLayout>
-#include <QPushButton>
-#include <QCheckBox>
-#include <QLabel>
 #include <QDir>
-#include <QApplication>
-#include <QStyle>
-#include <QIcon>
-#include <QTimer>
 #include <ctime>
 
 #include "call.h"
@@ -44,6 +35,7 @@
 #include "wavewriter.h"
 #include "mp3writer.h"
 #include "preferences.h"
+#include "callgui.h"
 
 
 Call::Call(QObject *p, Skype *sk, CallID i) :
@@ -522,79 +514,5 @@ void CallHandler::stopRecordingAndDelete() {
 	call->stopRecording();
 	call->removeFile();
 	call->hideConfirmation(0);
-}
-
-// ---- RecordConfirmationDialog ----
-
-RecordConfirmationDialog::RecordConfirmationDialog(const QString &skypeName, const QString &displayName) {
-	setWindowTitle(PROGRAM_NAME);
-	setAttribute(Qt::WA_DeleteOnClose);
-
-	QHBoxLayout *bighbox = new QHBoxLayout(this);
-	bighbox->setSizeConstraint(QLayout::SetFixedSize);
-
-	// get standard icon
-	int iconSize = QApplication::style()->pixelMetric(QStyle::PM_MessageBoxIconSize);
-	QIcon icon = QApplication::style()->standardIcon(QStyle::SP_MessageBoxQuestion);
-	QLabel *iconLabel = new QLabel;
-	iconLabel->setPixmap(icon.pixmap(iconSize, iconSize));
-	bighbox->addWidget(iconLabel, 0, Qt::AlignTop);
-
-	bighbox->addSpacing(10);
-
-	QVBoxLayout *vbox = new QVBoxLayout;
-	bighbox->addLayout(vbox);
-
-	QLabel *label = new QLabel(QString(PROGRAM_NAME " has started recording the call with <b>%1</b> (%2).<br>"
-		"Do you wish to continue recording or shall it stop and delete the file?").arg(skypeName).arg(displayName));
-	vbox->addWidget(label);
-
-	vbox->addSpacing(10);
-
-	QCheckBox *check = new QCheckBox(QString("&Automatically perform this action on the next call with %1").arg(skypeName));
-	check->setEnabled(false);
-	//widgets.append(check);
-	vbox->addWidget(check);
-
-	QHBoxLayout *hbox = new QHBoxLayout;
-
-	QPushButton *button = new QPushButton("&Continue recording");
-	button->setEnabled(false);
-	button->setDefault(true);
-	widgets.append(button);
-	connect(button, SIGNAL(clicked()), this, SLOT(yesClicked()));
-	hbox->addWidget(button);
-
-	button = new QPushButton("&Stop recording and delete");
-	button->setEnabled(false);
-	widgets.append(button);
-	connect(button, SIGNAL(clicked()), this, SLOT(noClicked()));
-	hbox->addWidget(button);
-
-	vbox->addLayout(hbox);
-
-	connect(this, SIGNAL(rejected()), this, SIGNAL(no()));
-	QTimer::singleShot(1000, this, SLOT(enableWidgets()));
-
-	show();
-	raise();
-	activateWindow();
-}
-
-void RecordConfirmationDialog::yesClicked() {
-	emit yes();
-	// TODO update preferences depending on checkbox
-	accept();
-}
-
-void RecordConfirmationDialog::noClicked() {
-	emit no();
-	// TODO update preferences depending on checkbox
-	accept();
-}
-
-void RecordConfirmationDialog::enableWidgets() {
-	for (int i = 0; i < widgets.size(); i++)
-		widgets.at(i)->setEnabled(true);
 }
 
