@@ -26,7 +26,6 @@
 #include <QTcpServer>
 #include <QTcpSocket>
 #include <QMessageBox>
-#include <QDir>
 #include <ctime>
 
 #include "call.h"
@@ -119,10 +118,8 @@ QString escape(const QString &s) {
 }
 
 QString Call::constructFileName() const {
-	QString path = preferences.get("output.path").toString();
+	QString path = getOutputPath();
 	QString fileName = preferences.get("output.pattern").toString();
-
-	path.replace('~', QDir::homePath());
 
 	fileName.replace("&s", escape(skypeName));
 	// TODO

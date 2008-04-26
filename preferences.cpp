@@ -31,12 +31,19 @@
 //#include <QSet>
 #include <QTextStream>
 #include <QtAlgorithms>
+#include <QDir>
 
 #include "preferences.h"
 #include "smartwidgets.h"
 #include "common.h"
 
 Preferences preferences;
+
+QString getOutputPath() {
+	QString path = preferences.get("output.path").toString();
+	path.replace('~', QDir::homePath());
+	return path;
+}
 
 // preferences dialog
 

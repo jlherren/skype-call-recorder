@@ -123,6 +123,7 @@ private slots:
 // the only instance of Preferences
 
 extern Preferences preferences;
+extern QString getOutputPath();
 
 #endif
 
