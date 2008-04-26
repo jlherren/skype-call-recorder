@@ -198,7 +198,7 @@ void Recorder::skypeConnectionFailed(const QString &reason) {
 	QMessageBox::critical(NULL, PROGRAM_NAME " - Error",
 		QString("The connection to Skype failed!  %1 cannot operate without this "
 		"connection, please make sure you haven't blocked access from within Skype.\n\n"
-		"Internal reason for failure: %2").arg(PROGRAM_NAME).arg(reason));
+		"Internal reason for failure: %2").arg(PROGRAM_NAME, reason));
 	// TODO: if skype is not running: "skype will now continually poll for connections, blah blah"
 }
 

@@ -269,7 +269,7 @@ void Call::startRecording(bool force) {
 	if (!rep1.startsWith("ALTER CALL ") || !rep2.startsWith("ALTER CALL")) {
 		QMessageBox *box = new QMessageBox(QMessageBox::Critical, PROGRAM_NAME " - Error",
 			QString(PROGRAM_NAME " could not obtain the audio streams from Skype and can thus not record this call.\n\n"
-			"The replies from Skype were:\n%1\n%2").arg(rep1).arg(rep2));
+			"The replies from Skype were:\n%1\n%2").arg(rep1, rep2));
 		box->setWindowModality(Qt::NonModal);
 		box->setAttribute(Qt::WA_DeleteOnClose);
 		box->show();

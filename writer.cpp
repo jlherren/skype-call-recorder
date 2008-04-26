@@ -28,8 +28,7 @@
 #include "common.h"
 
 bool AudioFileWriter::open(const QString &fn, long sr, bool s) {
-	QFileInfo fi(fn);
-	bool b = QDir().mkpath(fi.path());
+	bool b = QDir().mkpath(QFileInfo(fn).path());
 	if (!b)
 		return false;
 

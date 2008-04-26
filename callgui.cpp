@@ -56,7 +56,7 @@ RecordConfirmationDialog::RecordConfirmationDialog(const QString &skypeName, con
 	bighbox->addLayout(vbox);
 
 	QLabel *label = new QLabel(QString(PROGRAM_NAME " has started recording the call with <b>%1</b> (%2).<br>"
-		"Do you wish to continue recording or shall it stop and delete the file?").arg(skypeName).arg(displayName));
+		"Do you wish to continue recording or shall it stop and delete the file?").arg(skypeName, displayName));
 	vbox->addWidget(label);
 
 	vbox->addSpacing(10);
