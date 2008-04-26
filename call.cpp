@@ -465,15 +465,15 @@ void CallHandler::callCmd(const QStringList &args) {
 
 		if (a == "INPROGRESS")
 			call->startRecording();
-		else if (a == "DURATION") {
-			/* this is where we start recording calls that are already running, for
-			   example if the user starts this program after the call has been placed */
-			if (newCall)
-				call->startRecording();
-		}
 
 		// don't stop recording when we get "FINISHED".  just wait for
 		// the connections to close so that we really get all the data
+	} else if (subCmd == "DURATION") {
+		/* this is where we start recording calls that are already running, for
+		   example if the user starts this program after the call has been placed */
+		call->setStatus("INPROGRESS");
+		if (newCall)
+			call->startRecording();
 	}
 
 	QList<Call *> list = calls.values();
