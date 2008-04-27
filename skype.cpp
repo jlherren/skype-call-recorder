@@ -28,7 +28,14 @@
 #include "skype.h"
 #include "common.h"
 
+namespace {
+const QString skypeServiceName("com.Skype.API");
+const QString skypeInterfaceName("com.Skype.API");
+}
+
 Skype::Skype() : dbus("SkypeRecorder"), connectionState(0), exported(NULL) {
+	dbus = QDBusConnection::connectToBus(QDBusConnection::SessionBus, "SkypeRecorder");
+
 	QTimer::singleShot(0, this, SLOT(connectToSkype()));
 }
 
@@ -36,7 +43,13 @@ void Skype::connectToSkype() {
 	if (connectionState)
 		return;
 
-	dbus = QDBusConnection::connectToBus(QDBusConnection::SessionBus, "SkypeRecorder");
+	QDBusReply<bool> exists = dbus.interface()->isServiceRegistered(skypeServiceName);
+
+	if (!exists.isValid() || !exists.value()) {
+		debug(QString("Service %1 not found on DBus").arg(skypeServiceName));
+		emit skypeNotFound();
+		return;
+	}
 
 	/* export our object */
 
@@ -51,7 +64,7 @@ void Skype::connectToSkype() {
 void Skype::sendWithAsyncReply(const QString &s) {
 	debug(QString("SKYPE --> %1 (async reply)").arg(s));
 
-	QDBusMessage msg = QDBusMessage::createMethodCall("com.Skype.API", "/com/Skype", "com.Skype.API", "Invoke");
+	QDBusMessage msg = QDBusMessage::createMethodCall(skypeServiceName, "/com/Skype", skypeInterfaceName, "Invoke");
 	QList<QVariant> args;
 	args.append(s);
 	msg.setArguments(args);
@@ -62,7 +75,7 @@ void Skype::sendWithAsyncReply(const QString &s) {
 QString Skype::sendWithReply(const QString &s) {
 	debug(QString("SKYPE --> %1 (sync reply)").arg(s));
 
-	QDBusMessage msg = QDBusMessage::createMethodCall("com.Skype.API", "/com/Skype", "com.Skype.API", "Invoke");
+	QDBusMessage msg = QDBusMessage::createMethodCall(skypeServiceName, "/com/Skype", skypeInterfaceName, "Invoke");
 	QList<QVariant> args;
 	args.append(s);
 	msg.setArguments(args);
@@ -82,7 +95,7 @@ QString Skype::sendWithReply(const QString &s) {
 void Skype::send(const QString &s) {
 	debug(QString("SKYPE --> %1 (no reply)").arg(s));
 
-	QDBusMessage msg = QDBusMessage::createMethodCall("com.Skype.API", "/com/Skype", "com.Skype.API", "Invoke");
+	QDBusMessage msg = QDBusMessage::createMethodCall(skypeServiceName, "/com/Skype", skypeInterfaceName, "Invoke");
 	QList<QVariant> args;
 	args.append(s);
 	msg.setArguments(args);

@@ -44,6 +44,7 @@ signals:
 	void notify(const QString &) const;
 	void connected() const;
 	void connectionFailed(const QString &) const;
+	void skypeNotFound() const;
 
 private:
 	void sendWithAsyncReply(const QString &);
