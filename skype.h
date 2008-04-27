@@ -45,14 +45,12 @@ signals:
 	void connected() const;
 	void connectionFailed(const QString &) const;
 
-public slots:
-	void connectToSkype();
-
 private:
 	void sendWithAsyncReply(const QString &);
 	void doNotify(const QString &) const;
 
 private slots:
+	void connectToSkype();
 	void methodCallback(const QDBusMessage &);
 	void methodError(const QDBusError &, const QDBusMessage &);
 

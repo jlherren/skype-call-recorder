@@ -25,7 +25,6 @@
 
 #include <QMessageBox>
 #include <QTextEdit>
-#include <QTimer>
 #include <QDir>
 #include <QProcess>
 #include <cstdlib>
@@ -50,8 +49,6 @@ Recorder::Recorder(int argc, char **argv) :
 	setupGUI();
 	setupSkype();
 	setupCallHandler();
-
-	QTimer::singleShot(0, skype, SLOT(connectToSkype()));
 }
 
 Recorder::~Recorder() {

@@ -23,11 +23,13 @@
 
 #include <QList>
 #include <QVariant>
+#include <QTimer>
 
 #include "skype.h"
 #include "common.h"
 
 Skype::Skype() : dbus("SkypeRecorder"), connectionState(0), exported(NULL) {
+	QTimer::singleShot(0, this, SLOT(connectToSkype()));
 }
 
 void Skype::connectToSkype() {
