@@ -44,6 +44,7 @@ signals:
 	void notify(const QString &) const;
 	void connected() const;
 	void connectionFailed(const QString &) const;
+	void connectionLost() const;
 	void skypeNotFound() const;
 
 private:
@@ -54,6 +55,7 @@ private slots:
 	void connectToSkype();
 	void methodCallback(const QDBusMessage &);
 	void methodError(const QDBusError &, const QDBusMessage &);
+	void serviceOwnerChanged(const QString &, const QString &, const QString &);
 
 private:
 	QDBusConnection dbus;

@@ -36,6 +36,9 @@ const QString skypeInterfaceName("com.Skype.API");
 Skype::Skype() : dbus("SkypeRecorder"), connectionState(0), exported(NULL) {
 	dbus = QDBusConnection::connectToBus(QDBusConnection::SessionBus, "SkypeRecorder");
 
+	connect(dbus.interface(), SIGNAL(serviceOwnerChanged(const QString &, const QString &, const QString &)),
+		this, SLOT(serviceOwnerChanged(const QString &, const QString &, const QString &)));
+
 	QTimer::singleShot(0, this, SLOT(connectToSkype()));
 }
 
@@ -59,6 +62,24 @@ void Skype::connectToSkype() {
 
 	sendWithAsyncReply("NAME SkypeRecorder");
 	connectionState = 1;
+}
+
+void Skype::serviceOwnerChanged(const QString &name, const QString &oldOwner, const QString &newOwner) {
+	if (name != skypeServiceName)
+		return;
+
+	if (oldOwner.isEmpty()) {
+		debug(QString("DBUS: Skype API service appeared as %1").arg(newOwner));
+		if (connectionState != 3)
+			connectToSkype();
+	} else if (newOwner.isEmpty()) {
+		debug("DBUS: Skype API service disappeared");
+		if (connectionState == 3)
+			emit connectionLost();
+		delete exported;
+		exported = NULL;
+		connectionState = 0;
+	}
 }
 
 void Skype::sendWithAsyncReply(const QString &s) {
