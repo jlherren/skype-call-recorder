@@ -29,6 +29,7 @@
 #include <QString>
 
 class SkypeExport;
+class QTimer;
 
 class Skype : public QObject {
 	Q_OBJECT
@@ -36,7 +37,7 @@ public:
 	friend class SkypeExport;
 
 	Skype();
-	QString sendWithReply(const QString &);
+	QString sendWithReply(const QString &, int = 10000);
 	void send(const QString &);
 	QString getObject(const QString &);
 
@@ -56,11 +57,13 @@ private slots:
 	void methodCallback(const QDBusMessage &);
 	void methodError(const QDBusError &, const QDBusMessage &);
 	void serviceOwnerChanged(const QString &, const QString &, const QString &);
+	void poll();
 
 private:
 	QDBusConnection dbus;
 	int connectionState;
 	SkypeExport *exported;
+	QTimer *timer;
 
 private:
 	// disabled

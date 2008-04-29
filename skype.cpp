@@ -44,6 +44,10 @@ Skype::Skype() : dbus("SkypeRecorder"), connectionState(0) {
 	if (!dbus.registerObject("/com/Skype/Client", this))
 		debug("Cannot register object /com/Skype/Client");
 
+	timer = new QTimer(this);
+	timer->setInterval(5000);
+	connect(timer, SIGNAL(timeout()), this, SLOT(poll()));
+
 	QTimer::singleShot(0, this, SLOT(connectToSkype()));
 }
 
@@ -54,10 +58,15 @@ void Skype::connectToSkype() {
 	QDBusReply<bool> exists = dbus.interface()->isServiceRegistered(skypeServiceName);
 
 	if (!exists.isValid() || !exists.value()) {
+		timer->stop();
+
 		debug(QString("Service %1 not found on DBus").arg(skypeServiceName));
 		emit skypeNotFound();
 		return;
 	}
+
+	if (!timer->isActive())
+		timer->start();
 
 	sendWithAsyncReply("NAME SkypeRecorder");
 	connectionState = 1;
@@ -75,6 +84,7 @@ void Skype::serviceOwnerChanged(const QString &name, const QString &oldOwner, co
 		debug("DBUS: Skype API service disappeared");
 		if (connectionState == 3)
 			emit connectionLost();
+		timer->stop();
 		connectionState = 0;
 	}
 }
@@ -90,7 +100,7 @@ void Skype::sendWithAsyncReply(const QString &s) {
 	dbus.callWithCallback(msg, this, SLOT(methodCallback(const QDBusMessage &)), SLOT(methodError(const QDBusError &, const QDBusMessage &)), 3600000);
 }
 
-QString Skype::sendWithReply(const QString &s) {
+QString Skype::sendWithReply(const QString &s, int timeout) {
 	debug(QString("SKYPE --> %1 (sync reply)").arg(s));
 
 	QDBusMessage msg = QDBusMessage::createMethodCall(skypeServiceName, "/com/Skype", skypeInterfaceName, "Invoke");
@@ -98,7 +108,7 @@ QString Skype::sendWithReply(const QString &s) {
 	args.append(s);
 	msg.setArguments(args);
 
-	msg = dbus.call(msg, QDBus::Block, 10000);
+	msg = dbus.call(msg, QDBus::Block, timeout);
 
 	if (msg.type() != QDBusMessage::ReplyMessage) {
 		debug(QString("SKYPE <R- (failed)"));
@@ -142,6 +152,13 @@ void Skype::methodCallback(const QDBusMessage &msg) {
 		if (s == "OK") {
 			connectionState = 2;
 			sendWithAsyncReply("PROTOCOL 5");
+		} else if (s == "CONNSTATUS OFFLINE") {
+			// no user logged in, cannot connect now.  from now on,
+			// we have no way of knowing when the user has logged
+			// in and we may again try to connect.  this is an
+			// annoying limitation of the Skype API which we work
+			// around be polling
+			connectionState = 0;
 		} else {
 			connectionState = 0;
 			emit connectionFailed("Skype denied access");
@@ -165,6 +182,18 @@ void Skype::methodError(const QDBusError &error, const QDBusMessage &) {
 void Skype::doNotify(const QString &s) const {
 	debug(QString("SKYPE <-- %1").arg(s));
 	emit notify(s);
+}
+
+void Skype::poll() {
+	if (connectionState == 0) {
+		connectToSkype();
+	} else if (connectionState == 3) {
+		if (sendWithReply("PING", 2000) != "PONG") {
+			debug("Skype didn't reply with PONG to our PING");
+			connectionState = 0;
+			emit connectionLost();
+		}
+	}
 }
 
 // ---- SkypeExport ----
