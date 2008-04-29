@@ -33,11 +33,16 @@ const QString skypeServiceName("com.Skype.API");
 const QString skypeInterfaceName("com.Skype.API");
 }
 
-Skype::Skype() : dbus("SkypeRecorder"), connectionState(0), exported(NULL) {
+Skype::Skype() : dbus("SkypeRecorder"), connectionState(0) {
 	dbus = QDBusConnection::connectToBus(QDBusConnection::SessionBus, "SkypeRecorder");
 
 	connect(dbus.interface(), SIGNAL(serviceOwnerChanged(const QString &, const QString &, const QString &)),
 		this, SLOT(serviceOwnerChanged(const QString &, const QString &, const QString &)));
+
+	// export our object
+	exported = new SkypeExport(this);
+	if (!dbus.registerObject("/com/Skype/Client", this))
+		debug("Cannot register object /com/Skype/Client");
 
 	QTimer::singleShot(0, this, SLOT(connectToSkype()));
 }
@@ -53,12 +58,6 @@ void Skype::connectToSkype() {
 		emit skypeNotFound();
 		return;
 	}
-
-	/* export our object */
-
-	exported = new SkypeExport(this);
-	if (!dbus.registerObject("/com/Skype/Client", this))
-		debug("Cannot register object /com/Skype/Client");
 
 	sendWithAsyncReply("NAME SkypeRecorder");
 	connectionState = 1;
@@ -76,8 +75,6 @@ void Skype::serviceOwnerChanged(const QString &name, const QString &oldOwner, co
 		debug("DBUS: Skype API service disappeared");
 		if (connectionState == 3)
 			emit connectionLost();
-		delete exported;
-		exported = NULL;
 		connectionState = 0;
 	}
 }
