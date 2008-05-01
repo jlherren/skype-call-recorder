@@ -42,7 +42,7 @@ bool AudioFileWriter::open(const QString &fn, long sr, bool s) {
 }
 
 void AudioFileWriter::close() {
-	debug(QString("Closing '%1'").arg(file.fileName()));
+	debug(QString("Closing '%1', wrote %2 samples, %3 seconds").arg(file.fileName()).arg(samplesWritten).arg(samplesWritten / sampleRate));
 	return file.close();
 }
 

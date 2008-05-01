@@ -123,6 +123,7 @@ bool WaveWriter::write(QByteArray &left, QByteArray &right, int samples, bool fl
 
 	fileSize += output.size();
 	dataSize += output.size();
+	samplesWritten += samples;
 
 	left.remove(0, samples * 2);
 	if (stereo)

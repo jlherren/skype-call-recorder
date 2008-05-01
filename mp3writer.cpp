@@ -89,6 +89,8 @@ bool Mp3Writer::write(QByteArray &left, QByteArray &right, int samples, bool flu
 		return false;
 	}
 
+	samplesWritten += samples;
+
 	if (ret > 0) {
 		output.truncate(ret);
 		file.write(output);

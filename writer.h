@@ -31,7 +31,7 @@ class QByteArray;
 
 class AudioFileWriter {
 public:
-	AudioFileWriter() { };
+	AudioFileWriter() : sampleRate(0), stereo(false), samplesWritten(0) { };
 	virtual ~AudioFileWriter() { };
 
 	// Note: you're not supposed to reopen after a close
@@ -44,6 +44,7 @@ protected:
 	QFile file;
 	long sampleRate;
 	bool stereo;
+	qint64 samplesWritten;
 
 private:
 	// disabled
