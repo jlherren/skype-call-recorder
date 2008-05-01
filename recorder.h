@@ -65,8 +65,6 @@ private:
 	CallHandler *callHandler;
 	PreferencesDialog *preferencesDialog;
 	TrayIcon *trayIcon;
-	QTextEdit *debugWidget;
-	QStringList savedDebugMessages;
 
 private:
 	// disabled

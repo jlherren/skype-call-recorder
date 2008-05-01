@@ -37,8 +37,7 @@
 #include "call.h"
 
 Recorder::Recorder(int argc, char **argv) :
-	QApplication(argc, argv),
-	debugWidget(NULL)
+	QApplication(argc, argv)
 {
 	setDebugHandler(this);
 
@@ -53,7 +52,6 @@ Recorder::Recorder(int argc, char **argv) :
 
 Recorder::~Recorder() {
 	delete preferencesDialog;
-	delete debugWidget;
 }
 
 void Recorder::setupGUI() {
@@ -65,15 +63,6 @@ void Recorder::setupGUI() {
 	connect(trayIcon, SIGNAL(requestAbout()),              this, SLOT(about()));
 	connect(trayIcon, SIGNAL(requestOpenSettings()),       this, SLOT(openSettings()));
 	connect(trayIcon, SIGNAL(requestBrowseCalls()),        this, SLOT(browseCalls()));
-
-	// TODO: temporary
-	debugWidget = new QTextEdit;
-	debugWidget->setWindowTitle(PROGRAM_NAME " - Debug");
-	debugWidget->setFont(QFont("Arial", 8));
-	//debugWidget->show();
-	for (int i = 0; i < savedDebugMessages.size(); i++)
-		debugWidget->append(savedDebugMessages.at(i));
-	savedDebugMessages.clear();
 
 	preferencesDialog = new PreferencesDialog();
 	connect(preferencesDialog, SIGNAL(finished(int)), this, SLOT(saveSettings()));
@@ -200,10 +189,6 @@ void Recorder::skypeConnectionFailed(const QString &reason) {
 }
 
 void Recorder::debugMessage(const QString &s) {
-	if (debugWidget)
-		debugWidget->append(s);
-	else
-		savedDebugMessages.append(s);
 	std::cout << s.toLocal8Bit().constData() << "\n";
 }
 
