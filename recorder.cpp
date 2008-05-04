@@ -135,6 +135,11 @@ void Recorder::openSettings() {
 	preferencesDialog->activateWindow();
 }
 
+void Recorder::closeSettings() {
+	debug("Hide preferences dialog");
+	preferencesDialog->hide();
+}
+
 void Recorder::browseCalls() {
 	QString program;
 	QStringList arguments;

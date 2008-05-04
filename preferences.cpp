@@ -64,7 +64,7 @@ static QHBoxLayout *makeHFrame(QVBoxLayout *parentLayout, const char *title) {
 	return hbox;
 }
 
-PreferencesDialog::PreferencesDialog() {
+PreferencesDialog::PreferencesDialog() : perCallerDialog(NULL) {
 	setWindowTitle(PROGRAM_NAME " - Preferences");
 
 	QVBoxLayout *vbox;
@@ -188,7 +188,19 @@ void PreferencesDialog::enableMp3Settings() {
 }
 
 void PreferencesDialog::editPerCallerPreferences() {
-	new PerCallerPreferencesDialog(this);
+	perCallerDialog = new PerCallerPreferencesDialog(this);
+	connect(perCallerDialog, SIGNAL(finished(int)), this, SLOT(perCallerFinished()));
+}
+
+void PreferencesDialog::perCallerFinished() {
+	perCallerDialog = NULL;
+}
+
+void PreferencesDialog::hideEvent(QHideEvent *event) {
+	if (perCallerDialog)
+		perCallerDialog->accept();
+
+	QDialog::hideEvent(event);
 }
 
 // per caller preferences editor

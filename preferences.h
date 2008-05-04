@@ -33,6 +33,7 @@
 class SmartComboBox;
 class QListView;
 class PerCallerModel;
+class PerCallerPreferencesDialog;
 class QRadioButton;
 
 // A single preference, with a name and a value
@@ -92,13 +93,18 @@ class PreferencesDialog : public QDialog {
 public:
 	PreferencesDialog();
 
+protected:
+	void hideEvent(QHideEvent *);
+
 private slots:
 	void enableMp3Settings();
 	void editPerCallerPreferences();
+	void perCallerFinished();
 
 private:
 	QList<QWidget *> mp3Settings;
 	SmartComboBox *formatWidget;
+	PerCallerPreferencesDialog *perCallerDialog;
 
 private:
 	// disabled

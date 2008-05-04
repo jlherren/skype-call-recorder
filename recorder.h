@@ -45,6 +45,7 @@ public:
 public slots:
 	void about();
 	void openSettings();
+	void closeSettings();
 	void browseCalls();
 	void quitConfirmation();
 	void skypeNotify(const QString &);
