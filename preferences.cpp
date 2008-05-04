@@ -39,6 +39,7 @@
 #include "preferences.h"
 #include "smartwidgets.h"
 #include "common.h"
+#include "recorder.h"
 
 Preferences preferences;
 
@@ -544,6 +545,9 @@ Preference &BasePreferences::get(const QString &name) {
 // preferences
 
 void Preferences::setPerCallerPreference(const QString &sn, int mode) {
+	// this would interfer with the per caller dialog
+	recorderInstance->closePreferences();
+
 	Preference &pYes = get("autorecord.yes");
 	Preference &pAsk = get("autorecord.ask");
 	Preference &pNo = get("autorecord.no");
