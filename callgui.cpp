@@ -33,10 +33,13 @@
 
 #include "callgui.h"
 #include "common.h"
+#include "preferences.h"
 
 // ---- RecordConfirmationDialog ----
 
-RecordConfirmationDialog::RecordConfirmationDialog(const QString &skypeName, const QString &displayName) {
+RecordConfirmationDialog::RecordConfirmationDialog(const QString &sn, const QString &displayName) :
+	skypeName(sn)
+{
 	setWindowTitle(PROGRAM_NAME);
 	setAttribute(Qt::WA_DeleteOnClose);
 
@@ -61,10 +64,10 @@ RecordConfirmationDialog::RecordConfirmationDialog(const QString &skypeName, con
 
 	vbox->addSpacing(10);
 
-	QCheckBox *check = new QCheckBox(QString("&Automatically perform this action on the next call with %1").arg(skypeName));
-	check->setEnabled(false);
-	//widgets.append(check);
-	vbox->addWidget(check);
+	remember = new QCheckBox(QString("&Automatically perform this action on the next call with %1").arg(skypeName));
+	remember->setEnabled(false);
+	widgets.append(remember);
+	vbox->addWidget(remember);
 
 	QHBoxLayout *hbox = new QHBoxLayout;
 
@@ -93,13 +96,15 @@ RecordConfirmationDialog::RecordConfirmationDialog(const QString &skypeName, con
 
 void RecordConfirmationDialog::yesClicked() {
 	emit yes();
-	// TODO update preferences depending on checkbox
+	if (remember->isChecked())
+		preferences.setPerCallerPreference(skypeName, 2);
 	accept();
 }
 
 void RecordConfirmationDialog::noClicked() {
 	emit no();
-	// TODO update preferences depending on checkbox
+	if (remember->isChecked())
+		preferences.setPerCallerPreference(skypeName, 0);
 	accept();
 }
 

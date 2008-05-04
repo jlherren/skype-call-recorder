@@ -29,6 +29,7 @@
 
 class QWidget;
 class QString;
+class QCheckBox;
 
 class RecordConfirmationDialog : public QDialog {
 	Q_OBJECT
@@ -39,13 +40,20 @@ signals:
 	void yes();
 	void no();
 
-private:
-	QList<QWidget *> widgets;
-
 private slots:
 	void yesClicked();
 	void noClicked();
 	void enableWidgets();
+
+private:
+	QString skypeName;
+	QList<QWidget *> widgets;
+	QCheckBox *remember;
+
+private:
+	// disabled
+	RecordConfirmationDialog(const RecordConfirmationDialog &);
+	RecordConfirmationDialog &operator=(const RecordConfirmationDialog &);
 };
 
 #endif
