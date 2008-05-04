@@ -468,6 +468,27 @@ Qt::ItemFlags PerCallerModel::flags(const QModelIndex &index) const {
 	return flags | Qt::ItemIsEditable;
 }
 
+// preference
+
+void Preference::listAdd(const QString &value) {
+	QStringList list = toList();
+	if (!list.contains(value)) {
+		list.append(value);
+		set(list);
+	}
+}
+
+void Preference::listRemove(const QString &value) {
+	QStringList list = toList();
+	if (list.removeAll(value))
+		set(list);
+}
+
+bool Preference::listContains(const QString &value) {
+	QStringList list = toList();
+	return list.contains(value);
+}
+
 // preferences
 
 bool Preferences::load(const QString &filename) {

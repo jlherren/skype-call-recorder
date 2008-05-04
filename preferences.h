@@ -49,6 +49,9 @@ public:
 	int toInt() const { return value.toInt(); }
 	bool toBool() const { return value.compare("yes", Qt::CaseInsensitive) == 0 || value.toInt(); }
 	QStringList toList() const { return value.split(',', QString::SkipEmptyParts); }
+	void listAdd(const QString &);
+	void listRemove(const QString &);
+	bool listContains(const QString &);
 
 	void set(const char *v)        { isSet = true; value = v; }
 	void set(const QString &v)     { isSet = true; value = v; }
