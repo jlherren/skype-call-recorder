@@ -29,8 +29,9 @@
 class Recorder;
 class QString;
 
-extern void setDebugHandler(Recorder *);
 extern void debug(const QString &);
+
+extern Recorder *recorderInstance;
 
 #endif
 

@@ -24,15 +24,9 @@
 #include "common.h"
 #include "recorder.h"
 
-namespace {
-Recorder *recorder;
-}
-
-void setDebugHandler(Recorder *r) {
-	recorder = r;
-}
+Recorder *recorderInstance = NULL;
 
 void debug(const QString &s) {
-	recorder->debugMessage(s);
+	recorderInstance->debugMessage(s);
 }
 

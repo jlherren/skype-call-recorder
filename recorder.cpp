@@ -39,7 +39,7 @@
 Recorder::Recorder(int argc, char **argv) :
 	QApplication(argc, argv)
 {
-	setDebugHandler(this);
+	recorderInstance = this;
 
 	debug("Initializing application");
 
