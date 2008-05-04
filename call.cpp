@@ -480,7 +480,7 @@ void CallHandler::callCmd(const QStringList &args) {
 	for (int i = 0; i < list.size(); i++) {
 		Call *c = list.at(i);
 		QString status = c->getStatus();
-		if ((status == "FINISHED" || status == "CANCELLED") && c->okToDelete()) {
+		if ((status == "FINISHED" || status == "CANCELLED" || status == "REFUSED") && c->okToDelete()) {
 			calls.remove(c->getID());
 			delete c;
 		}
