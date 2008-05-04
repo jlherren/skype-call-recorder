@@ -489,9 +489,9 @@ bool Preference::listContains(const QString &value) {
 	return list.contains(value);
 }
 
-// preferences
+// base preferences
 
-bool Preferences::load(const QString &filename) {
+bool BasePreferences::load(const QString &filename) {
 	clear();
 	QFile file(filename);
 	if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
@@ -517,7 +517,7 @@ bool Preferences::load(const QString &filename) {
 	return true;
 }
 
-bool Preferences::save(const QString &filename) {
+bool BasePreferences::save(const QString &filename) {
 	qSort(preferences);
 	QFile file(filename);
 	if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
@@ -533,11 +533,30 @@ bool Preferences::save(const QString &filename) {
 	return true;
 }
 
-Preference &Preferences::get(const QString &name) {
+Preference &BasePreferences::get(const QString &name) {
 	for (int i = 0; i < preferences.size(); i++)
 		if (preferences.at(i).name() == name)
 			return preferences[i];
 	preferences.append(Preference(name));
 	return preferences.last();
+}
+
+// preferences
+
+void Preferences::setPerCallerPreference(const QString &sn, int mode) {
+	Preference &pYes = get("autorecord.yes");
+	Preference &pAsk = get("autorecord.ask");
+	Preference &pNo = get("autorecord.no");
+
+	pYes.listRemove(sn);
+	pAsk.listRemove(sn);
+	pNo.listRemove(sn);
+
+	if (mode == 2)
+		pYes.listAdd(sn);
+	else if (mode == 1)
+		pAsk.listAdd(sn);
+	else if (mode == 0)
+		pNo.listAdd(sn);
 }
 

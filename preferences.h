@@ -75,7 +75,7 @@ private:
 
 // A collection of preferences that can be loaded/saved
 
-class Preferences {
+class BasePreferences {
 public:
 	bool load(const QString &);
 	bool save(const QString &);
@@ -87,6 +87,13 @@ public:
 
 private:
 	QList<Preference> preferences;
+};
+
+// preferences with some utils
+
+class Preferences : public BasePreferences {
+public:
+	void setPerCallerPreference(const QString &, int);
 };
 
 // The preferences dialog
