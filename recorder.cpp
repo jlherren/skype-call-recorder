@@ -43,7 +43,7 @@ Recorder::Recorder(int argc, char **argv) :
 
 	debug("Initializing application");
 
-	loadSettings();
+	loadPreferences();
 
 	setupGUI();
 	setupSkype();
@@ -61,11 +61,11 @@ void Recorder::setupGUI() {
 	connect(trayIcon, SIGNAL(requestQuit()),               this, SLOT(quitConfirmation()));
 	connect(trayIcon, SIGNAL(requestQuitNoConfirmation()), this, SLOT(quit()));
 	connect(trayIcon, SIGNAL(requestAbout()),              this, SLOT(about()));
-	connect(trayIcon, SIGNAL(requestOpenSettings()),       this, SLOT(openSettings()));
+	connect(trayIcon, SIGNAL(requestOpenPreferences()),    this, SLOT(openPreferences()));
 	connect(trayIcon, SIGNAL(requestBrowseCalls()),        this, SLOT(browseCalls()));
 
 	preferencesDialog = new PreferencesDialog();
-	connect(preferencesDialog, SIGNAL(finished(int)), this, SLOT(saveSettings()));
+	connect(preferencesDialog, SIGNAL(finished(int)), this, SLOT(savePreferences()));
 
 	debug("GUI initialized");
 }
@@ -94,7 +94,7 @@ QString Recorder::getConfigFile() const {
 	return QDir::homePath() + "/.skypecallrecorder.rc";
 }
 
-void Recorder::loadSettings() {
+void Recorder::loadPreferences() {
 	preferences.load(getConfigFile());
 	int c = preferences.count();
 
@@ -118,7 +118,7 @@ void Recorder::loadSettings() {
 		debug(QString("Loading %1 built-in default preference(s)").arg(c));
 }
 
-void Recorder::saveSettings() {
+void Recorder::savePreferences() {
 	preferences.save(getConfigFile());
 	// TODO: when failure?
 }
@@ -128,14 +128,14 @@ void Recorder::about() {
 		"This is a place holder for a future about dialog.");
 }
 
-void Recorder::openSettings() {
+void Recorder::openPreferences() {
 	debug("Show preferences dialog");
 	preferencesDialog->show();
 	preferencesDialog->raise();
 	preferencesDialog->activateWindow();
 }
 
-void Recorder::closeSettings() {
+void Recorder::closePreferences() {
 	debug("Hide preferences dialog");
 	preferencesDialog->hide();
 }
@@ -168,7 +168,7 @@ void Recorder::browseCalls() {
 
 void Recorder::quitConfirmation() {
 	debug("Request to quit");
-	saveSettings();
+	savePreferences();
 	quit();
 }
 

@@ -37,7 +37,7 @@ signals:
 	void requestQuit();
 	void requestQuitNoConfirmation();
 	void requestAbout();
-	void requestOpenSettings();
+	void requestOpenPreferences();
 	void requestBrowseCalls();
 
 signals:

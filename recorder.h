@@ -44,17 +44,17 @@ public:
 
 public slots:
 	void about();
-	void openSettings();
-	void closeSettings();
+	void openPreferences();
+	void closePreferences();
 	void browseCalls();
 	void quitConfirmation();
 	void skypeNotify(const QString &);
 	void skypeConnected();
 	void skypeConnectionFailed(const QString &);
-	void saveSettings();
+	void savePreferences();
 
 private:
-	void loadSettings();
+	void loadPreferences();
 	void setupGUI();
 	void setupSkype();
 	void setupCallHandler();
