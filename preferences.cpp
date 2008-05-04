@@ -24,9 +24,12 @@
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QGroupBox>
+#include <QRadioButton>
+#include <QButtonGroup>
 #include <QLabel>
 #include <QPushButton>
 #include <QListView>
+#include <QPair>
 #include <QFile>
 //#include <QSet>
 #include <QTextStream>
@@ -82,18 +85,17 @@ PreferencesDialog::PreferencesDialog() {
 
 	vbox = new QVBoxLayout;
 	Preference &preference = preferences.get("autorecord.default");
-	radio = new SmartRadioButton("&Automatically record calls", preference, "yes");
+	radio = new SmartRadioButton("Automatically &record calls", preference, "yes");
 	vbox->addWidget(radio);
-	radio = new SmartRadioButton("Ask every time", preference, "ask");
+	radio = new SmartRadioButton("&Ask every time", preference, "ask");
 	vbox->addWidget(radio);
-	radio = new SmartRadioButton("Do not automatically record calls", preference, "no");
+	radio = new SmartRadioButton("Do &not automatically record calls", preference, "no");
 	vbox->addWidget(radio);
 
 	hbox->addLayout(vbox);
 
-	button = new QPushButton("Per-caller preferences");
-	connect(button, SIGNAL(clicked(bool)), this, SLOT(editPerCallerSettings()));
-	button->setDisabled(true);
+	button = new QPushButton("&Per caller preferences");
+	connect(button, SIGNAL(clicked(bool)), this, SLOT(editPerCallerPreferences()));
 	hbox->addWidget(button, 0, Qt::AlignBottom);
 
 	// ---- output file name ----
@@ -105,7 +107,7 @@ PreferencesDialog::PreferencesDialog() {
 	vbox->addWidget(label);
 	vbox->addWidget(edit);
 
-	label = new QLabel("File &name:");
+	label = new QLabel("&File name:");
 	ecombo = new SmartEditableComboBox(preferences.get("output.pattern"));
 	label->setBuddy(ecombo);
 	ecombo->addItem("%Y, %B/Skype call with &s, %A %B %d, %Y, %H:%M:%S");
@@ -185,122 +187,273 @@ void PreferencesDialog::enableMp3Settings() {
 		mp3Settings.at(i)->setEnabled(b);
 }
 
-void PreferencesDialog::editPerCallerSettings() {
-	new PerCallerSettingsDialog(this);
+void PreferencesDialog::editPerCallerPreferences() {
+	new PerCallerPreferencesDialog(this);
 }
 
 // per caller preferences editor
 
-PerCallerSettingsDialog::PerCallerSettingsDialog(QWidget *parent) : QDialog(parent) {
-	setWindowTitle("Per-caller Preferences");
+PerCallerPreferencesDialog::PerCallerPreferencesDialog(QWidget *parent) : QDialog(parent) {
+	setWindowTitle("Per Caller Preferences");
 	setWindowModality(Qt::WindowModal);
 	setAttribute(Qt::WA_DeleteOnClose);
 
-	QVBoxLayout *vbox = new QVBoxLayout(this);
+	model = new PerCallerModel(this);
 
-	list = new QListView;
-	//QStringList l;
-	//l.append("Skype name");
-	//l.append("Record automatically");
-	//table->setHorizontalHeaderLabels(l);
-	//table->setSelectionMode(QAbstractItemView::ExtendedSelection);
-	//table->setSelectionBehavior(QAbstractItemView::SelectRows);
-	//table->setTextElideMode(Qt::ElideRight);
-	//table->setSortingEnabled(true);
-	//table->setGridStyle(Qt::NoPen);
-	//table->setShowGrid(false);
-	vbox->addWidget(list);
+	QHBoxLayout *bighbox = new QHBoxLayout(this);
+	QVBoxLayout *vbox = new QVBoxLayout;
 
-	QHBoxLayout *hbox = new QHBoxLayout;
+	listWidget = new QListView;
+	listWidget->setModel(model);
+	listWidget->setSelectionMode(QAbstractItemView::ExtendedSelection);
+	listWidget->setEditTriggers(QAbstractItemView::SelectedClicked | QAbstractItemView::DoubleClicked);
+	connect(listWidget->selectionModel(), SIGNAL(selectionChanged(const QItemSelection &, const QItemSelection &)), this, SLOT(selectionChanged()));
+	vbox->addWidget(listWidget);
 
-	QPushButton *button = new QPushButton("&Add");
+	QVBoxLayout *frame = makeVFrame(vbox, "Preference for selected Skype names:");
+	radioYes = new QRadioButton("Automatically &record calls");
+	radioAsk = new QRadioButton("&Ask every time");
+	radioNo  = new QRadioButton("Do &not automatically record calls");
+	connect(radioYes, SIGNAL(clicked(bool)), this, SLOT(radioChanged()));
+	connect(radioAsk, SIGNAL(clicked(bool)), this, SLOT(radioChanged()));
+	connect(radioNo,  SIGNAL(clicked(bool)), this, SLOT(radioChanged()));
+	frame->addWidget(radioYes);
+	frame->addWidget(radioAsk);
+	frame->addWidget(radioNo);
+
+	bighbox->addLayout(vbox);
+
+	vbox = new QVBoxLayout;
+
+	QPushButton *button = new QPushButton("A&dd");
 	connect(button, SIGNAL(clicked(bool)), this, SLOT(add()));
-	hbox->addWidget(button);
+	vbox->addWidget(button);
 
-	button = new QPushButton("&Remove");
+	button = new QPushButton("Re&move");
 	connect(button, SIGNAL(clicked(bool)), this, SLOT(remove()));
-	hbox->addWidget(button);
+	vbox->addWidget(button);
+
+	vbox->addStretch();
 
 	button = new QPushButton("&Close");
 	button->setDefault(true);
 	connect(button, SIGNAL(clicked(bool)), this, SLOT(accept()));
-	hbox->addWidget(button);
+	vbox->addWidget(button);
 
-	vbox->addLayout(hbox);
+	bighbox->addLayout(vbox);
 
 	// fill in data
-/*
+
 	QSet<QString> seen;
-	int rows = 0;
 
-	l = preferences.get("autorecord.yes").toList();
-	for (int i = 0; i < l.count(); i++) {
-		if (seen.contains(l.at(i)))
+	QStringList list = preferences.get("autorecord.yes").toList();
+	for (int i = 0; i < list.count(); i++) {
+		QString sn = list.at(i);
+		if (seen.contains(sn))
 			continue;
-		table->setRowCount(rows + 1);
-		table->setItem(rows, 0, new QTableWidgetItem(l.at(i)));
-		table->setItem(rows, 1, new QTableWidgetItem("yes"));
-		rows++;
+		seen.insert(sn);
+		add(sn, 2, false);
 	}
 
-	l = preferences.get("autorecord.ask").toList();
-	for (int i = 0; i < l.count(); i++) {
-		if (seen.contains(l.at(i)))
+	list = preferences.get("autorecord.ask").toList();
+	for (int i = 0; i < list.count(); i++) {
+		QString sn = list.at(i);
+		if (seen.contains(sn))
 			continue;
-		table->setRowCount(rows + 1);
-		table->setItem(rows, 0, new QTableWidgetItem(l.at(i)));
-		table->setItem(rows, 1, new QTableWidgetItem("ask"));
-		rows++;
+		seen.insert(sn);
+		add(sn, 1, false);
 	}
 
-	l = preferences.get("autorecord.no").toList();
-	for (int i = 0; i < l.count(); i++) {
-		if (seen.contains(l.at(i)))
+	list = preferences.get("autorecord.no").toList();
+	for (int i = 0; i < list.count(); i++) {
+		QString sn = list.at(i);
+		if (seen.contains(sn))
 			continue;
-		table->setRowCount(rows + 1);
-		table->setItem(rows, 0, new QTableWidgetItem(l.at(i)));
-		table->setItem(rows, 1, new QTableWidgetItem("no"));
-		rows++;
+		seen.insert(sn);
+		add(sn, 0, false);
 	}
-*/
-	//list->sortItems();
 
-	//for (int i = 0; i < list->count(); i++) {
-	//	QListWidgetItem *item = list->item(i);
-	//	item->setFlags(item->flags() | Qt::ItemIsEditable);
-	//}
-
-	connect(this, SIGNAL(finished(int)), this, SLOT(saveSetting()));
-
+	model->sort();
+	connect(this, SIGNAL(finished(int)), this, SLOT(save()));
+	selectionChanged();
 	show();
 }
 
-void PerCallerSettingsDialog::add() {
-	//QListWidgetItem *item = new QListWidgetItem("Enter skype name");
-        //item->setFlags(item->flags() | Qt::ItemIsEditable);
-	//int i = list->currentRow();
-	//if (i < 0)
-	//	list->addItem(item);
-	//else
-	//	list->insertItem(i + 1, item);
+void PerCallerPreferencesDialog::add(const QString &name, int mode, bool edit) {
+	int i = model->rowCount();
+	model->insertRow(i);
 
-	//list->clearSelection();
-	//list->setCurrentItem(item);
-	//list->editItem(item);
+	QModelIndex idx = model->index(i, 0);
+	model->setData(idx, name, Qt::EditRole);
+	model->setData(idx, mode, Qt::UserRole);
+
+	if (edit) {
+		listWidget->clearSelection();
+		listWidget->setCurrentIndex(idx);
+		listWidget->edit(idx);
+	}
 }
 
-void PerCallerSettingsDialog::remove() {
-	//QList<QListWidgetItem *> sel = list->selectedItems();
-	//while (!sel.isEmpty())
-	//	delete sel.takeFirst();
+void PerCallerPreferencesDialog::remove() {
+	QModelIndexList sel = listWidget->selectionModel()->selectedIndexes();
+	qSort(sel);
+	while (!sel.isEmpty())
+		model->removeRow(sel.takeLast().row());
 }
 
-void PerCallerSettingsDialog::saveSetting() {
-	//table->sortItems(0);
-	//QSet<QString> set;
-	//for (int i = 0; i < list->count(); i++)
-	//	set.insert(list->item(i)->text());
-	//preference.set(set.toList());
+void PerCallerPreferencesDialog::selectionChanged() {
+	QModelIndexList sel = listWidget->selectionModel()->selectedIndexes();
+	bool notEmpty = !sel.isEmpty();
+	int mode = -1;
+	while (!sel.isEmpty()) {
+		int m = model->data(sel.takeLast(), Qt::UserRole).toInt();
+		if (mode == -1) {
+			mode = m;
+		} else if (mode != m) {
+			mode = -1;
+			break;
+		}
+	}
+	if (mode == -1) {
+		// Qt is a bit annoying about this: You can't deselect
+		// everything unless you disable auto-exclusive mode
+		radioYes->setAutoExclusive(false);
+		radioAsk->setAutoExclusive(false);
+		radioNo ->setAutoExclusive(false);
+		radioYes->setChecked(false);
+		radioAsk->setChecked(false);
+		radioNo ->setChecked(false);
+		radioYes->setAutoExclusive(true);
+		radioAsk->setAutoExclusive(true);
+		radioNo ->setAutoExclusive(true);
+	} else if (mode == 0) {
+		radioNo->setChecked(true);
+	} else if (mode == 1) {
+		radioAsk->setChecked(true);
+	} else if (mode == 2) {
+		radioYes->setChecked(true);
+	}
+
+	radioYes->setEnabled(notEmpty);
+	radioAsk->setEnabled(notEmpty);
+	radioNo ->setEnabled(notEmpty);
+}
+
+void PerCallerPreferencesDialog::radioChanged() {
+	int mode = 1;
+	if (radioYes->isChecked())
+		mode = 2;
+	else if (radioNo->isChecked())
+		mode = 0;
+
+	QModelIndexList sel = listWidget->selectionModel()->selectedIndexes();
+	while (!sel.isEmpty())
+		model->setData(sel.takeLast(), mode, Qt::UserRole);
+}
+
+void PerCallerPreferencesDialog::save() {
+	model->sort();
+	int n = model->rowCount();
+	QStringList yes, ask, no;
+	for (int i = 0; i < n; i++) {
+		QModelIndex idx = model->index(i, 0);
+		QString sn = model->data(idx, Qt::EditRole).toString();
+		if (sn.isEmpty())
+			continue;
+		int mode = model->data(idx, Qt::UserRole).toInt();
+		if (mode == 0)
+			no.append(sn);
+		else if (mode == 1)
+			ask.append(sn);
+		else if (mode == 2)
+			yes.append(sn);
+	}
+	preferences.get("autorecord.yes").set(yes);
+	preferences.get("autorecord.ask").set(ask);
+	preferences.get("autorecord.no").set(no);
+}
+
+// per caller model
+
+int PerCallerModel::rowCount(const QModelIndex &) const {
+	return skypeNames.count();
+}
+
+namespace {
+	const char *PerCallerModel_data_table[3] = {
+		"Don't record", "Ask", "Automatic"
+	};
+}
+
+QVariant PerCallerModel::data(const QModelIndex &index, int role) const {
+	if (!index.isValid() || index.row() >= skypeNames.size())
+		return QVariant();
+	if (role == Qt::DisplayRole) {
+		int i = index.row();
+		return skypeNames.at(i) + " - " + PerCallerModel_data_table[modes.at(i)];
+	}
+	if (role == Qt::EditRole)
+		return skypeNames.at(index.row());
+	if (role == Qt::UserRole)
+		return modes.at(index.row());
+	return QVariant();
+}
+
+bool PerCallerModel::setData(const QModelIndex &index, const QVariant &value, int role) {
+	if (!index.isValid() || index.row() >= skypeNames.size())
+		return false;
+	if (role == Qt::EditRole) {
+		skypeNames[index.row()] = value.toString();
+		emit dataChanged(index, index);
+		return true;
+	}
+	if (role == Qt::UserRole) {
+		modes[index.row()] = value.toInt();
+		emit dataChanged(index, index);
+		return true;
+	}
+	return false;
+}
+
+bool PerCallerModel::insertRows(int position, int rows, const QModelIndex &) {
+	beginInsertRows(QModelIndex(), position, position + rows - 1);
+	for (int i = 0; i < rows; i++) {
+		skypeNames.insert(position, "");
+		modes.insert(position, 1);
+	}
+	endInsertRows();
+	return true;
+}
+
+bool PerCallerModel::removeRows(int position, int rows, const QModelIndex &) {
+	beginRemoveRows(QModelIndex(), position, position + rows - 1);
+	for (int i = 0; i < rows; i++) {
+		skypeNames.removeAt(position);
+		modes.removeAt(position);
+	}
+	endRemoveRows();
+	return true;
+}
+
+void PerCallerModel::sort(int, Qt::SortOrder) {
+	typedef QPair<QString, int> Pair;
+	typedef QList<Pair> List;
+	List list;
+	for (int i = 0; i < skypeNames.size(); i++)
+		list.append(Pair(skypeNames.at(i), modes.at(i)));
+	qSort(list);
+	for (int i = 0; i < skypeNames.size(); i++) {
+		skypeNames[i] = list.at(i).first;
+		modes[i] = list.at(i).second;
+	}
+	reset();
+}
+
+Qt::ItemFlags PerCallerModel::flags(const QModelIndex &index) const {
+	Qt::ItemFlags flags = QAbstractListModel::flags(index);
+	if (!index.isValid() || index.row() >= skypeNames.size())
+		return flags;
+	return flags | Qt::ItemIsEditable;
 }
 
 // preferences

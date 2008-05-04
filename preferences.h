@@ -28,6 +28,12 @@
 #include <QList>
 #include <QString>
 #include <QStringList>
+#include <QAbstractListModel>
+
+class SmartComboBox;
+class QListView;
+class PerCallerModel;
+class QRadioButton;
 
 // A single preference, with a name and a value
 
@@ -81,20 +87,18 @@ private:
 
 // The preferences dialog
 
-class SmartComboBox;
-
 class PreferencesDialog : public QDialog {
 	Q_OBJECT
 public:
 	PreferencesDialog();
 
+private slots:
+	void enableMp3Settings();
+	void editPerCallerPreferences();
+
 private:
 	QList<QWidget *> mp3Settings;
 	SmartComboBox *formatWidget;
-
-private slots:
-	void enableMp3Settings();
-	void editPerCallerSettings();
 
 private:
 	// disabled
@@ -102,22 +106,45 @@ private:
 	PreferencesDialog operator=(const PreferencesDialog &);
 };
 
-// The per-caller editor dialog
+// The per caller editor dialog
 
-class QListView;
-
-class PerCallerSettingsDialog : public QDialog {
+class PerCallerPreferencesDialog : public QDialog {
 	Q_OBJECT
 public:
-	PerCallerSettingsDialog(QWidget *);
-
-private:
-	QListView *list;
+	PerCallerPreferencesDialog(QWidget *);
 
 private slots:
-	void add();
+	void add(const QString & = QString(), int = 1, bool = true);
 	void remove();
-	void saveSetting();
+	void selectionChanged();
+	void radioChanged();
+	void save();
+
+private:
+	QListView *listWidget;
+	PerCallerModel *model;
+	QRadioButton *radioYes;
+	QRadioButton *radioAsk;
+	QRadioButton *radioNo;
+};
+
+// per caller model
+
+class PerCallerModel : public QAbstractListModel {
+	Q_OBJECT
+public:
+	PerCallerModel(QObject *parent) : QAbstractListModel(parent) { }
+	int rowCount(const QModelIndex & = QModelIndex()) const;
+	QVariant data(const QModelIndex &, int) const;
+	bool setData(const QModelIndex &, const QVariant &, int = Qt::EditRole);
+	bool insertRows(int, int, const QModelIndex &);
+	bool removeRows(int, int, const QModelIndex &);
+	void sort(int = 0, Qt::SortOrder = Qt::AscendingOrder);
+	Qt::ItemFlags flags(const QModelIndex &) const;
+
+private:
+	QStringList skypeNames;
+	QList<int> modes;
 };
 
 // the only instance of Preferences
