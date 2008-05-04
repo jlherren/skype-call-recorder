@@ -119,7 +119,7 @@ private:
 private:
 	// disabled
 	PreferencesDialog(const PreferencesDialog &);
-	PreferencesDialog operator=(const PreferencesDialog &);
+	PreferencesDialog &operator=(const PreferencesDialog &);
 };
 
 // The per caller editor dialog
