@@ -430,6 +430,19 @@ void Call::stopRecording(bool flush) {
 CallHandler::CallHandler(QObject *parent, Skype *s) : QObject(parent), skype(s), currentCall(-1) {
 }
 
+CallHandler::~CallHandler() {
+	prune();
+
+	QList<Call *> list = calls.values();
+	if (!list.isEmpty()) {
+		debug(QString("Destroying CallHandler, these calls still exist:"));
+		for (int i = 0; i < list.size(); i++) {
+			Call *c = list.at(i);
+			debug(QString("    call %1, status=%2, okToDelete=%3").arg(c->getID()).arg(c->getStatus()).arg(c->okToDelete()));
+		}
+	}
+}
+
 void CallHandler::callCmd(const QStringList &args) {
 	CallID id = args.at(0).toInt();
 
