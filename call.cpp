@@ -427,7 +427,7 @@ void Call::stopRecording(bool flush) {
 
 // ---- CallHandler ----
 
-CallHandler::CallHandler(Skype *s) : skype(s), currentCall(-1) {
+CallHandler::CallHandler(QObject *parent, Skype *s) : QObject(parent), skype(s), currentCall(-1) {
 }
 
 void CallHandler::callCmd(const QStringList &args) {

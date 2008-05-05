@@ -101,7 +101,7 @@ private:
 class CallHandler : public QObject {
 	Q_OBJECT
 public:
-	CallHandler(Skype *);
+	CallHandler(QObject *, Skype *);
 	void callCmd(const QStringList &);
 
 signals:

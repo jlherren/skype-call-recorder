@@ -78,7 +78,7 @@ void Recorder::setupSkype() {
 }
 
 void Recorder::setupCallHandler() {
-	callHandler = new CallHandler(skype);
+	callHandler = new CallHandler(this, skype);
 
 	connect(trayIcon, SIGNAL(startRecording()),         callHandler, SLOT(startRecording()));
 	connect(trayIcon, SIGNAL(stopRecording()),          callHandler, SLOT(stopRecording()));
