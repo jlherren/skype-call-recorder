@@ -36,7 +36,7 @@ class Skype : public QObject {
 public:
 	friend class SkypeExport;
 
-	Skype();
+	Skype(QObject *);
 	QString sendWithReply(const QString &, int = 10000);
 	void send(const QString &);
 	QString getObject(const QString &);

@@ -33,7 +33,7 @@ const QString skypeServiceName("com.Skype.API");
 const QString skypeInterfaceName("com.Skype.API");
 }
 
-Skype::Skype() : dbus("SkypeRecorder"), connectionState(0) {
+Skype::Skype(QObject *parent) : QObject(parent), dbus("SkypeRecorder"), connectionState(0) {
 	dbus = QDBusConnection::connectToBus(QDBusConnection::SessionBus, "SkypeRecorder");
 
 	connect(dbus.interface(), SIGNAL(serviceOwnerChanged(const QString &, const QString &, const QString &)),

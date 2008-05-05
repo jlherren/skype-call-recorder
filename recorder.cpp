@@ -71,7 +71,7 @@ void Recorder::setupGUI() {
 }
 
 void Recorder::setupSkype() {
-	skype = new Skype;
+	skype = new Skype(this);
 	connect(skype, SIGNAL(notify(const QString &)),           this, SLOT(skypeNotify(const QString &)));
 	connect(skype, SIGNAL(connected()),                       this, SLOT(skypeConnected()));
 	connect(skype, SIGNAL(connectionFailed(const QString &)), this, SLOT(skypeConnectionFailed(const QString &)));
