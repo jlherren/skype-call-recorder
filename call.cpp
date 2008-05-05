@@ -476,6 +476,10 @@ void CallHandler::callCmd(const QStringList &args) {
 			call->startRecording();
 	}
 
+	prune();
+}
+
+void CallHandler::prune() {
 	QList<Call *> list = calls.values();
 	for (int i = 0; i < list.size(); i++) {
 		Call *c = list.at(i);

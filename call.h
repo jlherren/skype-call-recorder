@@ -116,6 +116,9 @@ public slots:
 	void stopRecordingAndDelete();
 
 private:
+	void prune();
+
+private:
 	typedef QMap<CallID, Call *> CallMap;
 	typedef QSet<CallID> CallSet;
 
