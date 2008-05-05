@@ -27,11 +27,13 @@
 #include <QSystemTrayIcon>
 
 class QAction;
+class QMenu;
 
 class TrayIcon : public QSystemTrayIcon {
 	Q_OBJECT
 public:
 	TrayIcon(QObject *);
+	~TrayIcon();
 
 signals:
 	void requestQuit();
@@ -51,14 +53,16 @@ public slots:
 	void startedRecording();
 	void stoppedRecording();
 
+private slots:
+	void activate(QSystemTrayIcon::ActivationReason);
+
 private:
 	QAction *currentCallAction;
 	QAction *startAction;
 	QAction *stopAction;
 	QAction *stopAndDeleteAction;
-
-private slots:
-	void activate(QSystemTrayIcon::ActivationReason);
+	QMenu *menu;
+	QMenu *subMenu;
 
 private:
 	// disabled

@@ -42,12 +42,12 @@ TrayIcon::TrayIcon(QObject *p) : QSystemTrayIcon(p) {
 	setIcon(QIcon(":/icon.png"));
 
 	// current call submenu
-	QMenu *subMenu = new QMenu("Call with unknown");
+	subMenu = new QMenu("Call with unknown");
 	startAction = subMenu->addAction("&Start recording", this, SIGNAL(startRecording()));
 	stopAction = subMenu->addAction("S&top recording", this, SIGNAL(stopRecording()));
 	stopAndDeleteAction = subMenu->addAction("Stop recording and &delete file", this, SIGNAL(stopRecordingAndDelete()));
 
-	QMenu *menu = new QMenu;
+	menu = new QMenu;
 
 	menu->addAction("&About " PROGRAM_NAME, this, SIGNAL(requestAbout()));
 	currentCallAction = menu->addMenu(subMenu);
@@ -63,6 +63,11 @@ TrayIcon::TrayIcon(QObject *p) : QSystemTrayIcon(p) {
 	connect(this, SIGNAL(activated(QSystemTrayIcon::ActivationReason)), this, SLOT(activate(QSystemTrayIcon::ActivationReason)));
 
 	show();
+}
+
+TrayIcon::~TrayIcon() {
+	delete menu;
+	delete subMenu;
 }
 
 void TrayIcon::activate(QSystemTrayIcon::ActivationReason) {
