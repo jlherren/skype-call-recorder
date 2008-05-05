@@ -497,8 +497,11 @@ void CallHandler::prune() {
 	for (int i = 0; i < list.size(); i++) {
 		Call *c = list.at(i);
 		QString status = c->getStatus();
-		if ((status == "FINISHED" || status == "CANCELLED" || status == "REFUSED") && c->okToDelete()) {
+		if ((status == "FINISHED" || status == "CANCELLED" || status == "REFUSED" || status == "MISSED") && c->okToDelete()) {
+			// we ignore this call from now on, because Skype might still send
+			// us information about it, like "SEEN" or "VAA_INPUT_STATUS"
 			calls.remove(c->getID());
+			ignore.insert(c->getID());
 			delete c;
 		}
 	}
