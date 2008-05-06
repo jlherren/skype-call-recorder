@@ -48,6 +48,7 @@ public:
 	bool okToDelete() const;
 	void setStatus(const QString &);
 	QString getStatus() const { return status; }
+	bool statusDone() const;
 	CallID getID() const { return id; }
 	void removeFile();
 	void hideConfirmation(int);

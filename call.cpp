@@ -108,6 +108,16 @@ void Call::setStatus(const QString &s) {
 		emit stoppedCall();
 }
 
+bool Call::statusDone() const {
+	return status == "BUSY" ||
+		status == "CANCELLED" ||
+		status == "FAILED" ||
+		status == "FINISHED" ||
+		status == "MISSED" ||
+		status == "REFUSED";
+	// TODO: see what the deal is with REDIAL_PENDING (protocol 8)
+}
+
 namespace {
 QString escape(const QString &s) {
 	QString out = s;
@@ -496,8 +506,7 @@ void CallHandler::prune() {
 	QList<Call *> list = calls.values();
 	for (int i = 0; i < list.size(); i++) {
 		Call *c = list.at(i);
-		QString status = c->getStatus();
-		if ((status == "FINISHED" || status == "CANCELLED" || status == "REFUSED" || status == "MISSED") && c->okToDelete()) {
+		if (c->statusDone() && c->okToDelete()) {
 			// we ignore this call from now on, because Skype might still send
 			// us information about it, like "SEEN" or "VAA_INPUT_STATUS"
 			calls.remove(c->getID());
