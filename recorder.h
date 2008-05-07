@@ -49,7 +49,7 @@ public slots:
 	void browseCalls();
 	void quitConfirmation();
 	void skypeNotify(const QString &);
-	void skypeConnected();
+	void skypeConnected(bool);
 	void skypeConnectionFailed(const QString &);
 	void savePreferences();
 

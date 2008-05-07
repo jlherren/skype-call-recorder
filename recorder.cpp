@@ -73,7 +73,7 @@ void Recorder::setupGUI() {
 void Recorder::setupSkype() {
 	skype = new Skype(this);
 	connect(skype, SIGNAL(notify(const QString &)),           this, SLOT(skypeNotify(const QString &)));
-	connect(skype, SIGNAL(connected()),                       this, SLOT(skypeConnected()));
+	connect(skype, SIGNAL(connected(bool)),                   this, SLOT(skypeConnected(bool)));
 	connect(skype, SIGNAL(connectionFailed(const QString &)), this, SLOT(skypeConnectionFailed(const QString &)));
 }
 
@@ -179,8 +179,11 @@ void Recorder::skypeNotify(const QString &s) {
 		callHandler->callCmd(args);
 }
 
-void Recorder::skypeConnected() {
-	debug("skype connection established");
+void Recorder::skypeConnected(bool conn) {
+	if (conn)
+		debug("skype connection established");
+	else
+		debug("skype not connected");
 }
 
 void Recorder::skypeConnectionFailed(const QString &reason) {
@@ -190,7 +193,6 @@ void Recorder::skypeConnectionFailed(const QString &reason) {
 		QString("The connection to Skype failed!  %1 cannot operate without this "
 		"connection, please make sure you haven't blocked access from within Skype.\n\n"
 		"Internal reason for failure: %2").arg(PROGRAM_NAME, reason));
-	// TODO: if skype is not running: "skype will now continually poll for connections, blah blah"
 }
 
 void Recorder::debugMessage(const QString &s) {

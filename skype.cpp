@@ -61,7 +61,6 @@ void Skype::connectToSkype() {
 		timer->stop();
 
 		debug(QString("Service %1 not found on DBus").arg(skypeServiceName));
-		emit skypeNotFound();
 		return;
 	}
 
@@ -83,7 +82,7 @@ void Skype::serviceOwnerChanged(const QString &name, const QString &oldOwner, co
 	} else if (newOwner.isEmpty()) {
 		debug("DBUS: Skype API service disappeared");
 		if (connectionState == 3)
-			emit connectionLost();
+			emit connected(false);
 		timer->stop();
 		connectionState = 0;
 	}
@@ -166,7 +165,7 @@ void Skype::methodCallback(const QDBusMessage &msg) {
 	} else if (connectionState == 2) {
 		if (s == "PROTOCOL 5") {
 			connectionState = 3;
-			emit connected();
+			emit connected(true);
 		} else {
 			connectionState = 0;
 			emit connectionFailed("Skype handshake error");
@@ -180,6 +179,9 @@ void Skype::methodError(const QDBusError &error, const QDBusMessage &) {
 }
 
 void Skype::doNotify(const QString &s) const {
+	if (connectionState != 3)
+		return;
+
 	debug(QString("SKYPE <-- %1").arg(s));
 	emit notify(s);
 }
@@ -191,7 +193,7 @@ void Skype::poll() {
 		if (sendWithReply("PING", 2000) != "PONG") {
 			debug("Skype didn't reply with PONG to our PING");
 			connectionState = 0;
-			emit connectionLost();
+			emit connected(false);
 		}
 	}
 }
