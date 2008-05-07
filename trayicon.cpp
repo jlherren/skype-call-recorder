@@ -39,7 +39,7 @@ TrayIcon::TrayIcon(QObject *p) : QSystemTrayIcon(p) {
 		return;
 	}
 
-	setIcon(QIcon(":/icon.png"));
+	setColor(false);
 
 	// current call submenu
 	subMenu = new QMenu("Call with unknown");
@@ -69,6 +69,11 @@ TrayIcon::~TrayIcon() {
 	delete menu;
 	delete subMenu;
 }
+
+void TrayIcon::setColor(bool color) {
+	setIcon(QIcon(color ? ":/icon.png" : ":/icongray.png"));
+}
+
 
 void TrayIcon::activate(QSystemTrayIcon::ActivationReason) {
 	contextMenu()->popup(QCursor::pos());

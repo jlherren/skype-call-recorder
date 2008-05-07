@@ -48,6 +48,7 @@ signals:
 	void stopRecording();
 
 public slots:
+	void setColor(bool);
 	void startedCall(const QString &);
 	void stoppedCall();
 	void startedRecording();

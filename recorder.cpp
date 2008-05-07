@@ -75,6 +75,8 @@ void Recorder::setupSkype() {
 	connect(skype, SIGNAL(notify(const QString &)),           this, SLOT(skypeNotify(const QString &)));
 	connect(skype, SIGNAL(connected(bool)),                   this, SLOT(skypeConnected(bool)));
 	connect(skype, SIGNAL(connectionFailed(const QString &)), this, SLOT(skypeConnectionFailed(const QString &)));
+
+	connect(skype, SIGNAL(connected(bool)), trayIcon, SLOT(setColor(bool)));
 }
 
 void Recorder::setupCallHandler() {
