@@ -178,11 +178,15 @@ void Skype::methodError(const QDBusError &error, const QDBusMessage &) {
 	emit connectionFailed(error.message());
 }
 
-void Skype::doNotify(const QString &s) const {
+void Skype::doNotify(const QString &s) {
 	if (connectionState != 3)
 		return;
 
 	debug(QString("SKYPE <-- %1").arg(s));
+
+	if (s.startsWith("CURRENTUSERHANDLE "))
+		skypeName = s.mid(18);
+
 	emit notify(s);
 }
 

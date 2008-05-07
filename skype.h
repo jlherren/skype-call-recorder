@@ -40,6 +40,7 @@ public:
 	QString sendWithReply(const QString &, int = 10000);
 	void send(const QString &);
 	QString getObject(const QString &);
+	const QString &getSkypeName() const { return skypeName; }
 
 signals:
 	void notify(const QString &) const;
@@ -48,7 +49,7 @@ signals:
 
 private:
 	void sendWithAsyncReply(const QString &);
-	void doNotify(const QString &) const;
+	void doNotify(const QString &);
 
 private slots:
 	void connectToSkype();
@@ -62,6 +63,7 @@ private:
 	int connectionState;
 	SkypeExport *exported;
 	QTimer *timer;
+	QString skypeName;
 
 private:
 	// disabled
