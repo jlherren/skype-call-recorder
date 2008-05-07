@@ -390,7 +390,8 @@ void Call::tryToWrite(bool flush) {
 	if (channelMode == 0) {
 		// mono
 		mixToMono(samples);
-		success = writer->write(bufferMono, bufferMono, samples, flush);
+		QByteArray dummy;
+		success = writer->write(bufferMono, dummy, samples, flush);
 	} else if (channelMode == 1) {
 		// stereo
 		success = writer->write(bufferLocal, bufferRemote, samples, flush);
