@@ -36,6 +36,7 @@ class QListView;
 class PerCallerModel;
 class PerCallerPreferencesDialog;
 class QRadioButton;
+class SmartEditableComboBox;
 
 // A single preference, with a name and a value
 
@@ -111,11 +112,13 @@ private slots:
 	void enableMp3Settings();
 	void editPerCallerPreferences();
 	void perCallerFinished();
+	void updatePatternToolTip(const QString &);
 
 private:
 	QList<QWidget *> mp3Settings;
 	SmartComboBox *formatWidget;
 	PerCallerPreferencesDialog *perCallerDialog;
+	SmartEditableComboBox *patternWidget;
 
 private:
 	// disabled
@@ -168,7 +171,8 @@ private:
 
 extern Preferences preferences;
 extern QString getOutputPath();
-extern QString getFileName(const QString &, const QString &, const QString &, const QString &, time_t);
+extern QString getFileName(const QString &, const QString &, const QString &,
+	const QString &, time_t, const QString & = QString());
 
 #endif
 

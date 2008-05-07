@@ -35,6 +35,7 @@
 #include <QTextStream>
 #include <QtAlgorithms>
 #include <QDir>
+#include <ctime>
 
 #include "preferences.h"
 #include "smartwidgets.h"
@@ -59,9 +60,13 @@ QString escape(const QString &s) {
 }
 
 QString getFileName(const QString &skypeName, const QString &displayName,
-	const QString &mySkypeName, const QString &myDisplayName, time_t timestamp)
+	const QString &mySkypeName, const QString &myDisplayName, time_t timestamp, const QString &pattern)
 {
-	QString fileName = preferences.get("output.pattern").toString();
+	QString fileName;
+	if (pattern.isEmpty())
+		fileName = preferences.get("output.pattern").toString();
+	else
+		fileName = pattern;
 
 	fileName.replace("&s", escape(skypeName));
 	fileName.replace("&d", escape(displayName));
@@ -103,7 +108,6 @@ PreferencesDialog::PreferencesDialog() : perCallerDialog(NULL) {
 	QLabel *label;
 	QPushButton *button;
 	SmartComboBox *combo;
-	SmartEditableComboBox *ecombo;
 	SmartLineEdit *edit;
 	SmartRadioButton *radio;
 	SmartCheckBox *check;
@@ -139,19 +143,17 @@ PreferencesDialog::PreferencesDialog() : perCallerDialog(NULL) {
 	vbox->addWidget(edit);
 
 	label = new QLabel("&File name:");
-	ecombo = new SmartEditableComboBox(preferences.get("output.pattern"));
-	label->setBuddy(ecombo);
-	ecombo->addItem("%Y, %B/Skype call with &s, %A %B %d, %Y, %H:%M:%S");
-	ecombo->addItem("Calls with &s/Skype call with &s, %A %B %d, %Y, %H:%M:%S");
-	ecombo->addItem("Calls with &s/Skype call with &s, %A %B %d, %Y, %I:%M:%S%p");
-	ecombo->addItem("Skype call with &s, %A, %B %d, %Y, %H:%M:%S");
-	ecombo->addItem("%Y-%m-%d %H:%M:%S call with &s");
-	ecombo->setupDone();
+	patternWidget = new SmartEditableComboBox(preferences.get("output.pattern"));
+	label->setBuddy(patternWidget);
+	patternWidget->addItem("%Y, %B/Skype call with &s, %A %B %d, %Y, %H:%M:%S");
+	patternWidget->addItem("Calls with &s/Skype call with &s, %A %B %d, %Y, %H:%M:%S");
+	patternWidget->addItem("Calls with &s/Skype call with &s, %A %B %d, %Y, %I:%M:%S%p");
+	patternWidget->addItem("Skype call with &s, %A, %B %d, %Y, %H:%M:%S");
+	patternWidget->addItem("%Y-%m-%d %H:%M:%S call with &s");
+	patternWidget->setupDone();
+	connect(patternWidget, SIGNAL(editTextChanged(const QString &)), this, SLOT(updatePatternToolTip(const QString &)));
 	vbox->addWidget(label);
-	vbox->addWidget(ecombo);
-
-	label = new QLabel("Example: blah blah");
-	vbox->addWidget(label);
+	vbox->addWidget(patternWidget);
 
 	// ---- output file format ----
 	vbox = makeVFrame(bigvbox, "Output file &format");
@@ -209,6 +211,7 @@ PreferencesDialog::PreferencesDialog() : perCallerDialog(NULL) {
 	bigvbox->addLayout(hbox);
 
 	enableMp3Settings();
+	updatePatternToolTip("");
 }
 
 void PreferencesDialog::enableMp3Settings() {
@@ -232,6 +235,40 @@ void PreferencesDialog::hideEvent(QHideEvent *event) {
 		perCallerDialog->accept();
 
 	QDialog::hideEvent(event);
+}
+
+void PreferencesDialog::updatePatternToolTip(const QString &pattern) {
+	QString tip =
+	"This pattern specifies how the file name for the recorded call is constructed.\n"
+	"You can use the following directives:\n\n"
+
+	#define X(a, b) "\t" a "\t" b "\n"
+	X("&s"     , "The remote skype name")
+	X("&d"     , "The remote display name")
+	X("&t"     , "Your skype name")
+	X("&e"     , "Your display name")
+	X("&&"     , "Literal & character")
+	X("%Y"     , "Year")
+	X("%A / %a", "Full / abbreviated weekday name")
+	X("%B / %b", "Full / abbreviated month name")
+	X("%m"     , "Month as a number (01 - 12)")
+	X("%d"     , "Day of the month (01 - 31)")
+	X("%H"     , "Hour as a 24-hour clock (00 - 23)")
+	X("%I"     , "Hour as a 12-hour clock (01 - 12)")
+	X("%p"     , "AM or PM")
+	X("%M"     , "Minutes (00 - 59)")
+	X("%S"     , "Seconds (00 - 59)")
+	X("%%"     , "Literal % character")
+	#undef X
+	"\t...and all other directives provided by strftime()\n\n"
+
+	"With the current choice, the file name might look like this:\n";
+
+	QString fn = getFileName("echo123", "Skype Test Service", "myskype", "My Full Name", std::time(NULL), pattern);
+	tip += fn;
+	if (fn.contains(':'))
+		tip += "\n\nWARNING: Microsoft Windows does not allow colon characters (:) in file names.";
+	patternWidget->setToolTip(tip);
 }
 
 // per caller preferences editor
