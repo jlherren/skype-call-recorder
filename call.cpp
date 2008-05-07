@@ -355,15 +355,35 @@ void Call::tryToWrite(bool flush) {
 
 	int l = bufferLocal.size();
 	int r = bufferRemote.size();
-	int samples = (l < r ? l : r) / 2;
+	int samples; // number of samples to write
 
-	// skype usually sends us more PCM data every 10ms, i.e. 160 samples.
-	// (skype operates at 16kHz) let's accumulate at least 100ms of data
-	// before bothering to write it to disk
-	if (samples < 1600 && !flush)
-		return;
+	if (flush) {
+		// when flushing, we pad the shorter buffer, so that all
+		// available data is written.  this shouldn't usually be a
+		// significant amount, but it might be if there was an audio
+		// I/O error in Skype.
+		if (l < r) {
+			bufferLocal.append(QByteArray(r - l, 0));
+			debug(QString("Call %1: padding %2 samples on local buffer while flushing").arg(id).arg((l - r) / 2));
+			samples = r / 2;
+		} else if (l > r) {
+			bufferRemote.append(QByteArray(l - r, 0));
+			debug(QString("Call %1: padding %2 samples on remote buffer while flushing").arg(id).arg((l - r) / 2));
+			samples = l / 2;
+		} else {
+			samples = l / 2;
+		}
+	} else {
+		samples = (l < r ? l : r) / 2;
+		// skype usually sends more PCM data every 10ms, i.e. 160
+		// samples (skype operates at 16kHz).  let's accumulate at
+		// least 100ms of data before bothering to write it to disk
+		if (samples < 1600)
+			return;
+	}
 
-	// got new samples to write to file, or have to flush
+	// got new samples to write to file, or have to flush.  note that we
+	// have to flush even if samples == 0
 
 	bool success;
 
