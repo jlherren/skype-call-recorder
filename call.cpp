@@ -118,35 +118,9 @@ bool Call::statusDone() const {
 	// TODO: see what the deal is with REDIAL_PENDING (protocol 8)
 }
 
-namespace {
-QString escape(const QString &s) {
-	QString out = s;
-	out.replace('%', "%%");
-	out.replace('&', "&&");
-	return out;
-}
-}
-
 QString Call::constructFileName() const {
-	QString path = getOutputPath();
-	QString fileName = preferences.get("output.pattern").toString();
-
-	fileName.replace("&s", escape(skypeName));
-	// TODO
-	//fileName.replace("&f", escape(fullName));
-	//fileName.replace("&t", escape(mySkypeName));
-	//fileName.replace("&g", escape(myFullName));
-	fileName.replace("&&", "&");
-
-	// TODO: uhm, does QT provide any time formatting the strftime() way?
-	char *buf = new char[fileName.size() + 1024];
-	time_t t = std::time(NULL);
-	struct tm *tm = std::localtime(&t);
-	std::strftime(buf, fileName.size() + 1024, fileName.toUtf8().constData(), tm);
-	fileName = buf;
-	delete[] buf;
-
-	return path + '/' + fileName;
+	return getFileName(skypeName, displayName, skype->getSkypeName(),
+		skype->getObject("PROFILE FULLNAME"), std::time(NULL));
 }
 
 void Call::setShouldRecord() {

@@ -49,6 +49,36 @@ QString getOutputPath() {
 	return path;
 }
 
+namespace {
+QString escape(const QString &s) {
+	QString out = s;
+	out.replace('%', "%%");
+	out.replace('&', "&&");
+	return out;
+}
+}
+
+QString getFileName(const QString &skypeName, const QString &displayName,
+	const QString &mySkypeName, const QString &myDisplayName, time_t timestamp)
+{
+	QString fileName = preferences.get("output.pattern").toString();
+
+	fileName.replace("&s", escape(skypeName));
+	fileName.replace("&d", escape(displayName));
+	fileName.replace("&t", escape(mySkypeName));
+	fileName.replace("&e", escape(myDisplayName));
+	fileName.replace("&&", "&");
+
+	// TODO: uhm, does QT provide any time formatting the strftime() way?
+	char *buf = new char[fileName.size() + 1024];
+	struct tm *tm = std::localtime(&timestamp);
+	std::strftime(buf, fileName.size() + 1024, fileName.toUtf8().constData(), tm);
+	fileName = buf;
+	delete[] buf;
+
+	return getOutputPath() + '/' + fileName;
+}
+
 // preferences dialog
 
 static QVBoxLayout *makeVFrame(QVBoxLayout *parentLayout, const char *title) {

@@ -29,6 +29,7 @@
 #include <QString>
 #include <QStringList>
 #include <QAbstractListModel>
+#include <ctime>
 
 class SmartComboBox;
 class QListView;
@@ -167,6 +168,7 @@ private:
 
 extern Preferences preferences;
 extern QString getOutputPath();
+extern QString getFileName(const QString &, const QString &, const QString &, const QString &, time_t);
 
 #endif
 
