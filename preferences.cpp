@@ -145,11 +145,10 @@ PreferencesDialog::PreferencesDialog() : perCallerDialog(NULL) {
 	label = new QLabel("&File name:");
 	patternWidget = new SmartEditableComboBox(preferences.get("output.pattern"));
 	label->setBuddy(patternWidget);
-	patternWidget->addItem("%Y, %B/Skype call with &s, %A %B %d, %Y, %H:%M:%S");
-	patternWidget->addItem("Calls with &s/Skype call with &s, %A %B %d, %Y, %H:%M:%S");
-	patternWidget->addItem("Calls with &s/Skype call with &s, %A %B %d, %Y, %I:%M:%S%p");
-	patternWidget->addItem("Skype call with &s, %A, %B %d, %Y, %H:%M:%S");
-	patternWidget->addItem("%Y-%m-%d %H:%M:%S call with &s");
+	patternWidget->addItem("%Y-%m-%d %H:%M:%S Call with &s");
+	patternWidget->addItem("Call with &s, %a %b %d %Y, %H:%M:%S");
+	patternWidget->addItem("%Y, %B/Call with &s, %a %b %d %Y, %H:%M:%S");
+	patternWidget->addItem("Calls with &s/Call with &s, %a %b %d %Y, %H:%M:%S");
 	patternWidget->setupDone();
 	connect(patternWidget, SIGNAL(editTextChanged(const QString &)), this, SLOT(updatePatternToolTip(const QString &)));
 	vbox->addWidget(label);

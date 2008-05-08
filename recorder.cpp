@@ -107,7 +107,7 @@ void Recorder::loadPreferences() {
 	X(autorecord.yes,            "");            // comma separated skypenames to always record
 	X(autorecord.no,             "");            // comma separated skypenames to never record
 	X(output.path,               "~/Skype Calls");
-	X(output.pattern,            "%Y, %B/Skype call with &s, %A %B %d, %Y, %H:%M:%S");
+	X(output.pattern,            "Calls with &s/Call with &s, %a %b %d %Y, %H:%M:%S");
 	X(output.format,             "mp3");         // "mp3" or "wav"
 	X(output.format.mp3.bitrate, 96);
 	X(output.channelmode,        "stereo");      // mono, stereo, oerets
