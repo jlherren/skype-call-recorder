@@ -1,5 +1,7 @@
 Makefile
 skype-call-recorder
-*.o
-moc_*.cpp
-qrc_resources.cpp
+CMakeCache.txt
+CMakeFiles
+cmake_install.cmake
+moc_*.cxx
+qrc_resources.cxx
