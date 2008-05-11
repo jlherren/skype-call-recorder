@@ -24,6 +24,7 @@
 #include <QList>
 #include <QVariant>
 #include <QTimer>
+#include <QtDBus>
 
 #include "skype.h"
 #include "common.h"

@@ -25,11 +25,14 @@
 #define SKYPE_H
 
 #include <QObject>
-#include <QtDBus>
+#include <QDBusConnection>
+#include <QDBusAbstractAdaptor>
 #include <QString>
 
 class SkypeExport;
 class QTimer;
+class QDBusError;
+class QDBusMessage;
 
 class Skype : public QObject {
 	Q_OBJECT
