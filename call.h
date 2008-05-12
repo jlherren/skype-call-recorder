@@ -29,6 +29,7 @@
 #include <QByteArray>
 #include <QMap>
 #include <QSet>
+#include <QPointer>
 
 class QStringList;
 class Skype;
@@ -76,7 +77,7 @@ private:
 	int channelMode;
 	int shouldRecord;
 	QString fileName;
-	QObject *confirmation;
+	QPointer<QObject> confirmation;
 
 	QTcpServer *serverLocal, *serverRemote;
 	QTcpSocket *socketLocal, *socketRemote;

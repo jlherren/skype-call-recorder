@@ -44,8 +44,7 @@ Call::Call(QObject *p, Skype *sk, CallID i) :
 	status("UNKNOWN"),
 	writer(NULL),
 	isRecording(false),
-	shouldRecord(1),
-	confirmation(NULL)
+	shouldRecord(1)
 {
 	debug(QString("Call %1: Call object contructed").arg(id));
 
@@ -164,22 +163,19 @@ void Call::ask() {
 }
 
 void Call::hideConfirmation(int should) {
-	if (!confirmation)
-		return;
-	delete confirmation;
-	confirmation = NULL;
-	shouldRecord = should;
+	if (confirmation) {
+		delete confirmation;
+		shouldRecord = should;
+	}
 }
 
 void Call::confirmRecording() {
 	shouldRecord = 2;
-	confirmation = NULL;
 }
 
 void Call::denyRecording() {
 	// note that the call might already be finished by now
 	shouldRecord = 0;
-	confirmation = NULL;
 	stopRecording(true);
 	removeFile();
 }
