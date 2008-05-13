@@ -26,6 +26,7 @@
 
 #include <QApplication>
 #include <QStringList>
+#include <QPointer>
 
 class TrayIcon;
 class QTextEdit;
@@ -33,6 +34,7 @@ class QString;
 class PreferencesDialog;
 class Skype;
 class CallHandler;
+class AboutDialog;
 
 class Recorder : public QApplication {
 	Q_OBJECT
@@ -66,6 +68,7 @@ private:
 	CallHandler *callHandler;
 	PreferencesDialog *preferencesDialog;
 	TrayIcon *trayIcon;
+	QPointer<AboutDialog> aboutDialog;
 
 private:
 	// disabled

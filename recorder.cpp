@@ -31,6 +31,7 @@
 
 #include "recorder.h"
 #include "common.h"
+#include "about.h"
 #include "trayicon.h"
 #include "preferences.h"
 #include "skype.h"
@@ -126,8 +127,11 @@ void Recorder::savePreferences() {
 }
 
 void Recorder::about() {
-	QMessageBox::information(NULL, PROGRAM_NAME " - About",
-		"This is a place holder for a future about dialog.");
+	if (!aboutDialog)
+		aboutDialog = new AboutDialog;
+
+	aboutDialog->raise();
+	aboutDialog->activateWindow();
 }
 
 void Recorder::openPreferences() {

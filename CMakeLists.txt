@@ -8,9 +8,9 @@ SET(CMAKE_CXX_FLAGS "-Wall -W -pipe -fno-rtti -fno-exceptions")
 SET(CMAKE_CXX_FLAGS_DEBUG "-ggdb")
 SET(CMAKE_CXX_FLAGS_RELEASE "-O2")
 
-SET(SOURCES call.cpp callgui.cpp common.cpp mp3writer.cpp preferences.cpp
-	recorder.cpp skype.cpp trayicon.cpp version.cpp wavewriter.cpp
-	writer.cpp)
+SET(SOURCES about.cpp call.cpp callgui.cpp common.cpp mp3writer.cpp
+	preferences.cpp recorder.cpp skype.cpp trayicon.cpp version.cpp
+	wavewriter.cpp writer.cpp)
 SET(MOC_HEADERS call.h callgui.h preferences.h recorder.h skype.h
 	smartwidgets.h trayicon.h)
 SET(RESOURCES resources.qrc)
