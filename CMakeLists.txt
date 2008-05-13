@@ -9,10 +9,16 @@ SET(CMAKE_CXX_FLAGS_DEBUG "-ggdb")
 SET(CMAKE_CXX_FLAGS_RELEASE "-O2")
 
 SET(SOURCES call.cpp callgui.cpp common.cpp mp3writer.cpp preferences.cpp
-	recorder.cpp skype.cpp trayicon.cpp wavewriter.cpp writer.cpp)
+	recorder.cpp skype.cpp trayicon.cpp version.cpp wavewriter.cpp
+	writer.cpp)
 SET(MOC_HEADERS call.h callgui.h preferences.h recorder.h skype.h
 	smartwidgets.h trayicon.h)
 SET(RESOURCES resources.qrc)
+
+ADD_CUSTOM_TARGET(Version ${CMAKE_CURRENT_SOURCE_DIR}/makeversion
+	COMMENT "Checking version.cpp" VERBATIM)
+SET_SOURCE_FILES_PROPERTIES(version.cpp PROPERTIES GENERATED TRUE)
+SET_DIRECTORY_PROPERTIES(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES version.cpp)
 
 SET(QT_USE_QTDBUS TRUE)
 SET(QT_USE_QTNETWORK TRUE)
@@ -29,4 +35,5 @@ QT4_ADD_RESOURCES(RESOURCES_SOURCES ${RESOURCES})
 
 ADD_EXECUTABLE(${TARGET} ${SOURCES} ${MOC_SOURCES} ${RESOURCES_SOURCES})
 TARGET_LINK_LIBRARIES(${TARGET} ${QT_LIBRARIES} ${LIBRARIES})
+ADD_DEPENDENCIES(${TARGET} Version)
 

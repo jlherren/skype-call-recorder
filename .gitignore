@@ -5,3 +5,4 @@ CMakeFiles
 cmake_install.cmake
 moc_*.cxx
 qrc_resources.cxx
+version.cpp

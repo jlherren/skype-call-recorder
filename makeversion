@@ -1,0 +1,19 @@
+#!/bin/sh
+
+output=version.cpp
+
+date=`date --utc +%Y-%m-%d`
+commit=`git rev-parse HEAD`
+git diff --quiet HEAD || commit="$commit-dirty"
+cat > "$output-new" <<EOF
+#include "common.h"
+const char *recorderCommit = "$commit";
+const char *recorderDate = "$date";
+EOF
+
+if test -e "$output" && diff -q "$output" "$output-new" > /dev/null 2>&1; then
+	rm "$output-new"
+else
+	mv "$output-new" "$output"
+fi
+

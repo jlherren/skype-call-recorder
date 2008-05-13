@@ -33,5 +33,9 @@ extern void debug(const QString &);
 
 extern Recorder *recorderInstance;
 
+// this is provided by the generated version.cpp file
+extern const char *recorderCommit;
+extern const char *recorderDate;
+
 #endif
 
