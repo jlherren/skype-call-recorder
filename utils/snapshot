@@ -1,0 +1,13 @@
+#!/bin/sh
+
+if test "$1" = ''; then
+	echo "Usage: $0 <tree-ish>"
+	exit 1
+fi
+
+d=`date +%Y%m%d`
+b=skype-call-recorder-$d
+
+git archive --format=tar --prefix="$b/" "$1" | gzip -9 > "$b.tar.gz"
+echo "$b.tar.gz"
+
