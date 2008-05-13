@@ -53,6 +53,9 @@ AboutDialog::AboutDialog() {
 		"or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public<br>"
 		"License for more details.</p>"
 		"<hr>"
+		"<p>This product uses the Skype API but is not endorsed, certified or otherwise<br>"
+		"approved in any way by Skype.</p>"
+		"<hr>"
 		"<p><small>Git commit: %1<br>"
 		"Build date: %2</small></p>";
 	str = str.arg(recorderCommit, recorderDate);
