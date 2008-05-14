@@ -1,10 +1,20 @@
 #!/bin/sh
 
+# this script creates version.cpp containing version and other compile-time
+# information.  it expects to get the source directory as only argument.
+
 output=version.cpp
 
+src=$1
+test "$src" = '' && src=.
+
 date=`date --utc +%Y-%m-%d`
-commit=`git rev-parse HEAD`
-git diff --quiet HEAD || commit="$commit-dirty"
+commit=`( cd "$src"; git rev-parse HEAD 2> /dev/null; )`
+if test "$commit" != ''; then
+	( cd "$src"; git diff --quiet HEAD; ) || commit="$commit-dirty"
+else
+	commit=unknown
+fi
 cat > "$output-new" <<EOF
 #include "common.h"
 const char *recorderCommit = "$commit";
