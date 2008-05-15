@@ -24,6 +24,7 @@
 #include <QByteArray>
 #include <QString>
 #include <lame/lame.h>
+#include <id3/tag.h>
 #include "mp3writer.h"
 #include "common.h"
 #include "preferences.h"
@@ -54,6 +55,49 @@ bool Mp3Writer::open(const QString &fn, long sr, bool s) {
 		return false;
 
 	return true;
+}
+
+void Mp3Writer::close() {
+	AudioFileWriter::close();
+	writeTags();
+}
+
+namespace {
+ID3_Frame *getOrCreateTag(ID3_Tag &tag, ID3_FrameID id) {
+	ID3_Frame *frame = tag.Find(id);
+
+	if (!frame) {
+		frame = new ID3_Frame(id);
+		tag.AttachFrame(frame);
+	}
+
+	return frame;
+}
+}
+
+void Mp3Writer::writeTags() {
+	if (!mustWriteTags)
+		return;
+
+	debug("Writing tags to MP3 file");
+
+	QByteArray fn = QFile::encodeName(file.fileName());
+	ID3_Tag tag(fn.constData());
+
+	// NOTE: we don't set ID3FID_TITLE as the file name is already meant to
+	// be a good enough description of the content
+
+	QString str = tagTime.toString("yyyyddMMhhmm");
+	// TODO: the following would be better but doesn't work.  find out why
+	//getOrCreateTag(tag, ID3FID_COMMENT    )->GetField(ID3FN_TEXT)->Set(tagComment.utf16());
+	getOrCreateTag(tag, ID3FID_COMMENT    )->GetField(ID3FN_TEXT)->Set(tagComment.toAscii().constData());
+	getOrCreateTag(tag, ID3FID_CONTENTTYPE)->GetField(ID3FN_TEXT)->Set("(101)Skype Call");
+	getOrCreateTag(tag, ID3FID_YEAR       )->GetField(ID3FN_TEXT)->Set(str.mid(0, 4).toAscii().constData());
+	getOrCreateTag(tag, ID3FID_DATE       )->GetField(ID3FN_TEXT)->Set(str.mid(4, 4).toAscii().constData());
+	getOrCreateTag(tag, ID3FID_TIME       )->GetField(ID3FN_TEXT)->Set(str.mid(8, 4).toAscii().constData());
+
+	tag.Update();
+	mustWriteTags = false;
 }
 
 bool Mp3Writer::write(QByteArray &left, QByteArray &right, int samples, bool flush) {

@@ -25,14 +25,23 @@
 #define WRITER_H
 
 #include <QFile>
+#include <QDateTime>
+#include <ctime>
 
 class QString;
 class QByteArray;
 
 class AudioFileWriter {
 public:
-	AudioFileWriter() : sampleRate(0), stereo(false), samplesWritten(0) { };
+	AudioFileWriter() : sampleRate(0), stereo(false), samplesWritten(0), mustWriteTags(true) { };
 	virtual ~AudioFileWriter() { };
+
+	// tags should be set before open() if possible, but can also be set
+	// and re-set later, but not after close().  tags will be written to
+	// disk at arbitrary times, but close() guarantees they are written.
+	// however, if a writer doesn't support tags at all, they are silently
+	// ignored.
+	virtual void setTags(const QString &, const QDateTime &);
 
 	// Note: you're not supposed to reopen after a close
 	virtual bool open(const QString &, long, bool);
@@ -45,6 +54,9 @@ protected:
 	long sampleRate;
 	bool stereo;
 	qint64 samplesWritten;
+	QString tagComment;
+	QDateTime tagTime;
+	bool mustWriteTags;
 
 private:
 	// disabled

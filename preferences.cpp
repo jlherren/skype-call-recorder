@@ -197,8 +197,7 @@ PreferencesDialog::PreferencesDialog() : perCallerDialog(NULL) {
 	vbox->addLayout(hbox);
 
 	check = new SmartCheckBox("Save call &information in MP3 files", preferences.get("output.savetags"));
-	//mp3Settings.append(check);
-	check->setEnabled(false);
+	mp3Settings.append(check);
 	vbox->addWidget(check);
 
 	// ---- buttons ----

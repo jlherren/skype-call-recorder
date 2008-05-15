@@ -35,7 +35,11 @@ public:
 	virtual ~Mp3Writer();
 
 	virtual bool open(const QString &, long, bool);
+	virtual void close();
 	virtual bool write(QByteArray &, QByteArray &, int, bool = false);
+
+private:
+	void writeTags();
 
 private:
 	lame_global_flags *lame;

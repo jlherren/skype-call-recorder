@@ -63,6 +63,7 @@ signals:
 
 private:
 	QString constructFileName() const;
+	QString constructCommentTag() const;
 	void mixToMono(int);
 	void setShouldRecord();
 	void ask();

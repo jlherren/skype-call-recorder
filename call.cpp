@@ -122,6 +122,17 @@ QString Call::constructFileName() const {
 		skype->getObject("PROFILE FULLNAME"), timeStartRecording);
 }
 
+QString Call::constructCommentTag() const {
+	QString str("Skype call between %1%2 and %3%4.");
+	QString dn1, dn2;
+	if (!displayName.isEmpty())
+		dn1 = QString(" (") + displayName + ")";
+	dn2 = skype->getObject("PROFILE FULLNAME");
+	if (!dn2.isEmpty())
+		dn2 = QString(" (") + dn2 + ")";
+	return str.arg(skypeName, dn1, skype->getSkypeName(), dn2);
+}
+
 void Call::setShouldRecord() {
 	// this sets shouldRecord based on preferences.  shouldRecord is 0 if
 	// the call should not be recorded, 1 if we should ask and 2 if we
@@ -222,6 +233,9 @@ void Call::startRecording(bool force) {
 		writer = new WaveWriter;
 	else /* if (format == "mp3") */
 		writer = new Mp3Writer;
+
+	if (preferences.get("output.savetags").toBool())
+		writer->setTags(constructCommentTag(), timeStartRecording);
 
 	bool b = writer->open(fn, 16000, channelMode != 0);
 	fileName = writer->fileName();
