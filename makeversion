@@ -9,11 +9,18 @@ src=$1
 test "$src" = '' && src=.
 
 date=`date --utc +%Y-%m-%d`
-commit=`( cd "$src"; git rev-parse HEAD 2> /dev/null; )`
-if test "$commit" != ''; then
-	( cd "$src"; git diff --quiet HEAD; ) || commit="$commit-dirty"
-else
-	commit=unknown
+if test -e "$src/.git"; then
+	commit=`( cd "$src"; git rev-parse HEAD 2> /dev/null; )`
+	if test "$commit" != ''; then
+		( cd "$src"; git diff --quiet HEAD; ) || commit="$commit-dirty"
+	fi
+fi
+if test -z "$commit"; then
+	if test -e "$src/gitcommit"; then
+		commit=`< "$src/gitcommit"`
+	else
+		commit=unknown
+	fi
 fi
 cat > "$output-new" <<EOF
 #include "common.h"

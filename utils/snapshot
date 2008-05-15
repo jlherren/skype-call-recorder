@@ -5,9 +5,31 @@ if test "$1" = ''; then
 	exit 1
 fi
 
-d=`date +%Y%m%d`
-b=skype-call-recorder-$d
+date=`date +%Y%m%d`
+base=skype-call-recorder-$date
+outfile=$base.tar.gz
 
-git archive --format=tar --prefix="$b/" "$1" | gzip -9 > "$b.tar.gz"
-echo "$b.tar.gz"
+if test -e "$base"; then
+	echo "$base/ exists already, won't overwrite"
+	exit 1
+fi
+
+if test -e "$outfile"; then
+	echo "$outfile exists already, won't overwrite"
+	exit 1
+fi
+
+# we extract the archive, modify the directory and re-tar.  we do that because
+# there's no simple way to add the gitcommit file under the right name using
+# tar -A in a pipe.
+
+git archive --format=tar --prefix="$base/" "$1" | tar -x
+
+rm -f "$base/.gitignore"
+rm -rf "$base/utils"
+git rev-parse "$1" > "$base/gitcommit"
+tar -c "$base" | gzip -9 > "$outfile"
+rm -rf "$base"
+
+echo "$outfile"
 
