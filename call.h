@@ -30,6 +30,7 @@
 #include <QMap>
 #include <QSet>
 #include <QPointer>
+#include <QDateTime>
 
 class QStringList;
 class Skype;
@@ -78,6 +79,7 @@ private:
 	int shouldRecord;
 	QString fileName;
 	QPointer<QObject> confirmation;
+	QDateTime timeStartRecording;
 
 	QTcpServer *serverLocal, *serverRemote;
 	QTcpSocket *socketLocal, *socketRemote;

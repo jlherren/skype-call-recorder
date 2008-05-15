@@ -29,7 +29,6 @@
 #include <QString>
 #include <QStringList>
 #include <QAbstractListModel>
-#include <ctime>
 
 class SmartComboBox;
 class QListView;
@@ -37,6 +36,7 @@ class PerCallerModel;
 class PerCallerPreferencesDialog;
 class QRadioButton;
 class SmartEditableComboBox;
+class QDateTime;
 
 // A single preference, with a name and a value
 
@@ -172,7 +172,7 @@ private:
 extern Preferences preferences;
 extern QString getOutputPath();
 extern QString getFileName(const QString &, const QString &, const QString &,
-	const QString &, time_t, const QString & = QString());
+	const QString &, const QDateTime &, const QString & = QString());
 
 #endif
 

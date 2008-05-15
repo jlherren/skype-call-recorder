@@ -119,7 +119,7 @@ bool Call::statusDone() const {
 
 QString Call::constructFileName() const {
 	return getFileName(skypeName, displayName, skype->getSkypeName(),
-		skype->getObject("PROFILE FULLNAME"), std::time(NULL));
+		skype->getObject("PROFILE FULLNAME"), timeStartRecording);
 }
 
 void Call::setShouldRecord() {
@@ -204,6 +204,7 @@ void Call::startRecording(bool force) {
 
 	// set up encoder for appropriate format
 
+	timeStartRecording = QDateTime::currentDateTime();
 	QString fn = constructFileName();
 
 	QString sm = preferences.get("output.channelmode").toString();

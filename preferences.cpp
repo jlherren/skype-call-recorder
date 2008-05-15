@@ -35,6 +35,7 @@
 #include <QTextStream>
 #include <QtAlgorithms>
 #include <QDir>
+#include <QDateTime>
 #include <ctime>
 
 #include "preferences.h"
@@ -60,7 +61,7 @@ QString escape(const QString &s) {
 }
 
 QString getFileName(const QString &skypeName, const QString &displayName,
-	const QString &mySkypeName, const QString &myDisplayName, time_t timestamp, const QString &pattern)
+	const QString &mySkypeName, const QString &myDisplayName, const QDateTime &timestamp, const QString &pattern)
 {
 	QString fileName;
 	if (pattern.isEmpty())
@@ -76,7 +77,8 @@ QString getFileName(const QString &skypeName, const QString &displayName,
 
 	// TODO: uhm, does QT provide any time formatting the strftime() way?
 	char *buf = new char[fileName.size() + 1024];
-	struct tm *tm = std::localtime(&timestamp);
+	time_t t = timestamp.toTime_t();
+	struct tm *tm = std::localtime(&t);
 	std::strftime(buf, fileName.size() + 1024, fileName.toUtf8().constData(), tm);
 	fileName = buf;
 	delete[] buf;
@@ -263,7 +265,8 @@ void PreferencesDialog::updatePatternToolTip(const QString &pattern) {
 
 	"With the current choice, the file name might look like this:\n";
 
-	QString fn = getFileName("echo123", "Skype Test Service", "myskype", "My Full Name", std::time(NULL), pattern);
+	QString fn = getFileName("echo123", "Skype Test Service", "myskype", "My Full Name",
+		QDateTime::currentDateTime(), pattern);
 	tip += fn;
 	if (fn.contains(':'))
 		tip += "\n\nWARNING: Microsoft Windows does not allow colon characters (:) in file names.";
