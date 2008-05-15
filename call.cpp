@@ -349,7 +349,7 @@ void Call::tryToWrite(bool flush) {
 		// I/O error in Skype.
 		if (l < r) {
 			bufferLocal.append(QByteArray(r - l, 0));
-			debug(QString("Call %1: padding %2 samples on local buffer while flushing").arg(id).arg((l - r) / 2));
+			debug(QString("Call %1: padding %2 samples on local buffer while flushing").arg(id).arg((r - l) / 2));
 			samples = r / 2;
 		} else if (l > r) {
 			bufferRemote.append(QByteArray(l - r, 0));
