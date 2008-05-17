@@ -1,0 +1,52 @@
+
+Skype Call Recorder - Installation
+==================================
+
+(1) Prerequisits
+
+    To build and use Skype Call Recorder you will need:
+
+      - Qt 4, at least version 4.3
+      - libmp3lame, for encoding to mp3 files
+      - libid3 (aka id3lib), for manipulating id3 tags
+
+(2) Configure
+
+    Run the following command to configure the source:
+
+        $ cmake .
+
+    Alternatively, you can also configure it out of source, by
+    creating an empty directory and running
+
+        $ cmake /path/to/source
+
+    If you want to change the installation prefix or other
+    settings, you can run cmake in interactive mode:
+
+        $ ccmake .
+
+(3) Compile
+
+    To Compile, run the following command:
+
+        $ make
+
+(4) Install
+
+    Finally, to install it, run the following as root:
+
+        $ make install
+
+    By default, this will install to /usr/local/bin.
+
+(5) Use it
+
+    The binary is called skype-call-recorder, start it with
+
+        $ skype-call-recorder &
+
+    From a terminal or create an entry in your desktop's menus.
+    For convenience, you can also add it to your auto-start
+    programs.
+
