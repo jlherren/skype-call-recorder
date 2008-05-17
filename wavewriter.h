@@ -31,9 +31,11 @@ class QByteArray;
 
 class WaveWriter : public AudioFileWriter {
 public:
+	WaveWriter();
 	virtual ~WaveWriter();
 
 	virtual bool open(const QString &, long, bool);
+	virtual void close();
 	virtual bool write(QByteArray &, QByteArray &, int, bool = false);
 
 private:
@@ -46,6 +48,7 @@ private:
 	int dataSizeOffset;
 	qint64 fileSize;
 	qint64 dataSize;
+	bool hasFlushed;
 };
 
 #endif

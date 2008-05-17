@@ -27,6 +27,21 @@
 #include "writer.h"
 #include "common.h"
 
+AudioFileWriter::AudioFileWriter() :
+	sampleRate(0),
+	stereo(false),
+	samplesWritten(0),
+	mustWriteTags(true)
+{
+}
+
+AudioFileWriter::~AudioFileWriter() {
+	if (file.isOpen()) {
+		debug("WARNING: AudioFileWriter::~AudioFileWriter(): File has not been closed, closing it now");
+		close();
+	}
+}
+
 void AudioFileWriter::setTags(const QString &comment, const QDateTime &t) {
 	tagComment = comment;
 	tagTime = t;
@@ -48,6 +63,11 @@ bool AudioFileWriter::open(const QString &fn, long sr, bool s) {
 }
 
 void AudioFileWriter::close() {
+	if (!file.isOpen()) {
+		debug("WARNING: AudioFileWriter::close() called, but file not open");
+		return;
+	}
+
 	debug(QString("Closing '%1', wrote %2 samples, %3 seconds").arg(file.fileName()).arg(samplesWritten).arg(samplesWritten / sampleRate));
 	return file.close();
 }

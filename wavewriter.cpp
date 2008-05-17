@@ -45,7 +45,16 @@ public:
 
 // WaveWriter
 
+WaveWriter::WaveWriter() :
+	hasFlushed(false)
+{
+}
+
 WaveWriter::~WaveWriter() {
+	if (file.isOpen()) {
+		debug("WARNING: WaveWriter::~WaveWriter(): File has not been closed, closing it now");
+		close();
+	}
 }
 
 bool WaveWriter::open(const QString &fn, long sr, bool s) {
@@ -98,6 +107,21 @@ bool WaveWriter::open(const QString &fn, long sr, bool s) {
 	return true;
 }
 
+void WaveWriter::close() {
+	if (!file.isOpen()) {
+		debug("WARNING: WaveWriter::close() called, but file not open");
+		return;
+	}
+
+	if (!hasFlushed) {
+		debug("WARNING: WaveWriter::close() called but no flush happened, flushing now");
+		QByteArray dummy1, dummy2;
+		write(dummy1, dummy2, 0, true);
+	}
+
+	AudioFileWriter::close();
+}
+
 bool WaveWriter::write(QByteArray &left, QByteArray &right, int samples, bool flush) {
 	QByteArray output;
 
@@ -136,6 +160,9 @@ bool WaveWriter::write(QByteArray &left, QByteArray &right, int samples, bool fl
 	if (flush || nextUpdateHeader <= 0) {
 		nextUpdateHeader = updateHeaderInterval;
 		updateHeader();
+
+		if (flush)
+			hasFlushed = true;
 	}
 
 	return true;

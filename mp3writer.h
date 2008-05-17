@@ -32,6 +32,7 @@ typedef struct lame_global_struct lame_global_flags;
 
 class Mp3Writer : public AudioFileWriter {
 public:
+	Mp3Writer();
 	virtual ~Mp3Writer();
 
 	virtual bool open(const QString &, long, bool);
@@ -44,6 +45,7 @@ private:
 private:
 	lame_global_flags *lame;
 	int bitRate;
+	bool hasFlushed;
 };
 
 #endif

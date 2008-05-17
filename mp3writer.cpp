@@ -29,7 +29,20 @@
 #include "common.h"
 #include "preferences.h"
 
+Mp3Writer::Mp3Writer() :
+	lame(NULL),
+	hasFlushed(false)
+{
+}
+
 Mp3Writer::~Mp3Writer() {
+	if (file.isOpen()) {
+		debug("WARNING: Mp3Writer::~Mp3Writer(): File has not been closed, closing it now");
+		close();
+	}
+
+	if (lame)
+		lame_close(lame);
 }
 
 bool Mp3Writer::open(const QString &fn, long sr, bool s) {
@@ -58,6 +71,17 @@ bool Mp3Writer::open(const QString &fn, long sr, bool s) {
 }
 
 void Mp3Writer::close() {
+	if (!file.isOpen()) {
+		debug("WARNING: Mp3Writer::close() called, but file not open");
+		return;
+	}
+
+	if (!hasFlushed) {
+		debug("WARNING: Mp3Writer::close() called but no flush happened, flushing now");
+		QByteArray dummy1, dummy2;
+		write(dummy1, dummy2, 0, true);
+	}
+
 	AudioFileWriter::close();
 	writeTags();
 }
@@ -152,6 +176,10 @@ bool Mp3Writer::write(QByteArray &left, QByteArray &right, int samples, bool flu
 	output.resize(10240);
 	ret = lame_encode_flush(lame, reinterpret_cast<unsigned char *>(output.data()), output.size());
 
+	lame_close(lame);
+	lame = NULL;
+	hasFlushed = true;
+
 	if (ret < 0) {
 		debug(QString("Error while flushing MP3 file, code = %1").arg(ret));
 		return false;
@@ -161,8 +189,6 @@ bool Mp3Writer::write(QByteArray &left, QByteArray &right, int samples, bool flu
 		output.truncate(ret);
 		file.write(output);
 	}
-
-	lame_close(lame);
 
 	return true;
 }

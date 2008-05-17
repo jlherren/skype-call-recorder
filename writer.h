@@ -33,8 +33,8 @@ class QByteArray;
 
 class AudioFileWriter {
 public:
-	AudioFileWriter() : sampleRate(0), stereo(false), samplesWritten(0), mustWriteTags(true) { };
-	virtual ~AudioFileWriter() { };
+	AudioFileWriter();
+	virtual ~AudioFileWriter();
 
 	// tags should be set before open() if possible, but can also be set
 	// and re-set later, but not after close().  tags will be written to
