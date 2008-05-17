@@ -27,6 +27,7 @@
 Recorder *recorderInstance = NULL;
 
 void debug(const QString &s) {
-	recorderInstance->debugMessage(s);
+	if (recorderInstance)
+		recorderInstance->debugMessage(s);
 }
 
