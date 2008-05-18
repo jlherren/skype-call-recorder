@@ -183,6 +183,7 @@ void Call::hideConfirmation(int should) {
 
 void Call::confirmRecording() {
 	shouldRecord = 2;
+	emit showLegalInformation();
 }
 
 void Call::denyRecording() {
@@ -204,12 +205,16 @@ void Call::startRecording(bool force) {
 	if (isRecording)
 		return;
 
-	if (!force) {
+	if (force) {
+		emit showLegalInformation();
+	} else {
 		setShouldRecord();
 		if (shouldRecord == 0)
 			return;
 		if (shouldRecord == 1)
 			ask();
+		else // shouldRecord == 2
+			emit showLegalInformation();
 	}
 
 	debug(QString("Call %1: start recording").arg(id));
@@ -479,6 +484,8 @@ CallHandler::~CallHandler() {
 			debug(QString("    call %1, status=%2, okToDelete=%3").arg(c->getID()).arg(c->getStatus()).arg(c->okToDelete()));
 		}
 	}
+
+	delete legalInformationDialog;
 }
 
 void CallHandler::callCmd(const QStringList &args) {
@@ -502,6 +509,7 @@ void CallHandler::callCmd(const QStringList &args) {
 		connect(call, SIGNAL(stoppedCall()),                this, SIGNAL(stoppedCall()));
 		connect(call, SIGNAL(startedRecording()),           this, SIGNAL(startedRecording()));
 		connect(call, SIGNAL(stoppedRecording()),           this, SIGNAL(stoppedRecording()));
+		connect(call, SIGNAL(showLegalInformation()),       this, SLOT(showLegalInformation()));
 	}
 
 	// this holds the current call.  skype currently only allows for one
@@ -568,5 +576,16 @@ void CallHandler::stopRecordingAndDelete() {
 	call->stopRecording();
 	call->removeFile();
 	call->hideConfirmation(0);
+}
+
+void CallHandler::showLegalInformation() {
+	if (preferences.get("suppress.legalinformation").toBool())
+		return;
+
+	if (!legalInformationDialog)
+		legalInformationDialog = new LegalInformationDialog;
+
+	legalInformationDialog->raise();
+	legalInformationDialog->activateWindow();
 }
 

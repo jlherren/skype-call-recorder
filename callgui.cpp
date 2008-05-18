@@ -34,6 +34,7 @@
 #include "callgui.h"
 #include "common.h"
 #include "preferences.h"
+#include "smartwidgets.h"
 
 // ---- RecordConfirmationDialog ----
 
@@ -111,5 +112,77 @@ void RecordConfirmationDialog::noClicked() {
 void RecordConfirmationDialog::enableWidgets() {
 	for (int i = 0; i < widgets.size(); i++)
 		widgets.at(i)->setEnabled(true);
+}
+
+// ---- LegalInformationDialog ----
+
+LegalInformationDialog::LegalInformationDialog() {
+	setWindowTitle(PROGRAM_NAME);
+	setAttribute(Qt::WA_DeleteOnClose);
+
+	QHBoxLayout *bighbox = new QHBoxLayout(this);
+	bighbox->setSizeConstraint(QLayout::SetFixedSize);
+
+	// get standard icon
+	int iconSize = QApplication::style()->pixelMetric(QStyle::PM_MessageBoxIconSize);
+	QIcon icon = QApplication::style()->standardIcon(QStyle::SP_MessageBoxInformation);
+	QLabel *iconLabel = new QLabel;
+	iconLabel->setPixmap(icon.pixmap(iconSize, iconSize));
+	bighbox->addWidget(iconLabel, 0, Qt::AlignTop);
+
+	bighbox->addSpacing(10);
+
+	QVBoxLayout *vbox = new QVBoxLayout;
+	bighbox->addLayout(vbox);
+
+	QLabel *label = new QLabel("Please make sure that recording this call is legal and that all involved parties\nagree with it.");
+	vbox->addWidget(label);
+
+	QWidget *additionalInfo = new QWidget;
+	additionalInfo->hide();
+	QVBoxLayout *additionalInfoLayout = new QVBoxLayout(additionalInfo);
+	additionalInfoLayout->setMargin(0);
+
+	additionalInfoLayout->addSpacing(10);
+
+	label = new QLabel(
+		"<p>The legality of recording calls depends on whether the involved parties agree<br>"
+		"with it and on the laws that apply to their geographic locations.  Here is a<br>"
+		"simple rule of thumb:</p>"
+
+		"<p>If all involved parties have been asked for permission to record a call and<br>"
+		"agree with the intended use or storage of the resulting file, then recording a<br>"
+		"call is probably legal.</p>"
+
+		"<p>If not all involved parties have been asked for permission, or if they don't<br>"
+		"explicitely agree with it, or if the resulting file is used for purposes other than<br>"
+		"what has been agreed upon, then it's probably illegal to record calls.</p>"
+
+		"<p>For more serious legal advice, consult a lawyer.  For more information, you can<br>"
+		"search the internet for '<a href='http://www.google.com/search?q=call+recording+legal'>call recording legal</a>'.</p>"
+	);
+	label->setTextInteractionFlags(Qt::TextSelectableByMouse | Qt::LinksAccessibleByMouse);
+	label->setTextFormat(Qt::RichText);
+	label->setOpenExternalLinks(true);
+	additionalInfoLayout->addWidget(label);
+
+	additionalInfoLayout->addSpacing(10);
+
+	QWidget *checkBox = new SmartCheckBox("Do not inform about this again", preferences.get("suppress.legalinformation"));
+	additionalInfoLayout->addWidget(checkBox);
+
+	vbox->addWidget(additionalInfo);
+
+	QPushButton *button = new QPushButton("More information >>");
+	connect(button, SIGNAL(clicked()), button, SLOT(hide()));
+	connect(button, SIGNAL(clicked()), additionalInfo, SLOT(show()));
+	vbox->addWidget(button, 0, Qt::AlignLeft);
+
+	button = new QPushButton("&OK");
+	button->setDefault(true);
+	connect(button, SIGNAL(clicked()), this, SLOT(close()));
+	vbox->addWidget(button, 0, Qt::AlignHCenter);
+
+	show();
 }
 

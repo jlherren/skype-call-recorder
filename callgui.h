@@ -31,6 +31,8 @@ class QWidget;
 class QString;
 class QCheckBox;
 
+// recording confirmation dialog for calls
+
 class RecordConfirmationDialog : public QDialog {
 	Q_OBJECT
 public:
@@ -54,6 +56,18 @@ private:
 	// disabled
 	RecordConfirmationDialog(const RecordConfirmationDialog &);
 	RecordConfirmationDialog &operator=(const RecordConfirmationDialog &);
+};
+
+// information dialog about legality of recording calls
+
+class LegalInformationDialog: public QDialog {
+public:
+	LegalInformationDialog();
+
+private:
+	// disabled
+	LegalInformationDialog(const LegalInformationDialog &);
+	LegalInformationDialog &operator=(const LegalInformationDialog &);
 };
 
 #endif

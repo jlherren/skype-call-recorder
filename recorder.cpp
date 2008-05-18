@@ -113,6 +113,7 @@ void Recorder::loadPreferences() {
 	X(output.format.mp3.bitrate, 96);
 	X(output.channelmode,        "stereo");      // mono, stereo, oerets
 	X(output.savetags,           true);
+	X(suppress.legalinformation, false);
 	#undef X
 
 	c = preferences.count() - c;

@@ -37,6 +37,7 @@ class Skype;
 class AudioFileWriter;
 class QTcpServer;
 class QTcpSocket;
+class LegalInformationDialog;
 
 typedef int CallID;
 
@@ -60,6 +61,7 @@ signals:
 	void stoppedCall();
 	void startedRecording();
 	void stoppedRecording();
+	void showLegalInformation();
 
 private:
 	QString constructFileName() const;
@@ -122,6 +124,9 @@ public slots:
 	void stopRecording();
 	void stopRecordingAndDelete();
 
+private slots:
+	void showLegalInformation();
+
 private:
 	void prune();
 
@@ -133,6 +138,7 @@ private:
 	CallSet ignore;
 	Skype *skype;
 	CallID currentCall;
+	QPointer<LegalInformationDialog> legalInformationDialog;
 };
 
 #endif
