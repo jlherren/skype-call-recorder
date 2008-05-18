@@ -27,6 +27,7 @@
 #include <QTcpSocket>
 #include <QMessageBox>
 #include <ctime>
+#include <cstdlib>
 
 #include "call.h"
 #include "common.h"
@@ -314,7 +315,7 @@ void Call::checkConnections() {
 	}
 }
 
-void Call::mixToMono(int samples) {
+void Call::mixToMono(long samples) {
 	long offset = bufferMono.size();
 	bufferMono.resize(offset + samples * 2);
 
@@ -322,7 +323,7 @@ void Call::mixToMono(int samples) {
 	qint16 *localData = reinterpret_cast<qint16 *>(bufferLocal.data());
 	qint16 *remoteData = reinterpret_cast<qint16 *>(bufferRemote.data());
 
-	for (int i = 0; i < samples; i++) {
+	for (long i = 0; i < samples; i++) {
 		long sum = localData[i] + remoteData[i];
 		if (sum < -32768)
 			sum = -32768;
@@ -335,36 +336,57 @@ void Call::mixToMono(int samples) {
 	bufferRemote.remove(0, samples * 2);
 }
 
+long Call::padBuffers() {
+	// pads the shorter buffer with silence, so they are both the same
+	// length afterwards.  returns the new number of samples in each buffer
+
+	long l = bufferLocal.size();
+	long r = bufferRemote.size();
+
+	if (l < r) {
+		long amount = r - l;
+		bufferLocal.append(QByteArray(amount, 0));
+		debug(QString("Call %1: padding %2 samples on local buffer").arg(id).arg(amount / 2));
+		return r / 2;
+	} else if (l > r) {
+		long amount = l - r;
+		bufferRemote.append(QByteArray(amount, 0));
+		debug(QString("Call %1: padding %2 samples on remote buffer").arg(id).arg(amount / 2));
+		return l / 2;
+	}
+
+	return l / 2;
+}
+
 void Call::tryToWrite(bool flush) {
 	//debug(QString("Situation: %3, %4").arg(bufferLocal.size()).arg(bufferRemote.size()));
 
-	int l = bufferLocal.size();
-	int r = bufferRemote.size();
-	int samples; // number of samples to write
+	long samples; // number of samples to write
 
 	if (flush) {
 		// when flushing, we pad the shorter buffer, so that all
 		// available data is written.  this shouldn't usually be a
 		// significant amount, but it might be if there was an audio
 		// I/O error in Skype.
-		if (l < r) {
-			bufferLocal.append(QByteArray(r - l, 0));
-			debug(QString("Call %1: padding %2 samples on local buffer while flushing").arg(id).arg((r - l) / 2));
-			samples = r / 2;
-		} else if (l > r) {
-			bufferRemote.append(QByteArray(l - r, 0));
-			debug(QString("Call %1: padding %2 samples on remote buffer while flushing").arg(id).arg((l - r) / 2));
-			samples = l / 2;
-		} else {
-			samples = l / 2;
-		}
+		samples = padBuffers();
 	} else {
-		samples = (l < r ? l : r) / 2;
-		// skype usually sends more PCM data every 10ms, i.e. 160
-		// samples (skype operates at 16kHz).  let's accumulate at
-		// least 100ms of data before bothering to write it to disk
-		if (samples < 1600)
-			return;
+		long l = bufferLocal.size() / 2;
+		long r = bufferRemote.size() / 2;
+
+		if (std::labs(l - r) > 16000 * 10) {
+			// more than 10 seconds out of sync, something went
+			// wrong.  avoid eating memory by accumulating data
+			debug(QString("Call %1: WARNING: seriously out of sync!").arg(id));
+			samples = padBuffers();
+		} else {
+			samples = l < r ? l : r;
+
+			// skype usually sends new PCM data every 10ms (160
+			// samples at 16kHz).  let's accumulate at least 100ms
+			// of data before bothering to write it to disk
+			if (samples < 1600)
+				return;
+		}
 	}
 
 	// got new samples to write to file, or have to flush.  note that we

@@ -64,7 +64,7 @@ signals:
 private:
 	QString constructFileName() const;
 	QString constructCommentTag() const;
-	void mixToMono(int);
+	void mixToMono(long);
 	void setShouldRecord();
 	void ask();
 
@@ -93,6 +93,7 @@ private slots:
 	void readLocal();
 	void readRemote();
 	void checkConnections();
+	long padBuffers();
 	void tryToWrite(bool = false);
 	void confirmRecording();
 	void denyRecording();
