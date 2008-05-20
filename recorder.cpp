@@ -27,6 +27,7 @@
 #include <QTextEdit>
 #include <QDir>
 #include <QProcess>
+#include <QTimer>
 #include <cstdlib>
 
 #include "recorder.h"
@@ -38,11 +39,19 @@
 #include "call.h"
 
 Recorder::Recorder(int argc, char **argv) :
-	QApplication(argc, argv)
+	QApplication(argc, argv),
+	preferencesDialog(NULL)
 {
 	recorderInstance = this;
 
 	debug("Initializing application");
+
+	// check for already running instance
+	if (!lockFile.lock(QDir::homePath() + "/.skypecallrecorder.lock")) {
+		debug("Other instance is running");
+		QTimer::singleShot(0, this, SLOT(quit()));
+		return;
+	}
 
 	loadPreferences();
 

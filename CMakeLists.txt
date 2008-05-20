@@ -26,6 +26,7 @@ SET(SOURCES
 	recorder.cpp
 	skype.cpp
 	trayicon.cpp
+	utils.cpp
 	version.cpp
 	wavewriter.cpp
 	writer.cpp

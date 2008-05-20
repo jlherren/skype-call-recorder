@@ -28,6 +28,8 @@
 #include <QStringList>
 #include <QPointer>
 
+#include "utils.h"
+
 class TrayIcon;
 class QTextEdit;
 class QString;
@@ -69,6 +71,7 @@ private:
 	PreferencesDialog *preferencesDialog;
 	TrayIcon *trayIcon;
 	QPointer<AboutDialog> aboutDialog;
+	LockFile lockFile;
 
 private:
 	// disabled
