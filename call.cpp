@@ -97,14 +97,21 @@ bool Call::okToDelete() const {
 	return true;
 }
 
-void Call::setStatus(const QString &s) {
-	bool wasInProgress = status == "INPROGRESS";
-	status = s;
-	bool nowInProgress = status == "INPROGRESS";
+bool Call::statusActive() const {
+	return status == "INPROGRESS" ||
+		status == "ONHOLD" ||
+		status == "LOCALHOLD" ||
+		status == "REMOTEHOLD";
+}
 
-	if (!wasInProgress && nowInProgress)
+void Call::setStatus(const QString &s) {
+	bool wasActive = statusActive();
+	status = s;
+	bool nowActive = statusActive();
+
+	if (!wasActive && nowActive)
 		emit startedCall(id, skypeName);
-	else if (wasInProgress && !nowInProgress)
+	else if (wasActive && !nowActive)
 		emit stoppedCall(id);
 }
 

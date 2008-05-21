@@ -52,6 +52,7 @@ public:
 	void setStatus(const QString &);
 	QString getStatus() const { return status; }
 	bool statusDone() const;
+	bool statusActive() const;
 	CallID getID() const { return id; }
 	void removeFile();
 	void hideConfirmation(int);
