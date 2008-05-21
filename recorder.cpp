@@ -92,14 +92,14 @@ void Recorder::setupSkype() {
 void Recorder::setupCallHandler() {
 	callHandler = new CallHandler(this, skype);
 
-	connect(trayIcon, SIGNAL(startRecording()),         callHandler, SLOT(startRecording()));
-	connect(trayIcon, SIGNAL(stopRecording()),          callHandler, SLOT(stopRecording()));
-	connect(trayIcon, SIGNAL(stopRecordingAndDelete()), callHandler, SLOT(stopRecordingAndDelete()));
+	connect(trayIcon, SIGNAL(startRecording(int)),         callHandler, SLOT(startRecording(int)));
+	connect(trayIcon, SIGNAL(stopRecording(int)),          callHandler, SLOT(stopRecording(int)));
+	connect(trayIcon, SIGNAL(stopRecordingAndDelete(int)), callHandler, SLOT(stopRecordingAndDelete(int)));
 
-	connect(callHandler, SIGNAL(startedCall(const QString &)), trayIcon, SLOT(startedCall(const QString &)));
-	connect(callHandler, SIGNAL(stoppedCall()),                trayIcon, SLOT(stoppedCall()));
-	connect(callHandler, SIGNAL(startedRecording()),           trayIcon, SLOT(startedRecording()));
-	connect(callHandler, SIGNAL(stoppedRecording()),           trayIcon, SLOT(stoppedRecording()));
+	connect(callHandler, SIGNAL(startedCall(int, const QString &)), trayIcon, SLOT(startedCall(int, const QString &)));
+	connect(callHandler, SIGNAL(stoppedCall(int)),                  trayIcon, SLOT(stoppedCall(int)));
+	connect(callHandler, SIGNAL(startedRecording(int)),             trayIcon, SLOT(startedRecording(int)));
+	connect(callHandler, SIGNAL(stoppedRecording(int)),             trayIcon, SLOT(stoppedRecording(int)));
 }
 
 QString Recorder::getConfigFile() const {

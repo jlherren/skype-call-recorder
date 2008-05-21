@@ -25,6 +25,7 @@
 #include <QMessageBox>
 #include <QMenu>
 #include <QCursor>
+#include <QSignalMapper>
 
 #include "trayicon.h"
 #include "skype.h"
@@ -39,21 +40,21 @@ TrayIcon::TrayIcon(QObject *p) : QSystemTrayIcon(p) {
 		return;
 	}
 
+	smStart = new QSignalMapper(this);
+	smStop = new QSignalMapper(this);
+	smStopAndDelete = new QSignalMapper(this);
+
+	connect(smStart, SIGNAL(mapped(int)), this, SIGNAL(startRecording(int)));
+	connect(smStop, SIGNAL(mapped(int)), this, SIGNAL(stopRecording(int)));
+	connect(smStopAndDelete, SIGNAL(mapped(int)), this, SIGNAL(stopRecordingAndDelete(int)));
+
 	setColor(false);
 
-	// current call submenu
-	subMenu = new QMenu("Call with unknown");
-	startAction = subMenu->addAction("&Start recording", this, SIGNAL(startRecording()));
-	stopAction = subMenu->addAction("S&top recording", this, SIGNAL(stopRecording()));
-	stopAndDeleteAction = subMenu->addAction("Stop recording and &delete file", this, SIGNAL(stopRecordingAndDelete()));
-
 	menu = new QMenu;
-
-	menu->addAction("&About " PROGRAM_NAME, this, SIGNAL(requestAbout()));
-	currentCallAction = menu->addMenu(subMenu);
-	currentCallAction->setVisible(false);
-	menu->addAction("Open &preferences...", this, SIGNAL(requestOpenPreferences()));
+	separator = menu->addSeparator();
 	menu->addAction("&Browse previous calls", this, SIGNAL(requestBrowseCalls()));
+	menu->addAction("Open &preferences...", this, SIGNAL(requestOpenPreferences()));
+	menu->addAction("&About " PROGRAM_NAME, this, SIGNAL(requestAbout()));
 	menu->addSeparator();
 	menu->addAction("&Exit", this, SIGNAL(requestQuit()));
 
@@ -66,8 +67,10 @@ TrayIcon::TrayIcon(QObject *p) : QSystemTrayIcon(p) {
 }
 
 TrayIcon::~TrayIcon() {
+	for (CallMap::const_iterator i = callMap.constBegin(); i != callMap.constEnd(); ++i)
+		delete i.value().menu;
+
 	delete menu;
-	delete subMenu;
 }
 
 void TrayIcon::setColor(bool color) {
@@ -79,27 +82,50 @@ void TrayIcon::activate(QSystemTrayIcon::ActivationReason) {
 	contextMenu()->popup(QCursor::pos());
 }
 
-void TrayIcon::startedCall(const QString &skypeName) {
-	currentCallAction->setText("Call with " + skypeName);
-	currentCallAction->setVisible(true);
-	startAction->setEnabled(true);
-	stopAction->setEnabled(false);
-	stopAndDeleteAction->setEnabled(false);
+void TrayIcon::startedCall(int id, const QString &skypeName) {
+	CallData &data = callMap[id];
+
+	data.menu = new QMenu(QString("Call with ") + skypeName);
+	data.startAction = data.menu->addAction("&Start recording", smStart, SLOT(map()));
+	data.stopAction = data.menu->addAction("S&top recording", smStop, SLOT(map()));
+	data.stopAndDeleteAction = data.menu->addAction("Stop recording and &delete file", smStopAndDelete, SLOT(map()));
+
+	data.startAction->setEnabled(true);
+	data.stopAction->setEnabled(false);
+	data.stopAndDeleteAction->setEnabled(false);
+
+	smStart->setMapping(data.startAction, id);
+	smStop->setMapping(data.stopAction, id);
+	smStopAndDelete->setMapping(data.stopAndDeleteAction, id);
+
+	menu->insertMenu(separator, data.menu);
 }
 
-void TrayIcon::stoppedCall() {
-	currentCallAction->setVisible(false);
+void TrayIcon::stoppedCall(int id) {
+	if (!callMap.contains(id))
+		return;
+	CallData &data = callMap[id];
+	delete data.menu;
+	// deleting the menu deletes the actions, which automatically removes
+	// the signal mappings
+	callMap.remove(id);
 }
 
-void TrayIcon::startedRecording() {
-	startAction->setEnabled(false);
-	stopAction->setEnabled(true);
-	stopAndDeleteAction->setEnabled(true);
+void TrayIcon::startedRecording(int id) {
+	if (!callMap.contains(id))
+		return;
+	CallData &data = callMap[id];
+	data.startAction->setEnabled(false);
+	data.stopAction->setEnabled(true);
+	data.stopAndDeleteAction->setEnabled(true);
 }
 
-void TrayIcon::stoppedRecording() {
-	startAction->setEnabled(true);
-	stopAction->setEnabled(false);
-	stopAndDeleteAction->setEnabled(false);
+void TrayIcon::stoppedRecording(int id) {
+	if (!callMap.contains(id))
+		return;
+	CallData &data = callMap[id];
+	data.startAction->setEnabled(true);
+	data.stopAction->setEnabled(false);
+	data.stopAndDeleteAction->setEnabled(false);
 }
 

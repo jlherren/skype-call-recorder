@@ -25,9 +25,11 @@
 #define TRAYICON_H
 
 #include <QSystemTrayIcon>
+#include <QMap>
 
 class QAction;
 class QMenu;
+class QSignalMapper;
 
 class TrayIcon : public QSystemTrayIcon {
 	Q_OBJECT
@@ -43,27 +45,37 @@ signals:
 	void requestBrowseCalls();
 
 signals:
-	void startRecording();
-	void stopRecordingAndDelete();
-	void stopRecording();
+	void startRecording(int);
+	void stopRecordingAndDelete(int);
+	void stopRecording(int);
 
 public slots:
 	void setColor(bool);
-	void startedCall(const QString &);
-	void stoppedCall();
-	void startedRecording();
-	void stoppedRecording();
+	void startedCall(int, const QString &);
+	void stoppedCall(int);
+	void startedRecording(int);
+	void stoppedRecording(int);
 
 private slots:
 	void activate(QSystemTrayIcon::ActivationReason);
 
 private:
-	QAction *currentCallAction;
-	QAction *startAction;
-	QAction *stopAction;
-	QAction *stopAndDeleteAction;
+	struct CallData {
+		QMenu *menu;
+		QAction *startAction;
+		QAction *stopAction;
+		QAction *stopAndDeleteAction;
+	};
+
+	typedef QMap<int, CallData> CallMap;
+
+private:
 	QMenu *menu;
-	QMenu *subMenu;
+	QAction *separator;
+	CallMap callMap;
+	QSignalMapper *smStart;
+	QSignalMapper *smStop;
+	QSignalMapper *smStopAndDelete;
 
 private:
 	// disabled

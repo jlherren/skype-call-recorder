@@ -103,9 +103,9 @@ void Call::setStatus(const QString &s) {
 	bool nowInProgress = status == "INPROGRESS";
 
 	if (!wasInProgress && nowInProgress)
-		emit startedCall(skypeName);
+		emit startedCall(id, skypeName);
 	else if (wasInProgress && !nowInProgress)
-		emit stoppedCall();
+		emit stoppedCall(id);
 }
 
 bool Call::statusDone() const {
@@ -282,7 +282,7 @@ void Call::startRecording(bool force) {
 	}
 
 	isRecording = true;
-	emit startedRecording();
+	emit startedRecording(id);
 }
 
 void Call::acceptLocal() {
@@ -465,12 +465,12 @@ void Call::stopRecording(bool flush) {
 	socketRemote->close();
 
 	isRecording = false;
-	emit stoppedRecording();
+	emit stoppedRecording(id);
 }
 
 // ---- CallHandler ----
 
-CallHandler::CallHandler(QObject *parent, Skype *s) : QObject(parent), skype(s), currentCall(-1) {
+CallHandler::CallHandler(QObject *parent, Skype *s) : QObject(parent), skype(s) {
 }
 
 CallHandler::~CallHandler() {
@@ -505,16 +505,12 @@ void CallHandler::callCmd(const QStringList &args) {
 		calls[id] = call;
 		newCall = true;
 
-		connect(call, SIGNAL(startedCall(const QString &)), this, SIGNAL(startedCall(const QString &)));
-		connect(call, SIGNAL(stoppedCall()),                this, SIGNAL(stoppedCall()));
-		connect(call, SIGNAL(startedRecording()),           this, SIGNAL(startedRecording()));
-		connect(call, SIGNAL(stoppedRecording()),           this, SIGNAL(stoppedRecording()));
-		connect(call, SIGNAL(showLegalInformation()),       this, SLOT(showLegalInformation()));
+		connect(call, SIGNAL(startedCall(int, const QString &)), this, SIGNAL(startedCall(int, const QString &)));
+		connect(call, SIGNAL(stoppedCall(int)),                  this, SIGNAL(stoppedCall(int)));
+		connect(call, SIGNAL(startedRecording(int)),             this, SIGNAL(startedRecording(int)));
+		connect(call, SIGNAL(stoppedRecording(int)),             this, SIGNAL(stoppedRecording(int)));
+		connect(call, SIGNAL(showLegalInformation()),            this, SLOT(showLegalInformation()));
 	}
-
-	// this holds the current call.  skype currently only allows for one
-	// call at any time, so this should work ok
-	currentCall = id;
 
 	QString subCmd = args.at(1);
 
@@ -552,27 +548,27 @@ void CallHandler::prune() {
 	}
 }
 
-void CallHandler::startRecording() {
-	if (!calls.contains(currentCall))
+void CallHandler::startRecording(int id) {
+	if (!calls.contains(id))
 		return;
 
-	calls[currentCall]->startRecording(true);
+	calls[id]->startRecording(true);
 }
 
-void CallHandler::stopRecording() {
-	if (!calls.contains(currentCall))
+void CallHandler::stopRecording(int id) {
+	if (!calls.contains(id))
 		return;
 
-	Call *call = calls[currentCall];
+	Call *call = calls[id];
 	call->stopRecording();
 	call->hideConfirmation(2);
 }
 
-void CallHandler::stopRecordingAndDelete() {
-	if (!calls.contains(currentCall))
+void CallHandler::stopRecordingAndDelete(int id) {
+	if (!calls.contains(id))
 		return;
 
-	Call *call = calls[currentCall];
+	Call *call = calls[id];
 	call->stopRecording();
 	call->removeFile();
 	call->hideConfirmation(0);

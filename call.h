@@ -57,10 +57,10 @@ public:
 	void hideConfirmation(int);
 
 signals:
-	void startedCall(const QString &);
-	void stoppedCall();
-	void startedRecording();
-	void stoppedRecording();
+	void startedCall(int, const QString &);
+	void stoppedCall(int);
+	void startedRecording(int);
+	void stoppedRecording(int);
 	void showLegalInformation();
 
 private:
@@ -114,15 +114,18 @@ public:
 	void callCmd(const QStringList &);
 
 signals:
-	void startedCall(const QString &);
-	void stoppedCall();
-	void startedRecording();
-	void stoppedRecording();
+	// note that {start,stop}Recording signals are not guaranteed to always
+	// happen within a {start,stop}Call block.  Especially,
+	// stoppedRecording will usually happen *after* stoppedCall
+	void startedCall(int, const QString &);
+	void stoppedCall(int);
+	void startedRecording(int);
+	void stoppedRecording(int);
 
 public slots:
-	void startRecording();
-	void stopRecording();
-	void stopRecordingAndDelete();
+	void startRecording(int);
+	void stopRecording(int);
+	void stopRecordingAndDelete(int);
 
 private slots:
 	void showLegalInformation();
@@ -137,7 +140,6 @@ private:
 	CallMap calls;
 	CallSet ignore;
 	Skype *skype;
-	CallID currentCall;
 	QPointer<LegalInformationDialog> legalInformationDialog;
 };
 
