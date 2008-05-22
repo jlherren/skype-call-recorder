@@ -26,16 +26,32 @@
 
 #include <QDialog>
 #include <QList>
+#include <QStyle>
 
 #include "common.h"
 
 class QWidget;
 class QString;
 class QCheckBox;
+class QHBoxLayout;
+class QVBoxLayout;
+
+// base dialog with a pixmap, a vbox and an hbox
+
+class IconDialogBase : public QDialog {
+protected:
+	IconDialogBase(const QString &, QStyle::StandardPixmap);
+
+protected:
+	QHBoxLayout *hbox;
+	QVBoxLayout *vbox;
+
+	DISABLE_COPY_AND_ASSIGNMENT(IconDialogBase);
+};
 
 // recording confirmation dialog for calls
 
-class RecordConfirmationDialog : public QDialog {
+class RecordConfirmationDialog : public IconDialogBase {
 	Q_OBJECT
 public:
 	RecordConfirmationDialog(const QString &, const QString &);
@@ -59,7 +75,7 @@ private:
 
 // information dialog about legality of recording calls
 
-class LegalInformationDialog: public QDialog {
+class LegalInformationDialog: public IconDialogBase {
 public:
 	LegalInformationDialog();
 
@@ -77,7 +93,7 @@ public:
 
 // first run dialog
 
-class FirstRunDialog : public QDialog {
+class FirstRunDialog : public IconDialogBase {
 public:
 	FirstRunDialog();
 

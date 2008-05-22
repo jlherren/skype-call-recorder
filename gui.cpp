@@ -27,7 +27,6 @@
 #include <QCheckBox>
 #include <QLabel>
 #include <QApplication>
-#include <QStyle>
 #include <QIcon>
 #include <QPixmap>
 #include <QPushButton>
@@ -38,29 +37,40 @@
 #include "preferences.h"
 #include "smartwidgets.h"
 
-// ---- RecordConfirmationDialog ----
+// ---- IconDialogBase
 
-RecordConfirmationDialog::RecordConfirmationDialog(const QString &sn, const QString &displayName) :
-	skypeName(sn)
-{
-	setWindowTitle(PROGRAM_NAME);
+IconDialogBase::IconDialogBase(const QString &title, QStyle::StandardPixmap pixmap) {
+	setWindowTitle(QString(PROGRAM_NAME) + title);
 	setAttribute(Qt::WA_DeleteOnClose);
 
-	QHBoxLayout *bighbox = new QHBoxLayout(this);
-	bighbox->setSizeConstraint(QLayout::SetFixedSize);
+	QVBoxLayout *mainvbox = new QVBoxLayout(this);
+	mainvbox->setSizeConstraint(QLayout::SetFixedSize);
+
+	QHBoxLayout *bighbox = new QHBoxLayout;
+	hbox = new QHBoxLayout;
+
+	mainvbox->addLayout(bighbox, 1);
+	mainvbox->addLayout(hbox);
 
 	// get standard icon
 	int iconSize = QApplication::style()->pixelMetric(QStyle::PM_MessageBoxIconSize);
-	QIcon icon = QApplication::style()->standardIcon(QStyle::SP_MessageBoxQuestion);
+	QIcon icon = QApplication::style()->standardIcon(pixmap);
 	QLabel *iconLabel = new QLabel;
 	iconLabel->setPixmap(icon.pixmap(iconSize, iconSize));
 	bighbox->addWidget(iconLabel, 0, Qt::AlignTop);
 
-	bighbox->addSpacing(10);
+	bighbox->addSpacing(iconSize / 3);
 
-	QVBoxLayout *vbox = new QVBoxLayout;
-	bighbox->addLayout(vbox);
+	vbox = new QVBoxLayout;
+	bighbox->addLayout(vbox, 1);
+}
 
+// ---- RecordConfirmationDialog ----
+
+RecordConfirmationDialog::RecordConfirmationDialog(const QString &sn, const QString &displayName) :
+	IconDialogBase("Recording confirmation", QStyle::SP_MessageBoxQuestion),
+	skypeName(sn)
+{
 	QLabel *label = new QLabel(QString(PROGRAM_NAME " has started recording the call with <b>%1</b> (%2).<br>"
 		"Do you wish to continue recording or shall it stop and delete the file?").arg(skypeName, displayName));
 	vbox->addWidget(label);
@@ -72,22 +82,24 @@ RecordConfirmationDialog::RecordConfirmationDialog(const QString &sn, const QStr
 	widgets.append(remember);
 	vbox->addWidget(remember);
 
-	QHBoxLayout *hbox = new QHBoxLayout;
+	hbox->addStretch(1);
 
 	QPushButton *button = new QPushButton("&Continue recording");
 	button->setEnabled(false);
 	button->setDefault(true);
+	button->setMinimumWidth(180);
 	widgets.append(button);
 	connect(button, SIGNAL(clicked()), this, SLOT(yesClicked()));
 	hbox->addWidget(button);
 
 	button = new QPushButton("&Stop recording and delete");
 	button->setEnabled(false);
+	button->setMinimumWidth(180);
 	widgets.append(button);
 	connect(button, SIGNAL(clicked()), this, SLOT(noClicked()));
 	hbox->addWidget(button);
 
-	vbox->addLayout(hbox);
+	hbox->addStretch(1);
 
 	connect(this, SIGNAL(rejected()), this, SIGNAL(no()));
 	QTimer::singleShot(1000, this, SLOT(enableWidgets()));
@@ -118,25 +130,9 @@ void RecordConfirmationDialog::enableWidgets() {
 
 // ---- LegalInformationDialog ----
 
-LegalInformationDialog::LegalInformationDialog() {
-	setWindowTitle(PROGRAM_NAME);
-	setAttribute(Qt::WA_DeleteOnClose);
-
-	QHBoxLayout *bighbox = new QHBoxLayout(this);
-	bighbox->setSizeConstraint(QLayout::SetFixedSize);
-
-	// get standard icon
-	int iconSize = QApplication::style()->pixelMetric(QStyle::PM_MessageBoxIconSize);
-	QIcon icon = QApplication::style()->standardIcon(QStyle::SP_MessageBoxInformation);
-	QLabel *iconLabel = new QLabel;
-	iconLabel->setPixmap(icon.pixmap(iconSize, iconSize));
-	bighbox->addWidget(iconLabel, 0, Qt::AlignTop);
-
-	bighbox->addSpacing(10);
-
-	QVBoxLayout *vbox = new QVBoxLayout;
-	bighbox->addLayout(vbox);
-
+LegalInformationDialog::LegalInformationDialog() :
+	IconDialogBase("Legal information", QStyle::SP_MessageBoxInformation)
+{
 	QLabel *label = new QLabel("Please make sure that recording this call is legal and that all involved parties\nagree with it.");
 	vbox->addWidget(label);
 
@@ -183,7 +179,7 @@ LegalInformationDialog::LegalInformationDialog() {
 	button = new QPushButton("&OK");
 	button->setDefault(true);
 	connect(button, SIGNAL(clicked()), this, SLOT(close()));
-	vbox->addWidget(button, 0, Qt::AlignHCenter);
+	hbox->addWidget(button, 0, Qt::AlignHCenter);
 
 	show();
 }
@@ -249,25 +245,9 @@ AboutDialog::AboutDialog() {
 
 // ---- FirstRunDialog
 
-FirstRunDialog::FirstRunDialog() {
-	setWindowTitle(PROGRAM_NAME);
-	setAttribute(Qt::WA_DeleteOnClose);
-
-	QHBoxLayout *bighbox = new QHBoxLayout(this);
-	bighbox->setSizeConstraint(QLayout::SetFixedSize);
-
-	// get standard icon
-	int iconSize = QApplication::style()->pixelMetric(QStyle::PM_MessageBoxIconSize);
-	QIcon icon = QApplication::style()->standardIcon(QStyle::SP_MessageBoxInformation);
-	QLabel *iconLabel = new QLabel;
-	iconLabel->setPixmap(icon.pixmap(iconSize, iconSize));
-	bighbox->addWidget(iconLabel, 0, Qt::AlignTop);
-
-	bighbox->addSpacing(10);
-
-	QVBoxLayout *vbox = new QVBoxLayout;
-	bighbox->addLayout(vbox);
-
+FirstRunDialog::FirstRunDialog() :
+	IconDialogBase("Information", QStyle::SP_MessageBoxInformation)
+{
 	QLabel *label = new QLabel(
 		"<p>Welcome to Skype Call Recorder!</p>"
 
@@ -289,7 +269,7 @@ FirstRunDialog::FirstRunDialog() {
 	QPushButton *button = new QPushButton("&OK");
 	button->setDefault(true);
 	connect(button, SIGNAL(clicked()), this, SLOT(close()));
-	vbox->addWidget(button, 0, Qt::AlignHCenter);
+	hbox->addWidget(button, 0, Qt::AlignHCenter);
 
 	show();
 }
