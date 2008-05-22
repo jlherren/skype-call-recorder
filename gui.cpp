@@ -170,7 +170,7 @@ LegalInformationDialog::LegalInformationDialog() {
 
 	additionalInfoLayout->addSpacing(10);
 
-	QWidget *checkBox = new SmartCheckBox("Do not inform about this again", preferences.get("suppress.legalinformation"));
+	QWidget *checkBox = new SmartCheckBox("Do not show this information again", preferences.get("suppress.legalinformation"));
 	additionalInfoLayout->addWidget(checkBox);
 
 	vbox->addWidget(additionalInfo);
@@ -243,6 +243,53 @@ AboutDialog::AboutDialog() {
 	QPushButton *button = new QPushButton("&Close");
 	connect(button, SIGNAL(clicked()), this, SLOT(close()));
 	vbox->addWidget(button);
+
+	show();
+}
+
+// ---- FirstRunDialog
+
+FirstRunDialog::FirstRunDialog() {
+	setWindowTitle(PROGRAM_NAME);
+	setAttribute(Qt::WA_DeleteOnClose);
+
+	QHBoxLayout *bighbox = new QHBoxLayout(this);
+	bighbox->setSizeConstraint(QLayout::SetFixedSize);
+
+	// get standard icon
+	int iconSize = QApplication::style()->pixelMetric(QStyle::PM_MessageBoxIconSize);
+	QIcon icon = QApplication::style()->standardIcon(QStyle::SP_MessageBoxInformation);
+	QLabel *iconLabel = new QLabel;
+	iconLabel->setPixmap(icon.pixmap(iconSize, iconSize));
+	bighbox->addWidget(iconLabel, 0, Qt::AlignTop);
+
+	bighbox->addSpacing(10);
+
+	QVBoxLayout *vbox = new QVBoxLayout;
+	bighbox->addLayout(vbox);
+
+	QLabel *label = new QLabel(
+		"<p>Welcome to Skype Call Recorder!</p>"
+
+		"<p>Please note that Skype Call Recorder does not have a main window.<br>"
+		"Instead, it hides itself in the system tray, from where you can open<br>"
+		"the preferences dialog, start or stop recording your Skype calls, or<br>"
+		"access previously recorded calls.</p>"
+
+		"<p>Thank you for using Skype Call Recorder!</p>"
+	);
+	label->setTextInteractionFlags(Qt::TextSelectableByMouse | Qt::LinksAccessibleByMouse);
+	label->setTextFormat(Qt::RichText);
+	label->setOpenExternalLinks(true);
+	vbox->addWidget(label);
+
+	QWidget *checkBox = new SmartCheckBox("Do not show this information again", preferences.get("suppress.firstruninformation"));
+	vbox->addWidget(checkBox);
+
+	QPushButton *button = new QPushButton("&OK");
+	button->setDefault(true);
+	connect(button, SIGNAL(clicked()), this, SLOT(close()));
+	vbox->addWidget(button, 0, Qt::AlignHCenter);
 
 	show();
 }

@@ -79,6 +79,9 @@ void Recorder::setupGUI() {
 	connect(preferencesDialog, SIGNAL(finished(int)), this, SLOT(savePreferences()));
 
 	debug("GUI initialized");
+
+	if (!preferences.get("suppress.firstruninformation").toBool())
+		new FirstRunDialog();
 }
 
 void Recorder::setupSkype() {
@@ -124,6 +127,7 @@ void Recorder::loadPreferences() {
 	X(output.channelmode,        "stereo");      // mono, stereo, oerets
 	X(output.savetags,           true);
 	X(suppress.legalinformation, false);
+	X(suppress.firstruninformation, false);
 	#undef X
 
 	c = preferences.count() - c;

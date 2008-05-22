@@ -82,5 +82,17 @@ private:
 	AboutDialog &operator=(const AboutDialog &);
 };
 
+// first run dialog
+
+class FirstRunDialog : public QDialog {
+public:
+	FirstRunDialog();
+
+private:
+	// disabled
+	FirstRunDialog(const FirstRunDialog &);
+	FirstRunDialog &operator=(const FirstRunDialog &);
+};
+
 #endif
 
