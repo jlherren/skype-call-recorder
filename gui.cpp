@@ -258,9 +258,7 @@ FirstRunDialog::FirstRunDialog() :
 
 		"<p>Thank you for using Skype Call Recorder!</p>"
 	);
-	label->setTextInteractionFlags(Qt::TextSelectableByMouse | Qt::LinksAccessibleByMouse);
 	label->setTextFormat(Qt::RichText);
-	label->setOpenExternalLinks(true);
 	vbox->addWidget(label);
 
 	QWidget *checkBox = new SmartCheckBox("Do not show this information again", preferences.get("suppress.firstruninformation"));
