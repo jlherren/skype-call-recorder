@@ -21,8 +21,10 @@
 	http://www.fsf.org/
 */
 
+#include <QHBoxLayout>
 #include <QVBoxLayout>
 #include <QLabel>
+#include <QPixmap>
 #include <QPushButton>
 
 #include "about.h"
@@ -35,18 +37,31 @@ AboutDialog::AboutDialog() {
 	QVBoxLayout *vbox = new QVBoxLayout(this);
 	vbox->setSizeConstraint(QLayout::SetFixedSize);
 
-	QString str =
+	QHBoxLayout *hbox = new QHBoxLayout;
+	vbox->addLayout(hbox);
+
+	QLabel *label = new QLabel(
 		"<p><font face='Arial' size='20'><b>Skype Call Recorder</b></font></p>"
 
 		"<p>Copyright &copy; 2008 jlh (<a href='mailto:jlh@gmx.ch'>jlh@gmx.ch</a>)<br>"
 		"Website: <a href='http://atdot.ch/scr/'>http://atdot.ch/scr/</a></p>"
+	);
+	label->setTextInteractionFlags(Qt::TextSelectableByMouse | Qt::LinksAccessibleByMouse);
+	label->setTextFormat(Qt::RichText);
+	label->setOpenExternalLinks(true);
+	hbox->addWidget(label, 1, Qt::AlignTop);
+
+	label = new QLabel;
+	label->setPixmap(QPixmap(":/icon.png").scaled(QSize(80, 80), Qt::KeepAspectRatio, Qt::SmoothTransformation));
+	hbox->addWidget(label, 0, Qt::AlignTop);
+
+	QString str =
 		"<hr>"
-		"<p>This program is free software; you can redistribute it and/or modify it<br>"
-		"under the terms of the GNU General Public License as published by the<br>"
-		"<a href='http://www.fsf.org/'>Free Software Foundation</a>; either "
-		"<a href='http://www.gnu.org/licenses/old-licenses/gpl-2.0.html'>version 2 "
-		"of the License</a>, <a href='http://www.gnu.org/licenses/gpl.html'>version 3 of<br>"
-		"the License</a>, or (at your option) any later version.</p>"
+		"<p>This program is free software; you can redistribute it and/or modify it under<br>"
+		"the terms of the GNU General Public License as published by the <a href='http://www.fsf.org/'>Free<br>"
+		"Software Foundation</a>; either <a href='http://www.gnu.org/licenses/old-licenses/gpl-2.0.html'>version 2 of the License</a>, "
+		"<a href='http://www.gnu.org/licenses/gpl.html'>version 3 of the<br>"
+		"License</a>, or (at your option) any later version.</p>"
 
 		"<p>This program is distributed in the hope that it will be useful, but WITHOUT<br>"
 		"ANY WARRANTY; without even the implied warranty of MERCHANTABILITY<br>"
@@ -59,9 +74,8 @@ AboutDialog::AboutDialog() {
 		"<p><small>Git commit: %1<br>"
 		"Build date: %2</small></p>";
 	str = str.arg(recorderCommit, recorderDate);
-	QLabel *label = new QLabel(str);
+	label = new QLabel(str);
 	label->setTextInteractionFlags(Qt::TextSelectableByMouse | Qt::LinksAccessibleByMouse);
-	label->setFont(QFont("Arial", 9));
 	label->setTextFormat(Qt::RichText);
 	label->setOpenExternalLinks(true);
 	vbox->addWidget(label);
