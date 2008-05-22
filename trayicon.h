@@ -27,6 +27,8 @@
 #include <QSystemTrayIcon>
 #include <QMap>
 
+#include "common.h"
+
 class QAction;
 class QMenu;
 class QSignalMapper;
@@ -77,10 +79,7 @@ private:
 	QSignalMapper *smStop;
 	QSignalMapper *smStopAndDelete;
 
-private:
-	// disabled
-	TrayIcon(const TrayIcon &);
-	TrayIcon &operator=(const TrayIcon &);
+	DISABLE_COPY_AND_ASSIGNMENT(TrayIcon);
 };
 
 #endif

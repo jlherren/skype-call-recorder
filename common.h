@@ -37,5 +37,13 @@ extern Recorder *recorderInstance;
 extern const char *recorderCommit;
 extern const char *recorderDate;
 
+#define DISABLE_COPY_CONSTRUCTOR(c) \
+	private: c(const c &)
+#define DISABLE_ASSIGNMENT_OP(c) \
+	private: c &operator=(const c &)
+#define DISABLE_COPY_AND_ASSIGNMENT(c) \
+	DISABLE_COPY_CONSTRUCTOR(c); \
+	DISABLE_ASSIGNMENT_OP(c)
+
 #endif
 

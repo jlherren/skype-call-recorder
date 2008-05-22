@@ -29,6 +29,8 @@
 #include <QDBusAbstractAdaptor>
 #include <QString>
 
+#include "common.h"
+
 class SkypeExport;
 class QTimer;
 class QDBusError;
@@ -68,10 +70,7 @@ private:
 	QTimer *timer;
 	QString skypeName;
 
-private:
-	// disabled
-	Skype(const Skype &);
-	Skype &operator=(const Skype &);
+	DISABLE_COPY_AND_ASSIGNMENT(Skype);
 };
 
 class SkypeExport : public QDBusAbstractAdaptor {
@@ -86,10 +85,7 @@ public slots:
 private:
 	Skype *parent;
 
-private:
-	// disabled
-	SkypeExport(const SkypeExport &);
-	SkypeExport &operator=(const SkypeExport &);
+	DISABLE_COPY_AND_ASSIGNMENT(SkypeExport);
 };
 
 #endif

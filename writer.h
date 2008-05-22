@@ -28,6 +28,8 @@
 #include <QDateTime>
 #include <ctime>
 
+#include "common.h"
+
 class QString;
 class QByteArray;
 
@@ -58,10 +60,7 @@ protected:
 	QDateTime tagTime;
 	bool mustWriteTags;
 
-private:
-	// disabled
-	AudioFileWriter(const AudioFileWriter &);
-	AudioFileWriter &operator=(const AudioFileWriter &);
+	DISABLE_COPY_AND_ASSIGNMENT(AudioFileWriter);
 };
 
 #endif

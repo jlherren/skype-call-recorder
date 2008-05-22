@@ -24,6 +24,7 @@
 #ifndef WAVEWRITER_H
 #define WAVEWRITER_H
 
+#include "common.h"
 #include "writer.h"
 
 class QString;
@@ -49,6 +50,8 @@ private:
 	qint64 fileSize;
 	qint64 dataSize;
 	bool hasFlushed;
+
+	DISABLE_COPY_AND_ASSIGNMENT(WaveWriter);
 };
 
 #endif

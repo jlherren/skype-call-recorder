@@ -24,6 +24,7 @@
 #ifndef MP3WRITER_H
 #define MP3WRITER_H
 
+#include "common.h"
 #include "writer.h"
 
 class QString;
@@ -46,6 +47,8 @@ private:
 	lame_global_flags *lame;
 	int bitRate;
 	bool hasFlushed;
+
+	DISABLE_COPY_AND_ASSIGNMENT(Mp3Writer);
 };
 
 #endif

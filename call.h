@@ -32,6 +32,8 @@
 #include <QPointer>
 #include <QDateTime>
 
+#include "common.h"
+
 class QStringList;
 class Skype;
 class AudioFileWriter;
@@ -101,10 +103,8 @@ private slots:
 	void confirmRecording();
 	void denyRecording();
 
-private:
-	// disabled
-	Call(const Call &);
-	Call &operator=(const Call &);
+private: // moc gets confused without this private:
+	DISABLE_COPY_AND_ASSIGNMENT(Call);
 };
 
 class CallHandler : public QObject {
@@ -142,6 +142,8 @@ private:
 	CallSet ignore;
 	Skype *skype;
 	QPointer<LegalInformationDialog> legalInformationDialog;
+
+	DISABLE_COPY_AND_ASSIGNMENT(CallHandler);
 };
 
 #endif

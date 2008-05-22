@@ -28,6 +28,7 @@
 #include <QStringList>
 #include <QPointer>
 
+#include "common.h"
 #include "utils.h"
 
 class TrayIcon;
@@ -73,10 +74,7 @@ private:
 	QPointer<AboutDialog> aboutDialog;
 	LockFile lockFile;
 
-private:
-	// disabled
-	Recorder(const Recorder &);
-	Recorder &operator=(const Recorder &);
+	DISABLE_COPY_AND_ASSIGNMENT(Recorder);
 };
 
 #endif

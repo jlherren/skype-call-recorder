@@ -27,6 +27,8 @@
 #include <QDialog>
 #include <QList>
 
+#include "common.h"
+
 class QWidget;
 class QString;
 class QCheckBox;
@@ -52,10 +54,7 @@ private:
 	QList<QWidget *> widgets;
 	QCheckBox *remember;
 
-private:
-	// disabled
-	RecordConfirmationDialog(const RecordConfirmationDialog &);
-	RecordConfirmationDialog &operator=(const RecordConfirmationDialog &);
+	DISABLE_COPY_AND_ASSIGNMENT(RecordConfirmationDialog);
 };
 
 // information dialog about legality of recording calls
@@ -64,10 +63,7 @@ class LegalInformationDialog: public QDialog {
 public:
 	LegalInformationDialog();
 
-private:
-	// disabled
-	LegalInformationDialog(const LegalInformationDialog &);
-	LegalInformationDialog &operator=(const LegalInformationDialog &);
+	DISABLE_COPY_AND_ASSIGNMENT(LegalInformationDialog);
 };
 
 // about dialog
@@ -76,10 +72,7 @@ class AboutDialog : public QDialog {
 public:
 	AboutDialog();
 
-private:
-	// disabled
-	AboutDialog(const AboutDialog &);
-	AboutDialog &operator=(const AboutDialog &);
+	DISABLE_COPY_AND_ASSIGNMENT(AboutDialog);
 };
 
 // first run dialog
@@ -88,10 +81,7 @@ class FirstRunDialog : public QDialog {
 public:
 	FirstRunDialog();
 
-private:
-	// disabled
-	FirstRunDialog(const FirstRunDialog &);
-	FirstRunDialog &operator=(const FirstRunDialog &);
+	DISABLE_COPY_AND_ASSIGNMENT(FirstRunDialog);
 };
 
 #endif

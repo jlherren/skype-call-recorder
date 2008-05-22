@@ -26,6 +26,8 @@
 
 #include <QString>
 
+#include "common.h"
+
 class LockFile {
 public:
 	LockFile();
@@ -37,6 +39,8 @@ public:
 private:
 	QString fileName;
 	int fd;
+
+	DISABLE_COPY_AND_ASSIGNMENT(LockFile);
 };
 
 #endif

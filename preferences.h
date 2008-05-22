@@ -30,6 +30,8 @@
 #include <QStringList>
 #include <QAbstractListModel>
 
+#include "common.h"
+
 class SmartComboBox;
 class QListView;
 class PerCallerModel;
@@ -120,10 +122,7 @@ private:
 	PerCallerPreferencesDialog *perCallerDialog;
 	SmartEditableComboBox *patternWidget;
 
-private:
-	// disabled
-	PreferencesDialog(const PreferencesDialog &);
-	PreferencesDialog &operator=(const PreferencesDialog &);
+	DISABLE_COPY_AND_ASSIGNMENT(PreferencesDialog);
 };
 
 // The per caller editor dialog
@@ -146,6 +145,8 @@ private:
 	QRadioButton *radioYes;
 	QRadioButton *radioAsk;
 	QRadioButton *radioNo;
+
+	DISABLE_COPY_AND_ASSIGNMENT(PerCallerPreferencesDialog);
 };
 
 // per caller model
