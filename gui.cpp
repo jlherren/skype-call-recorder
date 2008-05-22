@@ -29,9 +29,11 @@
 #include <QApplication>
 #include <QStyle>
 #include <QIcon>
+#include <QPixmap>
+#include <QPushButton>
 #include <QTimer>
 
-#include "callgui.h"
+#include "gui.h"
 #include "common.h"
 #include "preferences.h"
 #include "smartwidgets.h"
@@ -182,6 +184,65 @@ LegalInformationDialog::LegalInformationDialog() {
 	button->setDefault(true);
 	connect(button, SIGNAL(clicked()), this, SLOT(close()));
 	vbox->addWidget(button, 0, Qt::AlignHCenter);
+
+	show();
+}
+
+// ---- AboutDialog ----
+
+AboutDialog::AboutDialog() {
+	setWindowTitle(PROGRAM_NAME " - About");
+	setAttribute(Qt::WA_DeleteOnClose);
+
+	QVBoxLayout *vbox = new QVBoxLayout(this);
+	vbox->setSizeConstraint(QLayout::SetFixedSize);
+
+	QHBoxLayout *hbox = new QHBoxLayout;
+	vbox->addLayout(hbox);
+
+	QLabel *label = new QLabel(
+		"<p><font face='Arial' size='20'><b>Skype Call Recorder</b></font></p>"
+
+		"<p>Copyright &copy; 2008 jlh (<a href='mailto:jlh@gmx.ch'>jlh@gmx.ch</a>)<br>"
+		"Website: <a href='http://atdot.ch/scr/'>http://atdot.ch/scr/</a></p>"
+	);
+	label->setTextInteractionFlags(Qt::TextSelectableByMouse | Qt::LinksAccessibleByMouse);
+	label->setTextFormat(Qt::RichText);
+	label->setOpenExternalLinks(true);
+	hbox->addWidget(label, 1, Qt::AlignTop);
+
+	label = new QLabel;
+	label->setPixmap(QPixmap(":/icon.png").scaled(QSize(80, 80), Qt::KeepAspectRatio, Qt::SmoothTransformation));
+	hbox->addWidget(label, 0, Qt::AlignTop);
+
+	QString str =
+		"<hr>"
+		"<p>This program is free software; you can redistribute it and/or modify it under<br>"
+		"the terms of the GNU General Public License as published by the <a href='http://www.fsf.org/'>Free<br>"
+		"Software Foundation</a>; either <a href='http://www.gnu.org/licenses/old-licenses/gpl-2.0.html'>version 2 of the License</a>, "
+		"<a href='http://www.gnu.org/licenses/gpl.html'>version 3 of the<br>"
+		"License</a>, or (at your option) any later version.</p>"
+
+		"<p>This program is distributed in the hope that it will be useful, but WITHOUT<br>"
+		"ANY WARRANTY; without even the implied warranty of MERCHANTABILITY<br>"
+		"or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public<br>"
+		"License for more details.</p>"
+		"<hr>"
+		"<p>This product uses the Skype API but is not endorsed, certified or otherwise<br>"
+		"approved in any way by Skype.</p>"
+		"<hr>"
+		"<p><small>Git commit: %1<br>"
+		"Build date: %2</small></p>";
+	str = str.arg(recorderCommit, recorderDate);
+	label = new QLabel(str);
+	label->setTextInteractionFlags(Qt::TextSelectableByMouse | Qt::LinksAccessibleByMouse);
+	label->setTextFormat(Qt::RichText);
+	label->setOpenExternalLinks(true);
+	vbox->addWidget(label);
+
+	QPushButton *button = new QPushButton("&Close");
+	connect(button, SIGNAL(clicked()), this, SLOT(close()));
+	vbox->addWidget(button);
 
 	show();
 }

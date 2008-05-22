@@ -17,10 +17,9 @@ SET(CMAKE_CXX_FLAGS_RELEASE "-O2 -s")
 # sources
 
 SET(SOURCES
-	about.cpp
 	call.cpp
-	callgui.cpp
 	common.cpp
+	gui.cpp
 	mp3writer.cpp
 	preferences.cpp
 	recorder.cpp
@@ -34,7 +33,7 @@ SET(SOURCES
 
 SET(MOC_HEADERS
 	call.h
-	callgui.h
+	gui.h
 	preferences.h
 	recorder.h
 	skype.h

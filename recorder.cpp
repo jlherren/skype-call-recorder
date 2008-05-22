@@ -32,7 +32,7 @@
 
 #include "recorder.h"
 #include "common.h"
-#include "about.h"
+#include "gui.h"
 #include "trayicon.h"
 #include "preferences.h"
 #include "skype.h"

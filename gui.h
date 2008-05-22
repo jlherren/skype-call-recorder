@@ -21,14 +21,65 @@
 	http://www.fsf.org/
 */
 
-#ifndef ABOUT_H
-#define ABOUT_H
+#ifndef GUI_H
+#define GUI_H
 
 #include <QDialog>
+#include <QList>
+
+class QWidget;
+class QString;
+class QCheckBox;
+
+// recording confirmation dialog for calls
+
+class RecordConfirmationDialog : public QDialog {
+	Q_OBJECT
+public:
+	RecordConfirmationDialog(const QString &, const QString &);
+
+signals:
+	void yes();
+	void no();
+
+private slots:
+	void yesClicked();
+	void noClicked();
+	void enableWidgets();
+
+private:
+	QString skypeName;
+	QList<QWidget *> widgets;
+	QCheckBox *remember;
+
+private:
+	// disabled
+	RecordConfirmationDialog(const RecordConfirmationDialog &);
+	RecordConfirmationDialog &operator=(const RecordConfirmationDialog &);
+};
+
+// information dialog about legality of recording calls
+
+class LegalInformationDialog: public QDialog {
+public:
+	LegalInformationDialog();
+
+private:
+	// disabled
+	LegalInformationDialog(const LegalInformationDialog &);
+	LegalInformationDialog &operator=(const LegalInformationDialog &);
+};
+
+// about dialog
 
 class AboutDialog : public QDialog {
 public:
 	AboutDialog();
+
+private:
+	// disabled
+	AboutDialog(const AboutDialog &);
+	AboutDialog &operator=(const AboutDialog &);
 };
 
 #endif

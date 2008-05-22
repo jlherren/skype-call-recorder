@@ -35,7 +35,7 @@
 #include "wavewriter.h"
 #include "mp3writer.h"
 #include "preferences.h"
-#include "callgui.h"
+#include "gui.h"
 
 
 Call::Call(QObject *p, Skype *sk, CallID i) :
