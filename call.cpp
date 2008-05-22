@@ -109,10 +109,14 @@ void Call::setStatus(const QString &s) {
 	status = s;
 	bool nowActive = statusActive();
 
-	if (!wasActive && nowActive)
+	if (!wasActive && nowActive) {
 		emit startedCall(id, skypeName);
-	else if (wasActive && !nowActive)
+		startRecording();
+	} else if (wasActive && !nowActive) {
+		// don't stop recording when we get "FINISHED".  just wait for
+		// the connections to close so that we really get all the data
 		emit stoppedCall(id);
+	}
 }
 
 bool Call::statusDone() const {
@@ -521,22 +525,13 @@ void CallHandler::callCmd(const QStringList &args) {
 
 	QString subCmd = args.at(1);
 
-	if (subCmd == "STATUS") {
-		QString a = args.at(2);
-		call->setStatus(a);
-
-		if (a == "INPROGRESS")
-			call->startRecording();
-
-		// don't stop recording when we get "FINISHED".  just wait for
-		// the connections to close so that we really get all the data
-	} else if (subCmd == "DURATION") {
-		/* this is where we start recording calls that are already running, for
-		   example if the user starts this program after the call has been placed */
+	if (subCmd == "STATUS")
+		call->setStatus(args.at(2));
+	else if (newCall && subCmd == "DURATION")
+		// this is where we start recording calls that are already
+		// running, for example if the user starts this program after
+		// the call has been placed
 		call->setStatus("INPROGRESS");
-		if (newCall)
-			call->startRecording();
-	}
 
 	prune();
 }
