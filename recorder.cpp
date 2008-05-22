@@ -65,6 +65,7 @@ Recorder::~Recorder() {
 }
 
 void Recorder::setupGUI() {
+	setWindowIcon(QIcon(":/icon.png"));
 	setQuitOnLastWindowClosed(false);
 
 	trayIcon = new TrayIcon(this);
