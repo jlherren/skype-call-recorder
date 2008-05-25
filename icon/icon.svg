@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+<svg
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   version="1.0"
+   width="128"
+   height="128"
+   id="svg2">
+  <defs
+     id="defs4" />
+  <g
+     id="layer1">
+    <path
+       d="M 32,49 L 22,124 L 112,124 L 122,49 L 32,49 z "
+       style="fill:#e0e080;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1"
+       id="path2166" />
+    <image
+       xlink:href="callstart.png"
+       x="36"
+       y="2"
+       width="64"
+       height="64"
+       id="image3212" />
+    <path
+       d="M 8,55 L 22,124 L 112,124 L 103,55 L 37,55 C 37,55 35,51 35,51 C 35,51 14,51 14,51 L 12,55 L 8,55 z "
+       style="fill:#ffff80;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1"
+       id="path2164" />
+    <image
+       xlink:href="skypeblue.png"
+       x="13.087343"
+       y="57.855515"
+       width="64"
+       height="64.960579"
+       transform="matrix(1,0,0.1713347,0.9852129,0,0)"
+       id="image3270" />
+  </g>
+</svg>
