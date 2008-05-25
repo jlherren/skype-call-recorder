@@ -36,6 +36,7 @@ extern Recorder *recorderInstance;
 // this is provided by the generated version.cpp file
 extern const char *recorderCommit;
 extern const char *recorderDate;
+extern const char *recorderVersion;
 
 #define DISABLE_COPY_CONSTRUCTOR(c) \
 	private: c(const c &)

@@ -196,12 +196,14 @@ AboutDialog::AboutDialog() {
 	QHBoxLayout *hbox = new QHBoxLayout;
 	vbox->addLayout(hbox);
 
-	QLabel *label = new QLabel(
+	QString str =
 		"<p><font face='Arial' size='20'><b>Skype Call Recorder</b></font></p>"
 
 		"<p>Copyright &copy; 2008 jlh (<a href='mailto:jlh@gmx.ch'>jlh@gmx.ch</a>)<br>"
-		"Website: <a href='http://atdot.ch/scr/'>http://atdot.ch/scr/</a></p>"
-	);
+		"Version: %1<br>"
+		"Website: <a href='http://atdot.ch/scr/'>http://atdot.ch/scr/</a></p>";
+	str = str.arg(recorderVersion);
+	QLabel *label = new QLabel(str);
 	label->setTextInteractionFlags(Qt::TextSelectableByMouse | Qt::LinksAccessibleByMouse);
 	label->setTextFormat(Qt::RichText);
 	label->setOpenExternalLinks(true);
@@ -211,7 +213,7 @@ AboutDialog::AboutDialog() {
 	label->setPixmap(QPixmap(":/icon.png").scaled(QSize(80, 80), Qt::KeepAspectRatio, Qt::SmoothTransformation));
 	hbox->addWidget(label, 0, Qt::AlignTop);
 
-	QString str =
+	str =
 		"<hr>"
 		"<p>This program is free software; you can redistribute it and/or modify it under<br>"
 		"the terms of the GNU General Public License as published by the <a href='http://www.fsf.org/'>Free<br>"

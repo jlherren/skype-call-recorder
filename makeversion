@@ -11,21 +11,20 @@ test "$src" = '' && src=.
 date=`date --utc +%Y-%m-%d`
 if test -e "$src/.git"; then
 	commit=`( cd "$src"; git rev-parse HEAD 2> /dev/null; )`
+	version=`( cd "$src"; git describe --tags HEAD 2> /dev/null; ) || echo "$commit"`
 	if test "$commit" != ''; then
-		( cd "$src"; git diff --quiet HEAD; ) || commit="$commit-dirty"
+		( cd "$src"; git diff --quiet HEAD; ) || { commit="$commit (dirty)"; version="$version (dirty)"; }
 	fi
 fi
-if test -z "$commit"; then
-	if test -e "$src/gitcommit"; then
-		commit=`< "$src/gitcommit"`
-	else
-		commit=unknown
-	fi
-fi
+test -z "$commit" -a -e "$src/gitcommit" && commit=`< "$src/gitcommit"`
+test -z "$version" -a -e "$src/version" && version=`< "$src/version"`
+test -z "$commit" && commit=unknown
+test -z "$version" && version=unknown
 cat > "$output-new" <<EOF
 #include "common.h"
 const char *recorderCommit = "$commit";
 const char *recorderDate = "$date";
+const char *recorderVersion = "$version";
 EOF
 
 if test -e "$output" && diff -q "$output" "$output-new" > /dev/null 2>&1; then

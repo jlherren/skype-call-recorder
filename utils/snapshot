@@ -5,8 +5,14 @@ if test "$1" = ''; then
 	exit 1
 fi
 
-date=`date +%Y%m%d`
-base=skype-call-recorder-$date
+version=`git describe --tags "$1" 2> /dev/null`
+case "$version" in
+	*-*|'')
+		version=`date +%Y%m%d`
+		;;
+esac
+
+base=skype-call-recorder-$version
 outfile=$base.tar.gz
 
 if test -e "$base"; then
@@ -28,6 +34,7 @@ git archive --format=tar --prefix="$base/" "$1" | tar -x
 rm -f "$base/.gitignore"
 rm -rf "$base/utils"
 git rev-parse "$1" > "$base/gitcommit"
+git describe "$1" 2> /dev/null > "$base/version" || cp "$base/gitcommit" "$base/version"
 tar -c "$base" | gzip -9 > "$outfile"
 rm -rf "$base"
 
