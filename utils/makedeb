@@ -1,0 +1,46 @@
+#!/bin/sh
+
+if test "$1" = ''; then
+	echo "Usage: $0 <version>"
+	exit 1
+fi
+
+version=$1
+
+if git tag -l | grep -q "^$version\$" > /dev/null 2> /dev/null; then
+	:
+else
+	echo "I don't know version $version, here's what I know:"
+	git tag -l | sed -e 's/^/    /'
+	exit 1
+fi
+
+execdir=${0%/*}
+
+tmp=tmp.debbuild.$$
+rm -rf "$tmp"
+mkdir "$tmp"
+
+$execdir/snapshot $version "$tmp/tarball.tar.gz" || exit 1
+tar -xzf "$tmp/tarball.tar.gz" -C "$tmp"
+
+(
+	cd "$tmp/skype-call-recorder-$version"
+	cmake .
+	make
+	make DESTDIR=../root install
+)
+
+echo -n "Package size: "
+size=`du -sk "$tmp/root" | cut -f1`
+echo "$size KB"
+
+mkdir "$tmp/root/DEBIAN"
+sed -e "s/@version@/$version/g" \
+	-e "s/@size@/$size/g" \
+	< skype-call-recorder.control > "$tmp/root/DEBIAN/control"
+
+dpkg -b "$tmp/root" "skype-call-recorder-$version.deb"
+
+rm -rf "$tmp"
+
