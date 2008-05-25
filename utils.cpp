@@ -68,6 +68,6 @@ void LockFile::unlock() {
 }
 
 bool LockFile::isLocked() const {
-	return fd < 0;
+	return fd >= 0;
 }
 
