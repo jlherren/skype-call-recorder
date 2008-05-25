@@ -5,7 +5,10 @@ if test "$1" = ''; then
 	exit 1
 fi
 
-version=`git describe --tags "$1" 2> /dev/null`
+tree=$1
+
+version=`git describe --tags "$tree" 2> /dev/null`
+
 case "$version" in
 	*-*|'')
 		version=`date +%Y%m%d`
@@ -13,30 +16,29 @@ case "$version" in
 esac
 
 base=skype-call-recorder-$version
-outfile=$base.tar.gz
 
-if test -e "$base"; then
-	echo "$base/ exists already, won't overwrite"
-	exit 1
+if test "$2" != ''; then
+	outfile=$2
+else
+	outfile=$base.tar.gz
 fi
 
-if test -e "$outfile"; then
-	echo "$outfile exists already, won't overwrite"
-	exit 1
-fi
+tmp="tmp.snapshot.$$"
+rm -rf "$tmp"
+mkdir "$tmp"
 
 # we extract the archive, modify the directory and re-tar.  we do that because
 # there's no simple way to add the gitcommit file under the right name using
 # tar -A in a pipe.
 
-git archive --format=tar --prefix="$base/" "$1" | tar -x
+git archive --format=tar --prefix="$base/" "$tree" | tar -x -C "$tmp"
 
-rm -f "$base/.gitignore"
-rm -rf "$base/utils"
-git rev-parse "$1" > "$base/gitcommit"
-git describe "$1" 2> /dev/null > "$base/version" || cp "$base/gitcommit" "$base/version"
-tar -c "$base" | gzip -9 > "$outfile"
-rm -rf "$base"
+rm -f "$tmp/$base/.gitignore"
+rm -rf "$tmp/$base/utils"
+git rev-parse "$tree" > "$tmp/$base/gitcommit"
+git describe "$tree" 2> /dev/null > "$tmp/$base/version" || cp "$tmp/$base/gitcommit" "$tmp/$base/version"
+tar -C "$tmp" -c "$base" | gzip -9 > "$outfile"
 
-echo "$outfile"
+rm -rf "$tmp"
+echo "$outfile created"
 
