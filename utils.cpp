@@ -50,7 +50,29 @@ bool LockFile::lock(const QString &fn) {
 	}
 
 	if (flock(fd, LOCK_EX | LOCK_NB) != 0) {
+		close(fd);
 		debug("ERROR: cannot get lock on lock file");
+		return false;
+	}
+
+	// set the FD_CLOEXEC flag, so that when another process forks off of
+	// us, it won't inherit the file descriptor and the lock.  see commit
+	// ce6f838b4587528630784c1ea1ad272b64e78544 to see why we do this
+
+	int flags = fcntl(fd, F_GETFD, 0);
+
+	if (flags == -1) {
+		debug("ERROR: failed to fcntl() lock file");
+		unlock();
+		return false;
+	}
+
+	flags |= FD_CLOEXEC;
+	flags = fcntl(fd, F_SETFD, flags);
+
+	if (flags == -1) {
+		debug("ERROR: failed to set FD_CLOEXEC on lock file");
+		unlock();
 		return false;
 	}
 
