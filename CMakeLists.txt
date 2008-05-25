@@ -90,4 +90,7 @@ ADD_DEPENDENCIES(${TARGET} Version)
 # installation
 
 INSTALL(TARGETS ${TARGET} RUNTIME DESTINATION bin)
+INSTALL(FILES skype-call-recorder.desktop DESTINATION share/applications)
+INSTALL(FILES icon.png DESTINATION share/icons/hicolor/128x128/apps
+	RENAME skype-call-recorder.png)
 
