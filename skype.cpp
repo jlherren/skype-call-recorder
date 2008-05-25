@@ -68,7 +68,7 @@ void Skype::connectToSkype() {
 	if (!timer->isActive())
 		timer->start();
 
-	sendWithAsyncReply("NAME SkypeRecorder");
+	sendWithAsyncReply("NAME SkypeCallRecorder");
 	connectionState = 1;
 }
 
