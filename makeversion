@@ -30,6 +30,6 @@ EOF
 if test -e "$output" && diff -q "$output" "$output-new" > /dev/null 2>&1; then
 	rm "$output-new"
 else
-	mv "$output-new" "$output"
+	mv -f "$output-new" "$output"
 fi
 
