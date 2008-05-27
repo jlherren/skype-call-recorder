@@ -38,7 +38,8 @@ echo "$size KB"
 mkdir "$tmp/root/DEBIAN"
 sed -e "s/@version@/$version/g" \
 	-e "s/@size@/$size/g" \
-	< skype-call-recorder.control > "$tmp/root/DEBIAN/control"
+	< "$tmp/skype-call-recorder-$version/skype-call-recorder.control" \
+	> "$tmp/root/DEBIAN/control"
 
 dpkg -b "$tmp/root" "skype-call-recorder-$version.deb"
 
