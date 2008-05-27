@@ -124,11 +124,11 @@ void Mp3Writer::writeTags() {
 	mustWriteTags = false;
 }
 
-bool Mp3Writer::write(QByteArray &left, QByteArray &right, int samples, bool flush) {
+bool Mp3Writer::write(QByteArray &left, QByteArray &right, long samples, bool flush) {
 	int ret;
 	QByteArray output;
 	// rough upper bound formula taken from lame.h
-	int size = samples + samples / 4 + 7200;
+	long size = samples + samples / 4 + 7200;
 
 	do {
 		output.resize(size);

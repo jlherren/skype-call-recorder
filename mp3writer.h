@@ -38,7 +38,7 @@ public:
 
 	virtual bool open(const QString &, long, bool);
 	virtual void close();
-	virtual bool write(QByteArray &, QByteArray &, int, bool = false);
+	virtual bool write(QByteArray &, QByteArray &, long, bool = false);
 
 private:
 	void writeTags();

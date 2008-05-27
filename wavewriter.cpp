@@ -122,7 +122,7 @@ void WaveWriter::close() {
 	AudioFileWriter::close();
 }
 
-bool WaveWriter::write(QByteArray &left, QByteArray &right, int samples, bool flush) {
+bool WaveWriter::write(QByteArray &left, QByteArray &right, long samples, bool flush) {
 	QByteArray output;
 
 	if (stereo) {
@@ -134,7 +134,7 @@ bool WaveWriter::write(QByteArray &left, QByteArray &right, int samples, bool fl
 		qint16 *leftData = reinterpret_cast<qint16 *>(left.data());
 		qint16 *rightData = reinterpret_cast<qint16 *>(right.data());
 
-		for (int i = 0; i < samples; i++) {
+		for (long i = 0; i < samples; i++) {
 			outputData[i * 2] = leftData[i];
 			outputData[i * 2 + 1] = rightData[i];
 		}

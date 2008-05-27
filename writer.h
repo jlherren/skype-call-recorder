@@ -48,7 +48,7 @@ public:
 	// Note: you're not supposed to reopen after a close
 	virtual bool open(const QString &, long, bool);
 	virtual void close();
-	virtual bool write(QByteArray &, QByteArray &, int, bool = false) = 0;
+	virtual bool write(QByteArray &, QByteArray &, long, bool = false) = 0;
 	QString fileName() const { return file.fileName(); }
 
 protected:
