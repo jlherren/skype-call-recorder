@@ -41,7 +41,7 @@ sed -e "s/@version@/$version/g" \
 	< "$tmp/skype-call-recorder-$version/skype-call-recorder.control" \
 	> "$tmp/root/DEBIAN/control"
 
-dpkg -b "$tmp/root" "skype-call-recorder-$version.deb"
+dpkg-deb -b -Zbzip2 -z9 "$tmp/root" .
 
 rm -rf "$tmp"
 
