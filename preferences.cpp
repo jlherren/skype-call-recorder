@@ -185,11 +185,11 @@ PreferencesDialog::PreferencesDialog() : perCallerDialog(NULL) {
 	combo->addItem("8 kbps", 8);
 	combo->addItem("16 kbps", 16);
 	combo->addItem("24 kbps", 24);
-	combo->addItem("32 kbps", 32);
+	combo->addItem("32 kbps (recommended for mono)", 32);
 	combo->addItem("40 kbps", 40);
 	combo->addItem("48 kbps", 48);
 	combo->addItem("56 kbps", 56);
-	combo->addItem("64 kbps", 64);
+	combo->addItem("64 kbps (recommended for stereo)", 64);
 	combo->addItem("80 kbps", 80);
 	combo->addItem("96 kbps", 96);
 	combo->addItem("112 kbps", 112);
@@ -212,7 +212,7 @@ PreferencesDialog::PreferencesDialog() : perCallerDialog(NULL) {
 	combo->addItem("Quality 0", 0);
 	combo->addItem("Quality 1", 1);
 	combo->addItem("Quality 2", 2);
-	combo->addItem("Quality 3", 3);
+	combo->addItem("Quality 3 (recommended)", 3);
 	combo->addItem("Quality 4", 4);
 	combo->addItem("Quality 5", 5);
 	combo->addItem("Quality 6", 6);

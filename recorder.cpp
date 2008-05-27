@@ -123,7 +123,7 @@ void Recorder::loadPreferences() {
 	X(output.path,               "~/Skype Calls");
 	X(output.pattern,            "Calls with &s/Call with &s, %a %b %d %Y, %H:%M:%S");
 	X(output.format,             "mp3");         // "mp3" or "wav"
-	X(output.format.mp3.bitrate, 96);
+	X(output.format.mp3.bitrate, 64);
 	X(output.format.vorbis.quality, 3);
 	X(output.channelmode,        "stereo");      // mono, stereo, oerets
 	X(output.savetags,           true);
