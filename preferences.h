@@ -111,13 +111,14 @@ protected:
 	void hideEvent(QHideEvent *);
 
 private slots:
-	void enableMp3Settings();
+	void updateFormatSettings();
 	void editPerCallerPreferences();
 	void perCallerFinished();
 	void updatePatternToolTip(const QString &);
 
 private:
 	QList<QWidget *> mp3Settings;
+	QList<QWidget *> vorbisSettings;
 	SmartComboBox *formatWidget;
 	PerCallerPreferencesDialog *perCallerDialog;
 	SmartEditableComboBox *patternWidget;

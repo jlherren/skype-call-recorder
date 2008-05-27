@@ -164,11 +164,24 @@ PreferencesDialog::PreferencesDialog() : perCallerDialog(NULL) {
 	formatWidget = combo = new SmartComboBox(preferences.get("output.format"));
 	combo->addItem("WAV PCM", "wav");
 	combo->addItem("MP3", "mp3");
+	combo->addItem("Ogg Vorbis", "vorbis");
 	combo->setupDone();
-	connect(combo, SIGNAL(currentIndexChanged(int)), this, SLOT(enableMp3Settings()));
+	connect(combo, SIGNAL(currentIndexChanged(int)), this, SLOT(updateFormatSettings()));
 	hbox->addWidget(combo);
 
+	combo = new SmartComboBox(preferences.get("output.channelmode"));
+	combo->addItem("Mix to mono channel", "mono");
+	combo->addItem("Stereo, local left, remote right", "stereo");
+	combo->addItem("Stereo, local right, remote left", "oerets");
+	combo->setupDone();
+	hbox->addWidget(combo);
+
+	vbox->addLayout(hbox);
+	hbox = new QHBoxLayout;
+
+	label = new QLabel("MP3 &bitrate:");
 	combo = new SmartComboBox(preferences.get("output.format.mp3.bitrate"));
+	label->setBuddy(combo);
 	combo->addItem("8 kbps", 8);
 	combo->addItem("16 kbps", 16);
 	combo->addItem("24 kbps", 24);
@@ -184,20 +197,40 @@ PreferencesDialog::PreferencesDialog() : perCallerDialog(NULL) {
 	combo->addItem("144 kbps", 144);
 	combo->addItem("160 kbps", 160);
 	combo->setupDone();
+	mp3Settings.append(label);
 	mp3Settings.append(combo);
+	hbox->addWidget(label);
 	hbox->addWidget(combo);
 
-	combo = new SmartComboBox(preferences.get("output.channelmode"));
-	combo->addItem("Mix to mono", "mono");
-	combo->addItem("Stereo, local left, remote right", "stereo");
-	combo->addItem("Stereo, local right, remote left", "oerets");
+	vbox->addLayout(hbox);
+	hbox = new QHBoxLayout;
+
+	label = new QLabel("Ogg Vorbis &quality:");
+	combo = new SmartComboBox(preferences.get("output.format.vorbis.quality"));
+	label->setBuddy(combo);
+	combo->addItem("Quality -1", -1);
+	combo->addItem("Quality 0", 0);
+	combo->addItem("Quality 1", 1);
+	combo->addItem("Quality 2", 2);
+	combo->addItem("Quality 3", 3);
+	combo->addItem("Quality 4", 4);
+	combo->addItem("Quality 5", 5);
+	combo->addItem("Quality 6", 6);
+	combo->addItem("Quality 7", 7);
+	combo->addItem("Quality 8", 8);
+	combo->addItem("Quality 9", 9);
+	combo->addItem("Quality 10", 10);
 	combo->setupDone();
+	vorbisSettings.append(label);
+	vorbisSettings.append(combo);
+	hbox->addWidget(label);
 	hbox->addWidget(combo);
 
 	vbox->addLayout(hbox);
 
-	check = new SmartCheckBox("Save call &information in MP3 files", preferences.get("output.savetags"));
+	check = new SmartCheckBox("Save call &information in files", preferences.get("output.savetags"));
 	mp3Settings.append(check);
+	vorbisSettings.append(check);
 	vbox->addWidget(check);
 
 	// ---- buttons ----
@@ -210,15 +243,26 @@ PreferencesDialog::PreferencesDialog() : perCallerDialog(NULL) {
 	hbox->addWidget(button);
 	bigvbox->addLayout(hbox);
 
-	enableMp3Settings();
+	updateFormatSettings();
 	updatePatternToolTip("");
 }
 
-void PreferencesDialog::enableMp3Settings() {
+void PreferencesDialog::updateFormatSettings() {
 	QVariant v = formatWidget->itemData(formatWidget->currentIndex());
-	bool b = v == "mp3";
-	for (int i = 0; i < mp3Settings.size(); i++)
-		mp3Settings.at(i)->setEnabled(b);
+	// hide
+	if (v != "mp3")
+		for (int i = 0; i < mp3Settings.size(); i++)
+			mp3Settings.at(i)->hide();
+	if (v != "vorbis")
+		for (int i = 0; i < vorbisSettings.size(); i++)
+			vorbisSettings.at(i)->hide();
+	// show
+	if (v == "mp3")
+		for (int i = 0; i < mp3Settings.size(); i++)
+			mp3Settings.at(i)->show();
+	if (v == "vorbis")
+		for (int i = 0; i < vorbisSettings.size(); i++)
+			vorbisSettings.at(i)->show();
 }
 
 void PreferencesDialog::editPerCallerPreferences() {

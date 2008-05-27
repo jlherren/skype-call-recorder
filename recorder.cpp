@@ -124,6 +124,7 @@ void Recorder::loadPreferences() {
 	X(output.pattern,            "Calls with &s/Call with &s, %a %b %d %Y, %H:%M:%S");
 	X(output.format,             "mp3");         // "mp3" or "wav"
 	X(output.format.mp3.bitrate, 96);
+	X(output.format.vorbis.quality, 3);
 	X(output.channelmode,        "stereo");      // mono, stereo, oerets
 	X(output.savetags,           true);
 	X(suppress.legalinformation, false);

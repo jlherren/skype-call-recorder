@@ -34,6 +34,7 @@
 #include "skype.h"
 #include "wavewriter.h"
 #include "mp3writer.h"
+#include "vorbiswriter.h"
 #include "preferences.h"
 #include "gui.h"
 
@@ -248,8 +249,10 @@ void Call::startRecording(bool force) {
 
 	if (format == "wav")
 		writer = new WaveWriter;
-	else /* if (format == "mp3") */
+	else if (format == "mp3")
 		writer = new Mp3Writer;
+	else /*if (format == "vorbis")*/
+		writer = new VorbisWriter;
 
 	if (preferences.get("output.savetags").toBool())
 		writer->setTags(constructCommentTag(), timeStartRecording);

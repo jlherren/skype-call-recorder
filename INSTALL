@@ -11,6 +11,7 @@ Skype Call Recorder - Installation
       - Qt 4, at least version 4.3
       - libmp3lame, for encoding to mp3 files
       - libid3 (aka id3lib), for manipulating id3 tags
+      - libvorbisenc, for encoding to Ogg Vorbis
 
 (2) Configure
 
