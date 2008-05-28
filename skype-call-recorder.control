@@ -8,5 +8,6 @@ Depends: libqt4-gui (>= 4.3), liblame0 (>= 3.97), libid3-3.8.3c2a, libvorbisenc2
 Installed-Size: @size@
 Provides: skype-call-recorder
 Maintainer: jlh <jlh@gmx.ch>
-Description: Skype Call recorder allows you to record Skype calls to MP3, Ogg Vorbis or WAV files.
+Description: Records your Skype calls
+ Skype Call recorder allows you to record Skype calls to MP3, Ogg Vorbis or WAV files.
 
