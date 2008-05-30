@@ -26,7 +26,6 @@
 #include <QTcpServer>
 #include <QTcpSocket>
 #include <QMessageBox>
-#include <ctime>
 #include <cstdlib>
 
 #include "call.h"

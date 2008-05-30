@@ -27,11 +27,11 @@
 #include <QDialog>
 #include <QList>
 #include <QStyle>
+#include <QString>
 
 #include "common.h"
 
 class QWidget;
-class QString;
 class QCheckBox;
 class QHBoxLayout;
 class QVBoxLayout;

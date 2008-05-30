@@ -28,8 +28,8 @@
 #include <QSignalMapper>
 
 #include "trayicon.h"
-#include "skype.h"
 #include "common.h"
+#include "skype.h"
 
 TrayIcon::TrayIcon(QObject *p) : QSystemTrayIcon(p) {
 	if (!QSystemTrayIcon::isSystemTrayAvailable()) {

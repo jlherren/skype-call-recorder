@@ -21,13 +21,11 @@
 	http://www.fsf.org/
 */
 
-#include <iostream>
-
 #include <QMessageBox>
-#include <QTextEdit>
 #include <QDir>
 #include <QProcess>
 #include <QTimer>
+#include <iostream>
 #include <cstdlib>
 
 #include "recorder.h"

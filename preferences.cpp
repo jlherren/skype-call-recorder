@@ -25,13 +25,12 @@
 #include <QHBoxLayout>
 #include <QGroupBox>
 #include <QRadioButton>
-#include <QButtonGroup>
 #include <QLabel>
 #include <QPushButton>
 #include <QListView>
 #include <QPair>
 #include <QFile>
-//#include <QSet>
+#include <QSet>
 #include <QTextStream>
 #include <QtAlgorithms>
 #include <QDir>

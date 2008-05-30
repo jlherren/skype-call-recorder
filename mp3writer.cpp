@@ -25,6 +25,7 @@
 #include <QString>
 #include <lame/lame.h>
 #include <id3/tag.h>
+
 #include "mp3writer.h"
 #include "common.h"
 #include "preferences.h"

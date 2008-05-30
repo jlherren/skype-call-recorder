@@ -25,15 +25,13 @@
 #define RECORDER_H
 
 #include <QApplication>
-#include <QStringList>
 #include <QPointer>
+#include <QString>
 
 #include "common.h"
 #include "utils.h"
 
 class TrayIcon;
-class QTextEdit;
-class QString;
 class PreferencesDialog;
 class Skype;
 class CallHandler;

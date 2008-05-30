@@ -29,7 +29,6 @@
 #include <QApplication>
 #include <QIcon>
 #include <QPixmap>
-#include <QPushButton>
 #include <QTimer>
 
 #include "gui.h"

@@ -26,11 +26,10 @@
 
 #include <QFile>
 #include <QDateTime>
-#include <ctime>
+#include <QString>
 
 #include "common.h"
 
-class QString;
 class QByteArray;
 
 class AudioFileWriter {

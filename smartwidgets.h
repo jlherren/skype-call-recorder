@@ -28,6 +28,8 @@
 #include <QCheckBox>
 #include <QLineEdit>
 #include <QComboBox>
+
+#include "common.h"
 #include "preferences.h"
 
 // Smart widgets that automatically load preferences and set them

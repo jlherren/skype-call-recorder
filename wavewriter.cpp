@@ -23,6 +23,7 @@
 
 #include <QByteArray>
 #include <QString>
+
 #include "wavewriter.h"
 #include "common.h"
 
