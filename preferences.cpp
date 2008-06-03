@@ -286,7 +286,7 @@ void PreferencesDialog::updatePatternToolTip(const QString &pattern) {
 	"You can use the following directives:\n\n"
 
 	#define X(a, b) "\t" a "\t" b "\n"
-	X("&s"     , "The remote skype name")
+	X("&s"     , "The remote skype name or phone number")
 	X("&d"     , "The remote display name")
 	X("&t"     , "Your skype name")
 	X("&e"     , "Your display name")
