@@ -165,7 +165,7 @@ LegalInformationDialog::LegalInformationDialog() :
 
 	additionalInfoLayout->addSpacing(10);
 
-	QWidget *checkBox = new SmartCheckBox("Do not show this information again", preferences.get("suppress.legalinformation"));
+	QWidget *checkBox = new SmartCheckBox("Do not show this information again", preferences.get(Pref::SuppressLegalInformation));
 	additionalInfoLayout->addWidget(checkBox);
 
 	vbox->addWidget(additionalInfo);
@@ -262,7 +262,7 @@ FirstRunDialog::FirstRunDialog() :
 	label->setTextFormat(Qt::RichText);
 	vbox->addWidget(label);
 
-	QWidget *checkBox = new SmartCheckBox("Do not show this information again", preferences.get("suppress.firstruninformation"));
+	QWidget *checkBox = new SmartCheckBox("Do not show this information again", preferences.get(Pref::SuppressFirstRunInformation));
 	vbox->addWidget(checkBox);
 
 	QPushButton *button = new QPushButton("&OK");

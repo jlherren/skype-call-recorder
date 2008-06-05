@@ -56,7 +56,7 @@ bool Mp3Writer::open(const QString &fn, long sr, bool s) {
 	if (!lame)
 		return false;
 
-	bitRate = preferences.get("output.format.mp3.bitrate").toInt();
+	bitRate = preferences.get(Pref::OutputFormatMp3Bitrate).toInt();
 
 	lame_set_in_samplerate(lame, sampleRate);
 	lame_set_num_channels(lame, stereo ? 2 : 1);

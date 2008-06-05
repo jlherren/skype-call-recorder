@@ -46,7 +46,7 @@
 Preferences preferences;
 
 QString getOutputPath() {
-	QString path = preferences.get("output.path").toString();
+	QString path = preferences.get(Pref::OutputPath).toString();
 	path.replace('~', QDir::homePath());
 	return path;
 }
@@ -65,7 +65,7 @@ QString getFileName(const QString &skypeName, const QString &displayName,
 {
 	QString fileName;
 	if (pattern.isEmpty())
-		fileName = preferences.get("output.pattern").toString();
+		fileName = preferences.get(Pref::OutputPattern).toString();
 	else
 		fileName = pattern;
 
@@ -121,7 +121,7 @@ PreferencesDialog::PreferencesDialog() : perCallerDialog(NULL) {
 	hbox = makeHFrame(bigvbox, "Automatic recording");
 
 	vbox = new QVBoxLayout;
-	Preference &preference = preferences.get("autorecord.default");
+	Preference &preference = preferences.get(Pref::AutoRecordDefault);
 	radio = new SmartRadioButton("Automatically &record calls", preference, "yes");
 	vbox->addWidget(radio);
 	radio = new SmartRadioButton("&Ask every time", preference, "ask");
@@ -139,13 +139,13 @@ PreferencesDialog::PreferencesDialog() : perCallerDialog(NULL) {
 	vbox = makeVFrame(bigvbox, "Output file");
 
 	label = new QLabel("&Save recorded calls here:");
-	edit = new SmartLineEdit(preferences.get("output.path"));
+	edit = new SmartLineEdit(preferences.get(Pref::OutputPath));
 	label->setBuddy(edit);
 	vbox->addWidget(label);
 	vbox->addWidget(edit);
 
 	label = new QLabel("&File name:");
-	patternWidget = new SmartEditableComboBox(preferences.get("output.pattern"));
+	patternWidget = new SmartEditableComboBox(preferences.get(Pref::OutputPattern));
 	label->setBuddy(patternWidget);
 	patternWidget->addItem("%Y-%m-%d %H:%M:%S Call with &s");
 	patternWidget->addItem("Call with &s, %a %b %d %Y, %H:%M:%S");
@@ -161,7 +161,7 @@ PreferencesDialog::PreferencesDialog() : perCallerDialog(NULL) {
 
 	hbox = new QHBoxLayout;
 
-	formatWidget = combo = new SmartComboBox(preferences.get("output.format"));
+	formatWidget = combo = new SmartComboBox(preferences.get(Pref::OutputFormat));
 	combo->addItem("WAV PCM", "wav");
 	combo->addItem("MP3", "mp3");
 	combo->addItem("Ogg Vorbis", "vorbis");
@@ -169,7 +169,7 @@ PreferencesDialog::PreferencesDialog() : perCallerDialog(NULL) {
 	connect(combo, SIGNAL(currentIndexChanged(int)), this, SLOT(updateFormatSettings()));
 	hbox->addWidget(combo);
 
-	combo = new SmartComboBox(preferences.get("output.channelmode"));
+	combo = new SmartComboBox(preferences.get(Pref::OutputChannelMode));
 	combo->addItem("Mix to mono channel", "mono");
 	combo->addItem("Stereo, local left, remote right", "stereo");
 	combo->addItem("Stereo, local right, remote left", "oerets");
@@ -180,7 +180,7 @@ PreferencesDialog::PreferencesDialog() : perCallerDialog(NULL) {
 	hbox = new QHBoxLayout;
 
 	label = new QLabel("MP3 &bitrate:");
-	combo = new SmartComboBox(preferences.get("output.format.mp3.bitrate"));
+	combo = new SmartComboBox(preferences.get(Pref::OutputFormatMp3Bitrate));
 	label->setBuddy(combo);
 	combo->addItem("8 kbps", 8);
 	combo->addItem("16 kbps", 16);
@@ -206,7 +206,7 @@ PreferencesDialog::PreferencesDialog() : perCallerDialog(NULL) {
 	hbox = new QHBoxLayout;
 
 	label = new QLabel("Ogg Vorbis &quality:");
-	combo = new SmartComboBox(preferences.get("output.format.vorbis.quality"));
+	combo = new SmartComboBox(preferences.get(Pref::OutputFormatVorbisQuality));
 	label->setBuddy(combo);
 	combo->addItem("Quality -1", -1);
 	combo->addItem("Quality 0", 0);
@@ -228,7 +228,7 @@ PreferencesDialog::PreferencesDialog() : perCallerDialog(NULL) {
 
 	vbox->addLayout(hbox);
 
-	check = new SmartCheckBox("Save call &information in files", preferences.get("output.savetags"));
+	check = new SmartCheckBox("Save call &information in files", preferences.get(Pref::OutputSaveTags));
 	mp3Settings.append(check);
 	vorbisSettings.append(check);
 	vbox->addWidget(check);
@@ -371,7 +371,7 @@ PerCallerPreferencesDialog::PerCallerPreferencesDialog(QWidget *parent) : QDialo
 
 	QSet<QString> seen;
 
-	QStringList list = preferences.get("autorecord.yes").toList();
+	QStringList list = preferences.get(Pref::AutoRecordYes).toList();
 	for (int i = 0; i < list.count(); i++) {
 		QString sn = list.at(i);
 		if (seen.contains(sn))
@@ -380,7 +380,7 @@ PerCallerPreferencesDialog::PerCallerPreferencesDialog(QWidget *parent) : QDialo
 		add(sn, 2, false);
 	}
 
-	list = preferences.get("autorecord.ask").toList();
+	list = preferences.get(Pref::AutoRecordAsk).toList();
 	for (int i = 0; i < list.count(); i++) {
 		QString sn = list.at(i);
 		if (seen.contains(sn))
@@ -389,7 +389,7 @@ PerCallerPreferencesDialog::PerCallerPreferencesDialog(QWidget *parent) : QDialo
 		add(sn, 1, false);
 	}
 
-	list = preferences.get("autorecord.no").toList();
+	list = preferences.get(Pref::AutoRecordNo).toList();
 	for (int i = 0; i < list.count(); i++) {
 		QString sn = list.at(i);
 		if (seen.contains(sn))
@@ -493,9 +493,9 @@ void PerCallerPreferencesDialog::save() {
 		else if (mode == 2)
 			yes.append(sn);
 	}
-	preferences.get("autorecord.yes").set(yes);
-	preferences.get("autorecord.ask").set(ask);
-	preferences.get("autorecord.no").set(no);
+	preferences.get(Pref::AutoRecordYes).set(yes);
+	preferences.get(Pref::AutoRecordAsk).set(ask);
+	preferences.get(Pref::AutoRecordNo).set(no);
 }
 
 // per caller model
@@ -677,9 +677,9 @@ void Preferences::setPerCallerPreference(const QString &sn, int mode) {
 	// this would interfer with the per caller dialog
 	recorderInstance->closePreferences();
 
-	Preference &pYes = get("autorecord.yes");
-	Preference &pAsk = get("autorecord.ask");
-	Preference &pNo = get("autorecord.no");
+	Preference &pYes = get(Pref::AutoRecordYes);
+	Preference &pAsk = get(Pref::AutoRecordAsk);
+	Preference &pNo = get(Pref::AutoRecordNo);
 
 	pYes.listRemove(sn);
 	pAsk.listRemove(sn);

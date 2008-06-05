@@ -77,7 +77,7 @@ bool VorbisWriter::open(const QString &fn, long sr, bool s) {
 	if (!b)
 		return false;
 
-	int quality = preferences.get("output.format.vorbis.quality").toInt();
+	int quality = preferences.get(Pref::OutputFormatVorbisQuality).toInt();
 
 	pd = new VorbisWriterPrivateData;
 	vorbis_info_init(&pd->vi);

@@ -194,5 +194,29 @@ extern QString getOutputPath();
 extern QString getFileName(const QString &, const QString &, const QString &,
 	const QString &, const QDateTime &, const QString & = QString());
 
+// preference constants
+
+#define X(name, string) const char * const name = #string;
+
+namespace Pref {
+
+X(AutoRecordDefault,           autorecord.default)
+X(AutoRecordAsk,               autorecord.ask)
+X(AutoRecordYes,               autorecord.yes)
+X(AutoRecordNo,                autorecord.no)
+X(OutputPath,                  output.path)
+X(OutputPattern,               output.pattern)
+X(OutputFormat,                output.format)
+X(OutputFormatMp3Bitrate,      output.format.mp3.bitrate)
+X(OutputFormatVorbisQuality,   output.format.vorbis.quality)
+X(OutputChannelMode,           output.channelmode)
+X(OutputSaveTags,              output.savetags)
+X(SuppressLegalInformation,    suppress.legalinformation)
+X(SuppressFirstRunInformation, suppress.firstruninformation)
+
+}
+
+#undef X
+
 #endif
 

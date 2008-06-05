@@ -150,25 +150,25 @@ void Call::setShouldRecord() {
 	// the call should not be recorded, 1 if we should ask and 2 if we
 	// should record
 
-	QStringList list = preferences.get("autorecord.yes").toList();
+	QStringList list = preferences.get(Pref::AutoRecordYes).toList();
 	if (list.contains(skypeName)) {
 		shouldRecord = 2;
 		return;
 	}
 
-	list = preferences.get("autorecord.ask").toList();
+	list = preferences.get(Pref::AutoRecordAsk).toList();
 	if (list.contains(skypeName)) {
 		shouldRecord = 1;
 		return;
 	}
 
-	list = preferences.get("autorecord.no").toList();
+	list = preferences.get(Pref::AutoRecordNo).toList();
 	if (list.contains(skypeName)) {
 		shouldRecord = 0;
 		return;
 	}
 
-	QString def = preferences.get("autorecord.default").toString();
+	QString def = preferences.get(Pref::AutoRecordDefault).toString();
 	if (def == "yes")
 		shouldRecord = 2;
 	else if (def == "ask")
@@ -235,7 +235,7 @@ void Call::startRecording(bool force) {
 	timeStartRecording = QDateTime::currentDateTime();
 	QString fn = constructFileName();
 
-	QString sm = preferences.get("output.channelmode").toString();
+	QString sm = preferences.get(Pref::OutputChannelMode).toString();
 
 	if (sm == "mono")
 		channelMode = 0;
@@ -244,7 +244,7 @@ void Call::startRecording(bool force) {
 	else /* if (sm == "stereo") */
 		channelMode = 1;
 
-	QString format = preferences.get("output.format").toString();
+	QString format = preferences.get(Pref::OutputFormat).toString();
 
 	if (format == "wav")
 		writer = new WaveWriter;
@@ -253,7 +253,7 @@ void Call::startRecording(bool force) {
 	else /*if (format == "vorbis")*/
 		writer = new VorbisWriter;
 
-	if (preferences.get("output.savetags").toBool())
+	if (preferences.get(Pref::OutputSaveTags).toBool())
 		writer->setTags(constructCommentTag(), timeStartRecording);
 
 	bool b = writer->open(fn, 16000, channelMode != 0);
@@ -579,7 +579,7 @@ void CallHandler::stopRecordingAndDelete(int id) {
 }
 
 void CallHandler::showLegalInformation() {
-	if (preferences.get("suppress.legalinformation").toBool())
+	if (preferences.get(Pref::SuppressLegalInformation).toBool())
 		return;
 
 	if (!legalInformationDialog)

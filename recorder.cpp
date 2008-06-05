@@ -78,7 +78,7 @@ void Recorder::setupGUI() {
 
 	debug("GUI initialized");
 
-	if (!preferences.get("suppress.firstruninformation").toBool())
+	if (!preferences.get(Pref::SuppressFirstRunInformation).toBool())
 		new FirstRunDialog();
 }
 
@@ -112,21 +112,21 @@ void Recorder::loadPreferences() {
 	preferences.load(getConfigFile());
 	int c = preferences.count();
 
-	#define X(n, v) preferences.get(#n).setIfNotSet(v);
+	#define X(n, v) preferences.get(n).setIfNotSet(v);
 	// default preferences
-	X(autorecord.default,        "ask");         // "yes", "ask", "no"
-	X(autorecord.ask,            "");            // comma separated skypenames to always ask for
-	X(autorecord.yes,            "");            // comma separated skypenames to always record
-	X(autorecord.no,             "");            // comma separated skypenames to never record
-	X(output.path,               "~/Skype Calls");
-	X(output.pattern,            "Calls with &s/Call with &s, %a %b %d %Y, %H:%M:%S");
-	X(output.format,             "mp3");         // "mp3" or "wav"
-	X(output.format.mp3.bitrate, 64);
-	X(output.format.vorbis.quality, 3);
-	X(output.channelmode,        "stereo");      // mono, stereo, oerets
-	X(output.savetags,           true);
-	X(suppress.legalinformation, false);
-	X(suppress.firstruninformation, false);
+	X(Pref::AutoRecordDefault,           "ask");         // "yes", "ask", "no"
+	X(Pref::AutoRecordAsk,               "");            // comma separated skypenames to always ask for
+	X(Pref::AutoRecordYes,               "");            // comma separated skypenames to always record
+	X(Pref::AutoRecordNo,                "");            // comma separated skypenames to never record
+	X(Pref::OutputPath,                  "~/Skype Calls");
+	X(Pref::OutputPattern,               "Calls with &s/Call with &s, %a %b %d %Y, %H:%M:%S");
+	X(Pref::OutputFormat,                "mp3");         // "mp3", "vorbis" or "wav"
+	X(Pref::OutputFormatMp3Bitrate,      64);
+	X(Pref::OutputFormatVorbisQuality,   3);
+	X(Pref::OutputChannelMode,           "stereo");      // mono, stereo, oerets
+	X(Pref::OutputSaveTags,              true);
+	X(Pref::SuppressLegalInformation,    false);
+	X(Pref::SuppressFirstRunInformation, false);
 	#undef X
 
 	c = preferences.count() - c;
