@@ -85,12 +85,12 @@ public:
 	bool save(const QString &);
 
 	Preference &get(const QString &);
-	void clear() { preferences.clear(); }
+	void clear() { prefs.clear(); }
 
-	int count() const { return preferences.size(); }
+	int count() const { return prefs.size(); }
 
 private:
-	QList<Preference> preferences;
+	QList<Preference> prefs;
 };
 
 // preferences with some utils

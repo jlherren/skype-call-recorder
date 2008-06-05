@@ -625,32 +625,32 @@ bool BasePreferences::load(const QString &filename) {
 			continue;
 		get(line.left(index).trimmed()).set(line.mid(index + 1).trimmed());
         }
-	debug(QString("Loaded %1 preferences from '%2'").arg(preferences.size()).arg(filename));
+	debug(QString("Loaded %1 preferences from '%2'").arg(prefs.size()).arg(filename));
 	return true;
 }
 
 bool BasePreferences::save(const QString &filename) {
-	qSort(preferences);
+	qSort(prefs);
 	QFile file(filename);
 	if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
 		debug(QString("Can't open '%1' for saving preferences").arg(filename));
 		return false;
 	}
 	QTextStream out(&file);
-	for (int i = 0; i < preferences.size(); i++) {
-		const Preference &p = preferences.at(i);
+	for (int i = 0; i < prefs.size(); i++) {
+		const Preference &p = prefs.at(i);
 		out << p.name() << " = " << p.toString() << "\n";
 	}
-	debug(QString("Saved %1 preferences to '%2'").arg(preferences.size()).arg(filename));
+	debug(QString("Saved %1 preferences to '%2'").arg(prefs.size()).arg(filename));
 	return true;
 }
 
 Preference &BasePreferences::get(const QString &name) {
-	for (int i = 0; i < preferences.size(); i++)
-		if (preferences.at(i).name() == name)
-			return preferences[i];
-	preferences.append(Preference(name));
-	return preferences.last();
+	for (int i = 0; i < prefs.size(); i++)
+		if (prefs.at(i).name() == name)
+			return prefs[i];
+	prefs.append(Preference(name));
+	return prefs.last();
 }
 
 // preferences
