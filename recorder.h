@@ -61,6 +61,8 @@ private:
 	void setupGUI();
 	void setupSkype();
 	void setupCallHandler();
+	void sanatizePreferences();
+	void sanatizePreferencesGeneric();
 
 	QString getConfigFile() const;
 

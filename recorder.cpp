@@ -127,17 +127,71 @@ void Recorder::loadPreferences() {
 	X(Pref::OutputSaveTags,              true);
 	X(Pref::SuppressLegalInformation,    false);
 	X(Pref::SuppressFirstRunInformation, false);
+	X(Pref::PreferencesVersion,          1);
 	#undef X
 
 	c = preferences.count() - c;
 
 	if (c)
 		debug(QString("Loading %1 built-in default preference(s)").arg(c));
+
+	sanatizePreferences();
 }
 
 void Recorder::savePreferences() {
 	preferences.save(getConfigFile());
 	// TODO: when failure?
+}
+
+void Recorder::sanatizePreferences() {
+	// this converts old preferences to new preferences
+
+	//int v = preferences.get(Pref::PreferencesVersion).toInt();
+
+	// this is where v is checked and the preferences updated
+
+	sanatizePreferencesGeneric();
+}
+
+void Recorder::sanatizePreferencesGeneric() {
+	QString s;
+	int i;
+	bool didSomething = false;
+
+	s = preferences.get(Pref::AutoRecordDefault).toString();
+	if (s != "ask" && s != "yes" && s != "no") {
+		preferences.get(Pref::AutoRecordDefault).set("ask");
+		didSomething = true;
+	}
+
+	s = preferences.get(Pref::OutputFormat).toString();
+	if (s != "mp3" && s != "vorbis" && s != "wav") {
+		preferences.get(Pref::OutputFormat).set("mp3");
+		didSomething = true;
+	}
+
+	i = preferences.get(Pref::OutputFormatMp3Bitrate).toInt();
+	if (i < 8 || (i < 64 && i % 8 != 0) || (i < 160 && i % 16 != 0) || i > 160) {
+		preferences.get(Pref::OutputFormatMp3Bitrate).set(64);
+		didSomething = true;
+	}
+
+	i = preferences.get(Pref::OutputFormatVorbisQuality).toInt();
+	if (i < -1 || i > 10) {
+		preferences.get(Pref::OutputFormatVorbisQuality).set(3);
+		didSomething = true;
+	}
+
+	s = preferences.get(Pref::OutputChannelMode).toString();
+	if (s != "stereo" && s != "oerets" && s != "mono") {
+		preferences.get(Pref::OutputChannelMode).set("stereo");
+		didSomething = true;
+	}
+
+	if (didSomething) {
+		debug("At least one preference has been reset to its default value, because it contained bogus data.");
+		savePreferences();
+	}
 }
 
 void Recorder::about() {

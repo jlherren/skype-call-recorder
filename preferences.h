@@ -213,6 +213,7 @@ X(OutputChannelMode,           output.channelmode)
 X(OutputSaveTags,              output.savetags)
 X(SuppressLegalInformation,    suppress.legalinformation)
 X(SuppressFirstRunInformation, suppress.firstruninformation)
+X(PreferencesVersion,          preferences.version)
 
 }
 
