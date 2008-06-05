@@ -104,6 +104,7 @@ static QHBoxLayout *makeHFrame(QVBoxLayout *parentLayout, const char *title) {
 
 PreferencesDialog::PreferencesDialog() : perCallerDialog(NULL) {
 	setWindowTitle(PROGRAM_NAME " - Preferences");
+	setAttribute(Qt::WA_DeleteOnClose);
 
 	QVBoxLayout *vbox;
 	QHBoxLayout *hbox;

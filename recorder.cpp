@@ -37,8 +37,7 @@
 #include "call.h"
 
 Recorder::Recorder(int argc, char **argv) :
-	QApplication(argc, argv),
-	preferencesDialog(NULL)
+	QApplication(argc, argv)
 {
 	recorderInstance = this;
 
@@ -72,9 +71,6 @@ void Recorder::setupGUI() {
 	connect(trayIcon, SIGNAL(requestAbout()),              this, SLOT(about()));
 	connect(trayIcon, SIGNAL(requestOpenPreferences()),    this, SLOT(openPreferences()));
 	connect(trayIcon, SIGNAL(requestBrowseCalls()),        this, SLOT(browseCalls()));
-
-	preferencesDialog = new PreferencesDialog();
-	connect(preferencesDialog, SIGNAL(finished(int)), this, SLOT(savePreferences()));
 
 	debug("GUI initialized");
 
@@ -204,6 +200,12 @@ void Recorder::about() {
 
 void Recorder::openPreferences() {
 	debug("Show preferences dialog");
+
+	if (!preferencesDialog) {
+		preferencesDialog = new PreferencesDialog();
+		connect(preferencesDialog, SIGNAL(finished(int)), this, SLOT(savePreferences()));
+	}
+
 	preferencesDialog->show();
 	preferencesDialog->raise();
 	preferencesDialog->activateWindow();
@@ -211,7 +213,8 @@ void Recorder::openPreferences() {
 
 void Recorder::closePreferences() {
 	debug("Hide preferences dialog");
-	preferencesDialog->hide();
+	if (preferencesDialog)
+		preferencesDialog->accept();
 }
 
 void Recorder::browseCalls() {
