@@ -45,7 +45,6 @@ class QDateTime;
 class Preference {
 public:
 	Preference(const Preference &p) : m_name(p.m_name), isSet(p.isSet), value(p.value) { }
-	Preference &operator=(const Preference &p) { m_name = p.m_name; isSet = p.isSet; value = p.value; return *this; }
 	Preference(const QString &n) : m_name(n), isSet(false) { }
 	template <typename T> Preference(const QString &n, const T &t) : m_name(n), isSet(false) { set(t); }
 
@@ -75,29 +74,48 @@ private:
 	QString m_name;
 	bool isSet;
 	QString value;
+
+private:
+	// disable assignment.  we want preference names to be immutable.
+	Preference &operator=(const Preference &);
 };
 
 // A collection of preferences that can be loaded/saved
 
 class BasePreferences {
 public:
+	BasePreferences() { };
+	~BasePreferences();
+
 	bool load(const QString &);
 	bool save(const QString &);
 
 	Preference &get(const QString &);
-	void clear() { prefs.clear(); }
+	void clear();
 
 	int count() const { return prefs.size(); }
 
 private:
-	QList<Preference> prefs;
+	// this is a list of pointers, so we can control the life time of each
+	// Preference.  we want references to them to be valid forever.  Only
+	// QLinkedList could give that guarantee, but it's unpractical for
+	// sorting.  QList<Preference> would technically be implemented as an
+	// array of pointers too, but its sorting semantics with regard to
+	// references are not the one we want.
+	QList<Preference *> prefs;
+
+	DISABLE_COPY_AND_ASSIGNMENT(BasePreferences);
 };
 
 // preferences with some utils
 
 class Preferences : public BasePreferences {
 public:
+	Preferences() { };
+
 	void setPerCallerPreference(const QString &, int);
+
+	DISABLE_COPY_AND_ASSIGNMENT(Preferences);
 };
 
 // The preferences dialog

@@ -35,6 +35,7 @@
 #include <QtAlgorithms>
 #include <QDir>
 #include <QDateTime>
+#include <QList>
 #include <ctime>
 
 #include "preferences.h"
@@ -603,6 +604,10 @@ bool Preference::listContains(const QString &value) {
 
 // base preferences
 
+BasePreferences::~BasePreferences() {
+	clear();
+}
+
 bool BasePreferences::load(const QString &filename) {
 	clear();
 	QFile file(filename);
@@ -629,8 +634,15 @@ bool BasePreferences::load(const QString &filename) {
 	return true;
 }
 
+namespace {
+bool comparePreferencePointers(const Preference *p1, const Preference *p2)
+{
+	return *p1 < *p2;
+}
+}
+
 bool BasePreferences::save(const QString &filename) {
-	qSort(prefs);
+	qSort(prefs.begin(), prefs.end(), comparePreferencePointers);
 	QFile file(filename);
 	if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
 		debug(QString("Can't open '%1' for saving preferences").arg(filename));
@@ -638,7 +650,7 @@ bool BasePreferences::save(const QString &filename) {
 	}
 	QTextStream out(&file);
 	for (int i = 0; i < prefs.size(); i++) {
-		const Preference &p = prefs.at(i);
+		const Preference &p = *prefs.at(i);
 		out << p.name() << " = " << p.toString() << "\n";
 	}
 	debug(QString("Saved %1 preferences to '%2'").arg(prefs.size()).arg(filename));
@@ -647,10 +659,16 @@ bool BasePreferences::save(const QString &filename) {
 
 Preference &BasePreferences::get(const QString &name) {
 	for (int i = 0; i < prefs.size(); i++)
-		if (prefs.at(i).name() == name)
-			return prefs[i];
-	prefs.append(Preference(name));
-	return prefs.last();
+		if (prefs.at(i)->name() == name)
+			return *prefs[i];
+	prefs.append(new Preference(name));
+	return *prefs.last();
+}
+
+void BasePreferences::clear() {
+	for (int i = 0; i < prefs.size(); i++)
+		delete prefs.at(i);
+	prefs.clear();
 }
 
 // preferences
