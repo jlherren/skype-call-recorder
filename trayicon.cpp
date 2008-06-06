@@ -60,7 +60,7 @@ TrayIcon::TrayIcon(QObject *p) : QSystemTrayIcon(p) {
 	menu->addAction("&Exit", this, SIGNAL(requestQuit()));
 
 	setContextMenu(menu);
-	setToolTip(PROGRAM_NAME);
+	updateToolTip();
 
 	connect(this, SIGNAL(activated(QSystemTrayIcon::ActivationReason)), this, SLOT(activate(QSystemTrayIcon::ActivationReason)));
 
@@ -87,6 +87,7 @@ void TrayIcon::startedCall(int id, const QString &skypeName) {
 	CallData &data = callMap[id];
 
 	data.skypeName = skypeName;
+	data.isRecording = false;
 	data.menu = new QMenu(QString("Call with ") + skypeName);
 	data.startAction = data.menu->addAction("&Start recording", smStart, SLOT(map()));
 	data.stopAction = data.menu->addAction("S&top recording", smStop, SLOT(map()));
@@ -101,6 +102,8 @@ void TrayIcon::startedCall(int id, const QString &skypeName) {
 	smStopAndDelete->setMapping(data.stopAndDeleteAction, id);
 
 	menu->insertMenu(separator, data.menu);
+
+	updateToolTip();
 }
 
 void TrayIcon::stoppedCall(int id) {
@@ -111,12 +114,15 @@ void TrayIcon::stoppedCall(int id) {
 	// deleting the menu deletes the actions, which automatically removes
 	// the signal mappings
 	callMap.remove(id);
+
+	updateToolTip();
 }
 
 void TrayIcon::startedRecording(int id) {
 	if (!callMap.contains(id))
 		return;
 	CallData &data = callMap[id];
+	data.isRecording = true;
 	data.startAction->setEnabled(false);
 	data.stopAction->setEnabled(true);
 	data.stopAndDeleteAction->setEnabled(true);
@@ -126,14 +132,34 @@ void TrayIcon::startedRecording(int id) {
 			QString("The call with %1 is now being recorded.").arg(data.skypeName),
 			Information, 5000);
 	}
+
+	updateToolTip();
 }
 
 void TrayIcon::stoppedRecording(int id) {
 	if (!callMap.contains(id))
 		return;
 	CallData &data = callMap[id];
+	data.isRecording = false;
 	data.startAction->setEnabled(true);
 	data.stopAction->setEnabled(false);
 	data.stopAndDeleteAction->setEnabled(false);
+
+	updateToolTip();
+}
+
+void TrayIcon::updateToolTip() {
+	QString str = PROGRAM_NAME;
+
+	if (!callMap.isEmpty()) {
+		for (CallMap::const_iterator i = callMap.constBegin(); i != callMap.constEnd(); ++i) {
+			const CallData &data = i.value();
+			str += QString(data.isRecording ?
+				"\nThe call with '%1' is being recorded" :
+				"\nThe call with '%1' is not being recorded").arg(data.skypeName);
+		}
+	}
+
+	setToolTip(str);
 }
 

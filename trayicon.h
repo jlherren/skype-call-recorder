@@ -62,8 +62,12 @@ private slots:
 	void activate(QSystemTrayIcon::ActivationReason);
 
 private:
+	void updateToolTip();
+
+private:
 	struct CallData {
 		QString skypeName;
+		bool isRecording;
 		QMenu *menu;
 		QAction *startAction;
 		QAction *stopAction;
