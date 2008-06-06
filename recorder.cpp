@@ -124,6 +124,7 @@ void Recorder::loadPreferences() {
 	X(Pref::SuppressLegalInformation,    false);
 	X(Pref::SuppressFirstRunInformation, false);
 	X(Pref::PreferencesVersion,          1);
+	X(Pref::NotifyRecordingStart,        true)
 	#undef X
 
 	c = preferences.count() - c;

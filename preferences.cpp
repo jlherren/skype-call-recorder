@@ -95,18 +95,20 @@ static QVBoxLayout *makeVFrame(QVBoxLayout *parentLayout, const char *title) {
 	return vbox;
 }
 
+#if 0
 static QHBoxLayout *makeHFrame(QVBoxLayout *parentLayout, const char *title) {
 	QGroupBox *box = new QGroupBox(title);
 	QHBoxLayout *hbox = new QHBoxLayout(box);
 	parentLayout->addWidget(box);
 	return hbox;
 }
+#endif
 
 PreferencesDialog::PreferencesDialog() : perCallerDialog(NULL) {
 	setWindowTitle(PROGRAM_NAME " - Preferences");
 	setAttribute(Qt::WA_DeleteOnClose);
 
-	QVBoxLayout *vbox;
+	QVBoxLayout *vbox, *vbox2;
 	QHBoxLayout *hbox;
 	QLabel *label;
 	QPushButton *button;
@@ -119,7 +121,9 @@ PreferencesDialog::PreferencesDialog() : perCallerDialog(NULL) {
 	bigvbox->setSizeConstraint(QLayout::SetFixedSize);
 
 	// ---- general options ----
-	hbox = makeHFrame(bigvbox, "Automatic recording");
+	vbox2 = makeVFrame(bigvbox, "Automatic recording");
+
+	hbox = new QHBoxLayout;
 
 	vbox = new QVBoxLayout;
 	Preference &preference = preferences.get(Pref::AutoRecordDefault);
@@ -135,6 +139,10 @@ PreferencesDialog::PreferencesDialog() : perCallerDialog(NULL) {
 	button = new QPushButton("&Per caller preferences");
 	connect(button, SIGNAL(clicked(bool)), this, SLOT(editPerCallerPreferences()));
 	hbox->addWidget(button, 0, Qt::AlignBottom);
+
+	vbox2->addLayout(hbox);
+	check = new SmartCheckBox("Show balloon notification when recording starts", preferences.get(Pref::NotifyRecordingStart));
+	vbox2->addWidget(check);
 
 	// ---- output file name ----
 	vbox = makeVFrame(bigvbox, "Output file");

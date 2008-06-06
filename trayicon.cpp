@@ -30,6 +30,7 @@
 #include "trayicon.h"
 #include "common.h"
 #include "skype.h"
+#include "preferences.h"
 
 TrayIcon::TrayIcon(QObject *p) : QSystemTrayIcon(p) {
 	if (!QSystemTrayIcon::isSystemTrayAvailable()) {
@@ -85,6 +86,7 @@ void TrayIcon::activate(QSystemTrayIcon::ActivationReason) {
 void TrayIcon::startedCall(int id, const QString &skypeName) {
 	CallData &data = callMap[id];
 
+	data.skypeName = skypeName;
 	data.menu = new QMenu(QString("Call with ") + skypeName);
 	data.startAction = data.menu->addAction("&Start recording", smStart, SLOT(map()));
 	data.stopAction = data.menu->addAction("S&top recording", smStop, SLOT(map()));
@@ -118,6 +120,12 @@ void TrayIcon::startedRecording(int id) {
 	data.startAction->setEnabled(false);
 	data.stopAction->setEnabled(true);
 	data.stopAndDeleteAction->setEnabled(true);
+
+	if (supportsMessages() && preferences.get(Pref::NotifyRecordingStart).toBool()) {
+		showMessage("Recording started",
+			QString("The call with %1 is now being recorded.").arg(data.skypeName),
+			Information, 5000);
+	}
 }
 
 void TrayIcon::stoppedRecording(int id) {

@@ -63,6 +63,7 @@ private slots:
 
 private:
 	struct CallData {
+		QString skypeName;
 		QMenu *menu;
 		QAction *startAction;
 		QAction *stopAction;
