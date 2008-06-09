@@ -256,7 +256,7 @@ void Call::startRecording(bool force) {
 	if (preferences.get(Pref::OutputSaveTags).toBool())
 		writer->setTags(constructCommentTag(), timeStartRecording);
 
-	bool b = writer->open(fn, 16000, channelMode != 0);
+	bool b = writer->open(fn, skypeSamplingRate, channelMode != 0);
 	fileName = writer->fileName();
 
 	if (!b) {
@@ -400,7 +400,7 @@ void Call::tryToWrite(bool flush) {
 		if (syncFile.isOpen())
 			syncFile.write(QString("%1 %2\n").arg(syncTime.elapsed()).arg(r - l).toAscii().constData());
 
-		if (std::labs(l - r) > 16000 * 10) {
+		if (std::labs(l - r) > skypeSamplingRate * 10) {
 			// more than 10 seconds out of sync, something went
 			// wrong.  avoid eating memory by accumulating data
 			debug(QString("Call %1: WARNING: seriously out of sync!").arg(id));
@@ -411,7 +411,7 @@ void Call::tryToWrite(bool flush) {
 			// skype usually sends new PCM data every 10ms (160
 			// samples at 16kHz).  let's accumulate at least 100ms
 			// of data before bothering to write it to disk
-			if (samples < 1600)
+			if (samples < skypeSamplingRate / 10)
 				return;
 		}
 	}

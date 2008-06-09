@@ -46,5 +46,7 @@ extern const char *recorderVersion;
 	DISABLE_COPY_CONSTRUCTOR(c); \
 	DISABLE_ASSIGNMENT_OP(c)
 
+const long skypeSamplingRate = 16000;
+
 #endif
 
