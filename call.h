@@ -31,6 +31,8 @@
 #include <QSet>
 #include <QPointer>
 #include <QDateTime>
+#include <QTime>
+#include <QFile>
 
 #include "common.h"
 
@@ -86,6 +88,8 @@ private:
 	QString fileName;
 	QPointer<QObject> confirmation;
 	QDateTime timeStartRecording;
+	QTime syncTime;
+	QFile syncFile;
 
 	QTcpServer *serverLocal, *serverRemote;
 	QTcpSocket *socketLocal, *socketRemote;

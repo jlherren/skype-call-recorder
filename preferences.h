@@ -215,6 +215,7 @@ X(SuppressLegalInformation,    suppress.legalinformation)
 X(SuppressFirstRunInformation, suppress.firstruninformation)
 X(PreferencesVersion,          preferences.version)
 X(NotifyRecordingStart,        notify.recordingstart)
+X(DebugWriteSyncFile,          debug.writesyncfile)
 
 }
 

@@ -294,6 +294,12 @@ void Call::startRecording(bool force) {
 		return;
 	}
 
+	if (preferences.get(Pref::DebugWriteSyncFile).toBool()) {
+		syncFile.setFileName(fn + ".sync");
+		syncFile.open(QIODevice::WriteOnly);
+		syncTime.start();
+	}
+
 	isRecording = true;
 	emit startedRecording(id);
 }
@@ -391,6 +397,9 @@ void Call::tryToWrite(bool flush) {
 		long l = bufferLocal.size() / 2;
 		long r = bufferRemote.size() / 2;
 
+		if (syncFile.isOpen())
+			syncFile.write(QString("%1 %2\n").arg(syncTime.elapsed()).arg(r - l).toAscii().constData());
+
 		if (std::labs(l - r) > 16000 * 10) {
 			// more than 10 seconds out of sync, something went
 			// wrong.  avoid eating memory by accumulating data
@@ -468,6 +477,9 @@ void Call::stopRecording(bool flush) {
 		tryToWrite(true);
 	writer->close();
 	delete writer;
+
+	if (syncFile.isOpen())
+		syncFile.close();
 
 	// we must disconnect all signals from the sockets first, so that upon
 	// closing them it won't call checkConnections() and we don't land here

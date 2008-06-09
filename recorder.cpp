@@ -125,6 +125,7 @@ void Recorder::loadPreferences() {
 	X(Pref::SuppressFirstRunInformation, false);
 	X(Pref::PreferencesVersion,          1);
 	X(Pref::NotifyRecordingStart,        true)
+	X(Pref::DebugWriteSyncFile,          false)
 	#undef X
 
 	c = preferences.count() - c;
