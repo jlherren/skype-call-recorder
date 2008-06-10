@@ -45,6 +45,26 @@ class LegalInformationDialog;
 
 typedef int CallID;
 
+class AutoSync {
+public:
+	AutoSync(int, long);
+	~AutoSync();
+	void add(long);
+	long getSync();
+	void reset();
+
+private:
+	long *delays;
+	int size;
+	int index;
+	long sum;
+	qint64 sum2;
+	long precision;
+	int suppress;
+
+	DISABLE_COPY_AND_ASSIGNMENT(AutoSync);
+};
+
 class Call : public QObject {
 	Q_OBJECT
 public:
@@ -74,6 +94,7 @@ private:
 	void mixToMono(long);
 	void setShouldRecord();
 	void ask();
+	void doSync(long);
 
 private:
 	Skype *skype;
@@ -88,8 +109,10 @@ private:
 	QString fileName;
 	QPointer<QObject> confirmation;
 	QDateTime timeStartRecording;
+
 	QTime syncTime;
 	QFile syncFile;
+	AutoSync sync;
 
 	QTcpServer *serverLocal, *serverRemote;
 	QTcpSocket *socketLocal, *socketRemote;

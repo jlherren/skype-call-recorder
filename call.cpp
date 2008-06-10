@@ -27,6 +27,8 @@
 #include <QTcpSocket>
 #include <QMessageBox>
 #include <cstdlib>
+#include <cmath>
+#include <cstring>
 
 #include "call.h"
 #include "common.h"
@@ -37,6 +39,56 @@
 #include "preferences.h"
 #include "gui.h"
 
+// AutoSync - automatic resynchronization of the two streams.  this class has a
+// circular buffer that keeps track of the delay between the two streams.  it
+// calculates the running average and deviation and then tells if and how much
+// correction should be applied.
+
+AutoSync::AutoSync(int s, long p) :
+	size(s),
+	index(0),
+	sum(0),
+	sum2(0),
+	precision(p),
+	suppress(s)
+{
+	delays = new long[size];
+	std::memset(delays, 0, sizeof(long) * size);
+}
+
+AutoSync::~AutoSync() {
+	delete[] delays;
+}
+
+void AutoSync::add(long d) {
+	long old = delays[index];
+	sum += d - old;
+	sum2 += (qint64)d * (qint64)d - (qint64)old * (qint64)old;
+	delays[index++] = d;
+	if (index >= size)
+		index = 0;
+	if (suppress)
+		suppress--;
+}
+
+long AutoSync::getSync() {
+	if (suppress)
+		return 0;
+
+	float avg = (float)sum / (float)size;
+	float dev = std::sqrt(((float)sum2 - (float)sum * (float)sum / (float)size) / (float)size);
+
+	if (std::fabs(avg) > (float)precision && dev < (float)precision)
+		return (long)avg;
+
+	return 0;
+}
+
+void AutoSync::reset() {
+	suppress = size;
+}
+
+// Call class
 
 Call::Call(QObject *p, Skype *sk, CallID i) :
 	QObject(p),
@@ -45,7 +97,8 @@ Call::Call(QObject *p, Skype *sk, CallID i) :
 	status("UNKNOWN"),
 	writer(NULL),
 	isRecording(false),
-	shouldRecord(1)
+	shouldRecord(1),
+	sync(100 * 2 * 3, 320) // approx 3 seconds
 {
 	debug(QString("Call %1: Call object contructed").arg(id));
 
@@ -382,6 +435,16 @@ long Call::padBuffers() {
 	return l / 2;
 }
 
+void Call::doSync(long s) {
+	if (s > 0) {
+		bufferLocal.append(QByteArray(s * 2, 0));
+		debug(QString("Call %1: padding %2 samples on local buffer").arg(id).arg(s));
+	} else {
+		bufferRemote.append(QByteArray(s * -2, 0));
+		debug(QString("Call %1: padding %2 samples on remote buffer").arg(id).arg(-s));
+	}
+}
+
 void Call::tryToWrite(bool flush) {
 	//debug(QString("Situation: %3, %4").arg(bufferLocal.size()).arg(bufferRemote.size()));
 
@@ -397,14 +460,28 @@ void Call::tryToWrite(bool flush) {
 		long l = bufferLocal.size() / 2;
 		long r = bufferRemote.size() / 2;
 
-		if (syncFile.isOpen())
-			syncFile.write(QString("%1 %2\n").arg(syncTime.elapsed()).arg(r - l).toAscii().constData());
+		sync.add(r - l);
 
-		if (std::labs(l - r) > skypeSamplingRate * 10) {
-			// more than 10 seconds out of sync, something went
+		long syncAmount = sync.getSync();
+		syncAmount = (syncAmount / 160) * 160;
+
+		if (syncAmount) {
+			doSync(syncAmount);
+			sync.reset();
+			l = bufferLocal.size() / 2;
+			r = bufferRemote.size() / 2;
+		}
+
+		if (syncFile.isOpen())
+			syncFile.write(QString("%1 %2 %3\n").arg(syncTime.elapsed()).arg(r - l).arg(syncAmount).toAscii().constData());
+
+		if (std::labs(r - l) > skypeSamplingRate * 20) {
+			// more than 20 seconds out of sync, something went
 			// wrong.  avoid eating memory by accumulating data
-			debug(QString("Call %1: WARNING: seriously out of sync!").arg(id));
+			long s = (r - l) / skypeSamplingRate;
+			debug(QString("Call %1: WARNING: seriously out of sync by %2s; padding").arg(id).arg(s));
 			samples = padBuffers();
+			sync.reset();
 		} else {
 			samples = l < r ? l : r;
 

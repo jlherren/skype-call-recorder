@@ -7,7 +7,8 @@ set ylabel "Delay (s)"
 set title "$1"
 set xdata time
 set timefmt "%s"
-plot "$1" using (\$1/1000):(\$2/16000) with lines notitle
+plot "$1" using (\$1/1000):(\$2/16000) with lines notitle, \
+	"$1" using (\$1/1000):(\$3/16000) with lines notitle
 pause mouse
 exit
 
