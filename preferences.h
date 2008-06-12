@@ -29,6 +29,7 @@
 #include <QString>
 #include <QStringList>
 #include <QAbstractListModel>
+#include <QPointer>
 
 #include "common.h"
 
@@ -131,14 +132,13 @@ protected:
 private slots:
 	void updateFormatSettings();
 	void editPerCallerPreferences();
-	void perCallerFinished();
 	void updatePatternToolTip(const QString &);
 
 private:
 	QList<QWidget *> mp3Settings;
 	QList<QWidget *> vorbisSettings;
 	SmartComboBox *formatWidget;
-	PerCallerPreferencesDialog *perCallerDialog;
+	QPointer<PerCallerPreferencesDialog> perCallerDialog;
 	SmartEditableComboBox *patternWidget;
 
 	DISABLE_COPY_AND_ASSIGNMENT(PreferencesDialog);

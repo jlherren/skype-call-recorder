@@ -104,7 +104,7 @@ static QHBoxLayout *makeHFrame(QVBoxLayout *parentLayout, const char *title) {
 }
 #endif
 
-PreferencesDialog::PreferencesDialog() : perCallerDialog(NULL) {
+PreferencesDialog::PreferencesDialog() {
 	setWindowTitle(PROGRAM_NAME " - Preferences");
 	setAttribute(Qt::WA_DeleteOnClose);
 
@@ -276,11 +276,6 @@ void PreferencesDialog::updateFormatSettings() {
 
 void PreferencesDialog::editPerCallerPreferences() {
 	perCallerDialog = new PerCallerPreferencesDialog(this);
-	connect(perCallerDialog, SIGNAL(finished(int)), this, SLOT(perCallerFinished()));
-}
-
-void PreferencesDialog::perCallerFinished() {
-	perCallerDialog = NULL;
 }
 
 void PreferencesDialog::hideEvent(QHideEvent *event) {
