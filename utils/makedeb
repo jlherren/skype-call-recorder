@@ -17,7 +17,7 @@ fi
 
 execdir=${0%/*}
 
-tmp=tmp.debbuild.$$
+tmp=tmp-deb-build
 rm -rf "$tmp"
 mkdir "$tmp"
 

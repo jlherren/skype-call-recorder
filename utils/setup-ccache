@@ -1,0 +1,7 @@
+
+# you must source in this file into your shell, like this:
+# . utils/setup-ccache
+
+export CC='ccache gcc'
+export CXX='ccache g++'
+
