@@ -320,6 +320,11 @@ void PreferencesDialog::updatePatternToolTip(const QString &pattern) {
 	patternWidget->setToolTip(tip);
 }
 
+void PreferencesDialog::closePerCallerDialog() {
+	if (perCallerDialog)
+		perCallerDialog->accept();
+}
+
 // per caller preferences editor
 
 PerCallerPreferencesDialog::PerCallerPreferencesDialog(QWidget *parent) : QDialog(parent) {
@@ -679,7 +684,7 @@ void BasePreferences::clear() {
 
 void Preferences::setPerCallerPreference(const QString &sn, int mode) {
 	// this would interfer with the per caller dialog
-	recorderInstance->closePreferences();
+	recorderInstance->closePerCallerDialog();
 
 	Preference &pYes = get(Pref::AutoRecordYes);
 	Preference &pAsk = get(Pref::AutoRecordAsk);

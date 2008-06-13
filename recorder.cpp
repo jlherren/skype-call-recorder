@@ -213,10 +213,10 @@ void Recorder::openPreferences() {
 	preferencesDialog->activateWindow();
 }
 
-void Recorder::closePreferences() {
-	debug("Hide preferences dialog");
+void Recorder::closePerCallerDialog() {
+	debug("Hide per-caller dialog");
 	if (preferencesDialog)
-		preferencesDialog->accept();
+		preferencesDialog->closePerCallerDialog();
 }
 
 void Recorder::browseCalls() {

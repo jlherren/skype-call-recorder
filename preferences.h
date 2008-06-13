@@ -125,6 +125,7 @@ class PreferencesDialog : public QDialog {
 	Q_OBJECT
 public:
 	PreferencesDialog();
+	void closePerCallerDialog();
 
 protected:
 	void hideEvent(QHideEvent *);

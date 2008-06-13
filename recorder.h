@@ -48,7 +48,7 @@ public:
 public slots:
 	void about();
 	void openPreferences();
-	void closePreferences();
+	void closePerCallerDialog();
 	void browseCalls();
 	void quitConfirmation();
 	void skypeNotify(const QString &);
