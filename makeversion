@@ -22,9 +22,9 @@ test -z "$commit" && commit=unknown
 test -z "$version" && version=unknown
 cat > "$output-new" <<EOF
 #include "common.h"
-const char *recorderCommit = "$commit";
-const char *recorderDate = "$date";
-const char *recorderVersion = "$version";
+const char *const recorderCommit = "$commit";
+const char *const recorderDate = "$date";
+const char *const recorderVersion = "$version";
 EOF
 
 if test -e "$output" && diff -q "$output" "$output-new" > /dev/null 2>&1; then

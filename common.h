@@ -34,9 +34,9 @@ extern void debug(const QString &);
 extern Recorder *recorderInstance;
 
 // this is provided by the generated version.cpp file
-extern const char *recorderCommit;
-extern const char *recorderDate;
-extern const char *recorderVersion;
+extern const char *const recorderCommit;
+extern const char *const recorderDate;
+extern const char *const recorderVersion;
 
 #define DISABLE_COPY_CONSTRUCTOR(c) \
 	private: c(const c &)
