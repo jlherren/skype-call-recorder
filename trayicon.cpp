@@ -68,9 +68,6 @@ TrayIcon::TrayIcon(QObject *p) : QSystemTrayIcon(p) {
 }
 
 TrayIcon::~TrayIcon() {
-	for (CallMap::const_iterator i = callMap.constBegin(); i != callMap.constEnd(); ++i)
-		delete i.value().menu;
-
 	delete menu;
 }
 
@@ -88,7 +85,7 @@ void TrayIcon::startedCall(int id, const QString &skypeName) {
 
 	data.skypeName = skypeName;
 	data.isRecording = false;
-	data.menu = new QMenu(QString("Call with ") + skypeName);
+	data.menu = new QMenu(QString("Call with ") + skypeName, menu);
 	data.startAction = data.menu->addAction("&Start recording", smStart, SLOT(map()));
 	data.stopAction = data.menu->addAction("S&top recording", smStop, SLOT(map()));
 	data.stopAndDeleteAction = data.menu->addAction("Stop recording and &delete file", smStopAndDelete, SLOT(map()));
