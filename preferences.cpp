@@ -47,7 +47,8 @@ Preferences preferences;
 
 QString getOutputPath() {
 	QString path = preferences.get(Pref::OutputPath).toString();
-	path.replace('~', QDir::homePath());
+	if (path.startsWith('~'))
+		path.replace(0, 1, QDir::homePath());
 	return path;
 }
 
