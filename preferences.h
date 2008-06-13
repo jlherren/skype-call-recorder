@@ -39,6 +39,7 @@ class PerCallerModel;
 class PerCallerPreferencesDialog;
 class QRadioButton;
 class SmartEditableComboBox;
+class SmartLineEdit;
 class QDateTime;
 
 // A single preference, with a name and a value
@@ -134,10 +135,12 @@ private slots:
 	void updateFormatSettings();
 	void editPerCallerPreferences();
 	void updatePatternToolTip(const QString &);
+	void browseOutputPath();
 
 private:
 	QList<QWidget *> mp3Settings;
 	QList<QWidget *> vorbisSettings;
+	SmartLineEdit *outputPathEdit;
 	SmartComboBox *formatWidget;
 	QPointer<PerCallerPreferencesDialog> perCallerDialog;
 	SmartEditableComboBox *patternWidget;

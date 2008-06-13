@@ -36,6 +36,8 @@
 #include <QDir>
 #include <QDateTime>
 #include <QList>
+#include <QFileIconProvider>
+#include <QFileDialog>
 #include <ctime>
 
 #include "preferences.h"
@@ -114,7 +116,6 @@ PreferencesDialog::PreferencesDialog() {
 	QLabel *label;
 	QPushButton *button;
 	SmartComboBox *combo;
-	SmartLineEdit *edit;
 	SmartRadioButton *radio;
 	SmartCheckBox *check;
 
@@ -149,10 +150,15 @@ PreferencesDialog::PreferencesDialog() {
 	vbox = makeVFrame(bigvbox, "Output file");
 
 	label = new QLabel("&Save recorded calls here:");
-	edit = new SmartLineEdit(preferences.get(Pref::OutputPath));
-	label->setBuddy(edit);
+	outputPathEdit = new SmartLineEdit(preferences.get(Pref::OutputPath));
+	label->setBuddy(outputPathEdit);
+	button = new QPushButton(QFileIconProvider().icon(QFileIconProvider::Folder), "");
+	connect(button, SIGNAL(clicked(bool)), this, SLOT(browseOutputPath()));
+	hbox = new QHBoxLayout;
+	hbox->addWidget(outputPathEdit);
+	hbox->addWidget(button);
 	vbox->addWidget(label);
-	vbox->addWidget(edit);
+	vbox->addLayout(hbox);
 
 	label = new QLabel("&File name:");
 	patternWidget = new SmartEditableComboBox(preferences.get(Pref::OutputPattern));
@@ -277,6 +283,26 @@ void PreferencesDialog::updateFormatSettings() {
 
 void PreferencesDialog::editPerCallerPreferences() {
 	perCallerDialog = new PerCallerPreferencesDialog(this);
+}
+
+void PreferencesDialog::browseOutputPath() {
+	QString home = QDir::homePath();
+	QString path = outputPathEdit->text();
+	if (path.startsWith('~'))
+		path.replace(0, 1, QDir::homePath());
+	QFileDialog dialog(this, "Select output path", path);
+	dialog.setFileMode(QFileDialog::DirectoryOnly);
+	if (!dialog.exec())
+		return;
+	QStringList list = dialog.selectedFiles();
+	if (!list.size())
+		return;
+	path = list.at(0);
+	if (path.startsWith(home))
+		path.replace(0, home.size(), '~');
+	if (path.endsWith('/') || path.endsWith('\\'))
+		path.chop(1);
+	outputPathEdit->setText(path);
 }
 
 void PreferencesDialog::hideEvent(QHideEvent *event) {

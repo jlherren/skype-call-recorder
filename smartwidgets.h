@@ -82,6 +82,9 @@ public:
 		connect(this, SIGNAL(editingFinished()), this, SLOT(set()));
 	}
 
+public slots:
+	void setText(const QString &text) { QLineEdit::setText(text); set(); }
+
 private slots:
 	void set() { preference.set(text()); }
 
