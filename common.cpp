@@ -26,6 +26,8 @@
 
 Recorder *recorderInstance = NULL;
 
+const char *const websiteURL = "http://atdot.ch/scr/";
+
 void debug(const QString &s) {
 	if (recorderInstance)
 		recorderInstance->debugMessage(s);

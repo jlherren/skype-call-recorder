@@ -43,6 +43,7 @@ signals:
 	void requestQuit();
 	void requestQuitNoConfirmation();
 	void requestAbout();
+	void requestWebsite();
 	void requestOpenPreferences();
 	void requestBrowseCalls();
 
@@ -78,6 +79,7 @@ private:
 
 private:
 	QMenu *menu;
+	QMenu *aboutMenu;
 	QAction *separator;
 	CallMap callMap;
 	QSignalMapper *smStart;

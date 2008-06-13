@@ -47,6 +47,7 @@ extern const char *recorderVersion;
 	DISABLE_ASSIGNMENT_OP(c)
 
 const long skypeSamplingRate = 16000;
+extern const char *const websiteURL;
 
 #endif
 

@@ -25,6 +25,8 @@
 #include <QDir>
 #include <QProcess>
 #include <QTimer>
+#include <QDesktopServices>
+#include <QUrl>
 #include <iostream>
 #include <cstdlib>
 
@@ -69,6 +71,7 @@ void Recorder::setupGUI() {
 	connect(trayIcon, SIGNAL(requestQuit()),               this, SLOT(quitConfirmation()));
 	connect(trayIcon, SIGNAL(requestQuitNoConfirmation()), this, SLOT(quit()));
 	connect(trayIcon, SIGNAL(requestAbout()),              this, SLOT(about()));
+	connect(trayIcon, SIGNAL(requestWebsite()),            this, SLOT(openWebsite()));
 	connect(trayIcon, SIGNAL(requestOpenPreferences()),    this, SLOT(openPreferences()));
 	connect(trayIcon, SIGNAL(requestBrowseCalls()),        this, SLOT(browseCalls()));
 
@@ -198,6 +201,10 @@ void Recorder::about() {
 
 	aboutDialog->raise();
 	aboutDialog->activateWindow();
+}
+
+void Recorder::openWebsite() {
+	QDesktopServices::openUrl(QUrl::fromEncoded(websiteURL));
 }
 
 void Recorder::openPreferences() {

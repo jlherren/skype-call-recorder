@@ -55,7 +55,11 @@ TrayIcon::TrayIcon(QObject *p) : QSystemTrayIcon(p) {
 	separator = menu->addSeparator();
 	menu->addAction("&Browse previous calls", this, SIGNAL(requestBrowseCalls()));
 	menu->addAction("Open &preferences...", this, SIGNAL(requestOpenPreferences()));
-	menu->addAction("&About " PROGRAM_NAME, this, SIGNAL(requestAbout()));
+
+	aboutMenu = menu->addMenu("&About");
+	aboutMenu->addAction("&About " PROGRAM_NAME, this, SIGNAL(requestAbout()));
+	aboutMenu->addAction("Visit &website", this, SIGNAL(requestWebsite()));
+
 	menu->addSeparator();
 	menu->addAction("&Exit", this, SIGNAL(requestQuit()));
 

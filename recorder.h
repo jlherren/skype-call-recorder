@@ -47,6 +47,7 @@ public:
 
 public slots:
 	void about();
+	void openWebsite();
 	void openPreferences();
 	void closePerCallerDialog();
 	void browseCalls();
