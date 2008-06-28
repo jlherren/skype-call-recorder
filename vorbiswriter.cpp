@@ -92,10 +92,13 @@ bool VorbisWriter::open(const QString &fn, long sr, bool s) {
 	// with vorbis_encode_ctl(), but I didn't find anything concrete
 
 	vorbis_comment_init(&pd->vc);
-	// unfortunately, this takes a char * and not a const char *
-	vorbis_comment_add_tag(&pd->vc, "COMMENT", tagComment.toUtf8().data());
-	vorbis_comment_add_tag(&pd->vc, "DATE", tagTime.toString("yyyy-MM-dd hh:mm").toAscii().data());
-	vorbis_comment_add_tag(&pd->vc, "GENRE", "Speech (Skype Call)");
+	// vorbis_comment_add_tag() in libvorbis up to version 1.2.0
+	// incorrectly takes a char * instead of a const char *.  to prevent
+	// compiler warnings we use const_cast<>(), since it's known that
+	// libvorbis does not change the arguments.
+	vorbis_comment_add_tag(&pd->vc, const_cast<const char *>("COMMENT"), const_cast<const char *>(tagComment.toUtf8().constData()));
+	vorbis_comment_add_tag(&pd->vc, const_cast<const char *>("DATE"), const_cast<const char *>(tagTime.toString("yyyy-MM-dd hh:mm").toAscii().constData()));
+	vorbis_comment_add_tag(&pd->vc, const_cast<const char *>("GENRE"), const_cast<const char *>("Speech (Skype Call)"));
 
 	vorbis_analysis_init(&pd->vd, &pd->vi);
 	vorbis_block_init(&pd->vd, &pd->vb);
