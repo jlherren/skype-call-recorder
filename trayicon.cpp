@@ -26,6 +26,7 @@
 #include <QMenu>
 #include <QCursor>
 #include <QSignalMapper>
+#include <QTimer>
 
 #include "trayicon.h"
 #include "common.h"
@@ -34,11 +35,8 @@
 
 TrayIcon::TrayIcon(QObject *p) : QSystemTrayIcon(p) {
 	if (!QSystemTrayIcon::isSystemTrayAvailable()) {
-		QMessageBox::critical(NULL, PROGRAM_NAME " - Error",
-			PROGRAM_NAME " cannot start, because it requires a system tray.  None was detected.  "
-			"(TODO: Make this work even without a system tray.)");
-		emit requestQuitNoConfirmation();
-		return;
+		debug("Warning: No system tray detected.  Will check again in 10 seconds.");
+		QTimer::singleShot(10000, this, SLOT(checkTrayPresence()));
 	}
 
 	smStart = new QSignalMapper(this);
@@ -73,6 +71,17 @@ TrayIcon::TrayIcon(QObject *p) : QSystemTrayIcon(p) {
 
 TrayIcon::~TrayIcon() {
 	delete menu;
+}
+
+void TrayIcon::checkTrayPresence() {
+	if (QSystemTrayIcon::isSystemTrayAvailable()) {
+		debug("System tray now present, all ok.");
+	} else {
+		QMessageBox::critical(NULL, PROGRAM_NAME " - Error",
+			PROGRAM_NAME " cannot start, because it requires a system tray.  None was detected.  "
+			"(TODO: Make this work even without a system tray.)");
+		emit requestQuitNoConfirmation();
+	}
 }
 
 void TrayIcon::setColor(bool color) {

@@ -60,6 +60,7 @@ public slots:
 	void stoppedRecording(int);
 
 private slots:
+	void checkTrayPresence();
 	void activate(QSystemTrayIcon::ActivationReason);
 
 private:
