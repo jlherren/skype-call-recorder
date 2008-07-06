@@ -36,7 +36,7 @@ git archive --format=tar --prefix="$base/" "$tree" | tar -x -C "$tmp"
 rm -f "$tmp/$base/.gitignore"
 rm -rf "$tmp/$base/utils/"{makedeb,snapshot}
 git rev-parse "$tree" > "$tmp/$base/gitcommit"
-git describe "$tree" 2> /dev/null > "$tmp/$base/version" || cp "$tmp/$base/gitcommit" "$tmp/$base/version"
+git describe --tags "$tree" 2> /dev/null > "$tmp/$base/version" || cp "$tmp/$base/gitcommit" "$tmp/$base/version"
 tar -C "$tmp" -c "$base" | gzip -9 > "$outfile"
 
 rm -rf "$tmp"
