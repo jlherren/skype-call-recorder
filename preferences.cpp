@@ -708,6 +708,15 @@ Preference &BasePreferences::get(const QString &name) {
 	return *prefs.last();
 }
 
+void BasePreferences::remove(const QString &name) {
+	for (int i = 0; i < prefs.size(); i++) {
+		if (prefs.at(i)->name() == name) {
+			delete prefs.takeAt(i);
+			return;
+		}
+	}
+}
+
 void BasePreferences::clear() {
 	for (int i = 0; i < prefs.size(); i++)
 		delete prefs.at(i);

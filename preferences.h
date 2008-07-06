@@ -93,6 +93,9 @@ public:
 	bool save(const QString &);
 
 	Preference &get(const QString &);
+	// Warning: remove() must only be used if nobody has a pointer to the
+	// preference, like for example smart widgets
+	void remove(const QString &);
 	void clear();
 
 	int count() const { return prefs.size(); }
