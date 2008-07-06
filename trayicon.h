@@ -61,7 +61,7 @@ public slots:
 
 private slots:
 	void checkTrayPresence();
-	void activate(QSystemTrayIcon::ActivationReason);
+	void activate();
 
 private:
 	void updateToolTip();

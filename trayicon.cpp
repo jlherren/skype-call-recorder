@@ -64,7 +64,7 @@ TrayIcon::TrayIcon(QObject *p) : QSystemTrayIcon(p) {
 	setContextMenu(menu);
 	updateToolTip();
 
-	connect(this, SIGNAL(activated(QSystemTrayIcon::ActivationReason)), this, SLOT(activate(QSystemTrayIcon::ActivationReason)));
+	connect(this, SIGNAL(activated(QSystemTrayIcon::ActivationReason)), this, SLOT(activate()));
 
 	show();
 }
@@ -89,7 +89,7 @@ void TrayIcon::setColor(bool color) {
 }
 
 
-void TrayIcon::activate(QSystemTrayIcon::ActivationReason) {
+void TrayIcon::activate() {
 	contextMenu()->popup(QCursor::pos());
 }
 
