@@ -35,6 +35,7 @@ class QWidget;
 class QCheckBox;
 class QHBoxLayout;
 class QVBoxLayout;
+class QPushButton;
 
 // base dialog with a pixmap, a vbox and an hbox
 
@@ -98,6 +99,44 @@ public:
 	FirstRunDialog();
 
 	DISABLE_COPY_AND_ASSIGNMENT(FirstRunDialog);
+};
+
+// message about missing system tray
+
+class NoSystemTrayDialog : public IconDialogBase {
+	Q_OBJECT
+public:
+	NoSystemTrayDialog();
+
+signals:
+	void useWindowedModeNow();
+	void useWindowedModeAlways();
+	void doQuit();
+
+private slots:
+	void buttonAlways();
+	void buttonYes();
+	void buttonDoQuit();
+
+private:
+	DISABLE_COPY_AND_ASSIGNMENT(NoSystemTrayDialog);
+};
+
+// main window for system tray-less operation
+
+class MainWindow : public QWidget {
+	Q_OBJECT
+public:
+	MainWindow(QWidget * = NULL);
+	void setColor(bool);
+
+signals:
+	void activate();
+
+private:
+	QPushButton *button;
+
+	DISABLE_COPY_AND_ASSIGNMENT(MainWindow);
 };
 
 #endif

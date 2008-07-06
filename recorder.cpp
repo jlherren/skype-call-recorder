@@ -69,7 +69,6 @@ void Recorder::setupGUI() {
 
 	trayIcon = new TrayIcon(this);
 	connect(trayIcon, SIGNAL(requestQuit()),               this, SLOT(quitConfirmation()));
-	connect(trayIcon, SIGNAL(requestQuitNoConfirmation()), this, SLOT(quit()));
 	connect(trayIcon, SIGNAL(requestAbout()),              this, SLOT(about()));
 	connect(trayIcon, SIGNAL(requestWebsite()),            this, SLOT(openWebsite()));
 	connect(trayIcon, SIGNAL(requestOpenPreferences()),    this, SLOT(openPreferences()));
@@ -128,6 +127,7 @@ void Recorder::loadPreferences() {
 	X(Pref::SuppressFirstRunInformation, false);
 	X(Pref::PreferencesVersion,          1);
 	X(Pref::NotifyRecordingStart,        true)
+	X(Pref::GuiWindowed,                 false)
 	X(Pref::DebugWriteSyncFile,          false)
 	#undef X
 

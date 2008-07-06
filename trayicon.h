@@ -25,6 +25,7 @@
 #define TRAYICON_H
 
 #include <QSystemTrayIcon>
+#include <QPointer>
 #include <QMap>
 
 #include "common.h"
@@ -32,6 +33,7 @@
 class QAction;
 class QMenu;
 class QSignalMapper;
+class MainWindow;
 
 class TrayIcon : public QSystemTrayIcon {
 	Q_OBJECT
@@ -41,7 +43,6 @@ public:
 
 signals:
 	void requestQuit();
-	void requestQuitNoConfirmation();
 	void requestAbout();
 	void requestWebsite();
 	void requestOpenPreferences();
@@ -61,6 +62,8 @@ public slots:
 
 private slots:
 	void checkTrayPresence();
+	void setWindowedMode();
+	void createMainWindow();
 	void activate();
 
 private:
@@ -86,6 +89,8 @@ private:
 	QSignalMapper *smStart;
 	QSignalMapper *smStop;
 	QSignalMapper *smStopAndDelete;
+	QPointer<MainWindow> window;
+	bool colored;
 
 	DISABLE_COPY_AND_ASSIGNMENT(TrayIcon);
 };

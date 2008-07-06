@@ -249,6 +249,13 @@ PreferencesDialog::PreferencesDialog() {
 	vorbisSettings.append(check);
 	vbox->addWidget(check);
 
+	// ---- advanced ----
+	vbox = makeVFrame(bigvbox, "Advanced");
+
+	check = new SmartCheckBox("Display a small main window (needs restart)", preferences.get(Pref::GuiWindowed));
+	check->setToolTip("Use this if your environment does not provide a system tray.");
+	vbox->addWidget(check);
+
 	// ---- buttons ----
 
 	hbox = new QHBoxLayout;

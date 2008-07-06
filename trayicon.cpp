@@ -22,7 +22,6 @@
 */
 
 #include <QSystemTrayIcon>
-#include <QMessageBox>
 #include <QMenu>
 #include <QCursor>
 #include <QSignalMapper>
@@ -32,11 +31,18 @@
 #include "common.h"
 #include "skype.h"
 #include "preferences.h"
+#include "gui.h"
 
 TrayIcon::TrayIcon(QObject *p) : QSystemTrayIcon(p) {
-	if (!QSystemTrayIcon::isSystemTrayAvailable()) {
-		debug("Warning: No system tray detected.  Will check again in 10 seconds.");
-		QTimer::singleShot(10000, this, SLOT(checkTrayPresence()));
+	setColor(false);
+
+	if (preferences.get(Pref::GuiWindowed).toBool()) {
+		createMainWindow();
+	} else {
+		if (!QSystemTrayIcon::isSystemTrayAvailable()) {
+			debug("Warning: No system tray detected.  Will check again in 10 seconds.");
+			QTimer::singleShot(10000, this, SLOT(checkTrayPresence()));
+		}
 	}
 
 	smStart = new QSignalMapper(this);
@@ -46,8 +52,6 @@ TrayIcon::TrayIcon(QObject *p) : QSystemTrayIcon(p) {
 	connect(smStart, SIGNAL(mapped(int)), this, SIGNAL(startRecording(int)));
 	connect(smStop, SIGNAL(mapped(int)), this, SIGNAL(stopRecording(int)));
 	connect(smStopAndDelete, SIGNAL(mapped(int)), this, SIGNAL(stopRecordingAndDelete(int)));
-
-	setColor(false);
 
 	menu = new QMenu;
 	separator = menu->addSeparator();
@@ -71,21 +75,40 @@ TrayIcon::TrayIcon(QObject *p) : QSystemTrayIcon(p) {
 
 TrayIcon::~TrayIcon() {
 	delete menu;
+	delete window;
+}
+
+void TrayIcon::createMainWindow() {
+	window = new MainWindow;
+	connect(window, SIGNAL(activate()), this, SLOT(activate()));
+	connect(window, SIGNAL(destroyed()), this, SIGNAL(requestQuit()));
+	window->setColor(colored);
 }
 
 void TrayIcon::checkTrayPresence() {
 	if (QSystemTrayIcon::isSystemTrayAvailable()) {
 		debug("System tray now present, all ok.");
 	} else {
-		QMessageBox::critical(NULL, PROGRAM_NAME " - Error",
-			PROGRAM_NAME " cannot start, because it requires a system tray.  None was detected.  "
-			"(TODO: Make this work even without a system tray.)");
-		emit requestQuitNoConfirmation();
+		QWidget *dialog = new NoSystemTrayDialog;
+
+		connect(dialog, SIGNAL(useWindowedModeNow())   , this, SLOT(createMainWindow()));
+		connect(dialog, SIGNAL(useWindowedModeAlways()), this, SLOT(createMainWindow()));
+		connect(dialog, SIGNAL(useWindowedModeAlways()), this, SLOT(setWindowedMode()));
+		connect(dialog, SIGNAL(doQuit()),                this, SIGNAL(requestQuit()));
 	}
 }
 
+void TrayIcon::setWindowedMode() {
+	preferences.get(Pref::GuiWindowed).set(true);
+}
+
 void TrayIcon::setColor(bool color) {
+	colored = color;
+
 	setIcon(QIcon(color ? ":/icon.png" : ":/icongray.png"));
+
+	if (window)
+		window->setColor(color);
 }
 
 

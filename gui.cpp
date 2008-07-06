@@ -273,3 +273,65 @@ FirstRunDialog::FirstRunDialog() :
 	show();
 }
 
+// ---- NoSystemTrayDialog ----
+
+NoSystemTrayDialog::NoSystemTrayDialog() :
+	IconDialogBase("Missing system tray", QStyle::SP_MessageBoxQuestion)
+{
+	QLabel *label = new QLabel(
+		PROGRAM_NAME " could not detect a system tray.  The system tray is the main point\n"
+		"of interaction with Skype Call Recorder.  Do you wish to use a small main window instead?"
+	);
+	vbox->addWidget(label);
+
+	QPushButton *button = new QPushButton("Yes, &always from now on");
+	connect(button, SIGNAL(clicked()), this, SLOT(buttonAlways()));
+	hbox->addWidget(button);
+
+	button = new QPushButton("&Yes, this time");
+	button->setDefault(true);
+	connect(button, SIGNAL(clicked()), this, SLOT(buttonYes()));
+	hbox->addWidget(button);
+
+	button = new QPushButton("&Quit");
+	connect(button, SIGNAL(clicked()), this, SLOT(buttonDoQuit()));
+	hbox->addWidget(button);
+
+	show();
+}
+
+void NoSystemTrayDialog::buttonAlways() {
+	emit useWindowedModeAlways();
+	accept();
+}
+
+void NoSystemTrayDialog::buttonYes() {
+	emit useWindowedModeNow();
+	accept();
+}
+
+void NoSystemTrayDialog::buttonDoQuit() {
+	emit doQuit();
+	accept();
+}
+
+// ---- MainWindow
+
+MainWindow::MainWindow(QWidget *parent) : QWidget(parent) {
+	setWindowTitle(PROGRAM_NAME);
+	setAttribute(Qt::WA_DeleteOnClose);
+
+	QVBoxLayout *vbox = new QVBoxLayout(this);
+	vbox->setSizeConstraint(QLayout::SetFixedSize);
+	button = new QPushButton(QIcon(":/icon.png"), "Menu");
+	vbox->addWidget(button);
+
+	connect(button, SIGNAL(clicked()), this, SIGNAL(activate()));
+
+	show();
+}
+
+void MainWindow::setColor(bool color) {
+	button->setIcon(QIcon(color ? ":/icon.png" : ":/icongray.png"));
+}
+
