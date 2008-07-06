@@ -39,7 +39,7 @@
 // ---- IconDialogBase
 
 IconDialogBase::IconDialogBase(const QString &title, QStyle::StandardPixmap pixmap) {
-	setWindowTitle(QString(PROGRAM_NAME) + title);
+	setWindowTitle(QString(PROGRAM_NAME " - ") + title);
 	setAttribute(Qt::WA_DeleteOnClose);
 
 	QVBoxLayout *mainvbox = new QVBoxLayout(this);
