@@ -393,24 +393,11 @@ void Call::checkConnections() {
 }
 
 void Call::mixToMono(long samples) {
-	long offset = bufferMono.size();
-	bufferMono.resize(offset + samples * 2);
-
-	qint16 *monoData = reinterpret_cast<qint16 *>(bufferMono.data()) + offset;
 	qint16 *localData = reinterpret_cast<qint16 *>(bufferLocal.data());
 	qint16 *remoteData = reinterpret_cast<qint16 *>(bufferRemote.data());
 
-	for (long i = 0; i < samples; i++) {
-		long sum = localData[i] + remoteData[i];
-		if (sum < -32768)
-			sum = -32768;
-		else if (sum > 32767)
-			sum = 32767;
-		monoData[i] = sum;
-	}
-
-	bufferLocal.remove(0, samples * 2);
-	bufferRemote.remove(0, samples * 2);
+	for (long i = 0; i < samples; i++)
+		localData[i] = ((qint32)localData[i] + (qint32)remoteData[i]) / (qint32)2;
 }
 
 long Call::padBuffers() {
@@ -502,7 +489,8 @@ void Call::tryToWrite(bool flush) {
 		// mono
 		mixToMono(samples);
 		QByteArray dummy;
-		success = writer->write(bufferMono, dummy, samples, flush);
+		success = writer->write(bufferLocal, dummy, samples, flush);
+		bufferRemote.remove(0, samples * 2);
 	} else if (channelMode == 1) {
 		// stereo
 		success = writer->write(bufferLocal, bufferRemote, samples, flush);
