@@ -4,7 +4,7 @@ Version: @version@
 Section: contrib/net
 Priority: optional
 Architecture: i386
-Depends: libqt4-gui (>= 4.3), liblame0 (>= 3.97), libid3-3.8.3c2a, libvorbisenc2
+Depends: libqt4-gui (>= 4.3), liblame0 (>= 3.97), libid3-3.8.3c2a, libvorbisenc2, dbus-x11
 Installed-Size: @size@
 Provides: skype-call-recorder
 Maintainer: jlh <jlh@gmx.ch>

@@ -24,6 +24,7 @@
 #include <QList>
 #include <QVariant>
 #include <QTimer>
+#include <QMessageBox>
 #include <QtDBus>
 
 #include "skype.h"
@@ -35,20 +36,30 @@ const QString skypeInterfaceName("com.Skype.API");
 }
 
 Skype::Skype(QObject *parent) : QObject(parent), dbus("SkypeRecorder"), connectionState(0) {
-	dbus = QDBusConnection::connectToBus(QDBusConnection::SessionBus, "SkypeRecorder");
-
-	connect(dbus.interface(), SIGNAL(serviceOwnerChanged(const QString &, const QString &, const QString &)),
-		this, SLOT(serviceOwnerChanged(const QString &, const QString &, const QString &)));
-
-	// export our object
-	exported = new SkypeExport(this);
-	if (!dbus.registerObject("/com/Skype/Client", this))
-		debug("Cannot register object /com/Skype/Client");
-
 	timer = new QTimer(this);
 	timer->setInterval(5000);
 	connect(timer, SIGNAL(timeout()), this, SLOT(poll()));
 
+	dbus = QDBusConnection::connectToBus(QDBusConnection::SessionBus, "SkypeRecorder");
+
+	if (!dbus.isConnected()) {
+		debug("Error: Cannot connect to DBus");
+		QMessageBox::critical(NULL, PROGRAM_NAME " - Error",
+			QString("The connection to DBus failed!  This is a fatal error."));
+		return;
+	}
+
+	// export our object
+	exported = new SkypeExport(this);
+	if (!dbus.registerObject("/com/Skype/Client", this)) {
+		debug("Error: Cannot register object /com/Skype/Client");
+		QMessageBox::critical(NULL, PROGRAM_NAME " - Error",
+			QString("Cannot register object on DBus!  This is a fatal error."));
+		return;
+	}
+
+	connect(dbus.interface(), SIGNAL(serviceOwnerChanged(const QString &, const QString &, const QString &)),
+		this, SLOT(serviceOwnerChanged(const QString &, const QString &, const QString &)));
 	QTimer::singleShot(0, this, SLOT(connectToSkype()));
 }
 
