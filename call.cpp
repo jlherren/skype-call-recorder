@@ -402,8 +402,8 @@ void Call::mixToStereo(long samples, int pan) {
 	qint32 fr = pan;
 
 	for (long i = 0; i < samples; i++) {
-		qint16 newLocal = ((qint32)localData[i] * fl + (qint32)remoteData[i] * fr) / (qint32)100;
-		qint16 newRemote = ((qint32)localData[i] * fr + (qint32)remoteData[i] * fl) / (qint32)100;
+		qint16 newLocal = ((qint32)localData[i] * fl + (qint32)remoteData[i] * fr + (qint32)50) / (qint32)100;
+		qint16 newRemote = ((qint32)localData[i] * fr + (qint32)remoteData[i] * fl + (qint32)50) / (qint32)100;
 		localData[i] = newLocal;
 		remoteData[i] = newRemote;
 	}
