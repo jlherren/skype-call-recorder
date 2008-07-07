@@ -741,6 +741,13 @@ void BasePreferences::remove(const QString &name) {
 	}
 }
 
+bool BasePreferences::exists(const QString &name) const {
+	for (int i = 0; i < prefs.size(); i++)
+		if (prefs.at(i)->name() == name)
+			return true;
+	return false;
+}
+
 void BasePreferences::clear() {
 	for (int i = 0; i < prefs.size(); i++)
 		delete prefs.at(i);
