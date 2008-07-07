@@ -34,6 +34,7 @@
 #include "common.h"
 
 class SmartComboBox;
+class QWidget;
 class QListView;
 class PerCallerModel;
 class PerCallerPreferencesDialog;
@@ -143,6 +144,12 @@ private slots:
 	void updateStereoSettings(bool);
 	void updateStereoMixLabel(int);
 	void browseOutputPath();
+
+private:
+	QWidget *createRecordingTab();
+	QWidget *createPathTab();
+	QWidget *createFormatTab();
+	QWidget *createMiscTab();
 
 private:
 	QList<QWidget *> mp3Settings;

@@ -265,7 +265,6 @@ void Recorder::openPreferences() {
 		connect(preferencesDialog, SIGNAL(finished(int)), this, SLOT(savePreferences()));
 	}
 
-	preferencesDialog->show();
 	preferencesDialog->raise();
 	preferencesDialog->activateWindow();
 }

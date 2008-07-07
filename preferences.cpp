@@ -38,6 +38,7 @@
 #include <QList>
 #include <QFileIconProvider>
 #include <QFileDialog>
+#include <QTabWidget>
 #include <ctime>
 
 #include "preferences.h"
@@ -98,69 +99,45 @@ static QVBoxLayout *makeVFrame(QVBoxLayout *parentLayout, const char *title) {
 	return vbox;
 }
 
-#if 0
-static QHBoxLayout *makeHFrame(QVBoxLayout *parentLayout, const char *title) {
-	QGroupBox *box = new QGroupBox(title);
-	QHBoxLayout *hbox = new QHBoxLayout(box);
-	parentLayout->addWidget(box);
-	return hbox;
-}
-#endif
+QWidget *PreferencesDialog::createRecordingTab() {
+	QWidget *widget = new QWidget;
+	QVBoxLayout *vbox = new QVBoxLayout(widget);
 
-PreferencesDialog::PreferencesDialog() {
-	setWindowTitle(PROGRAM_NAME " - Preferences");
-	setAttribute(Qt::WA_DeleteOnClose);
-
-	QVBoxLayout *vbox, *vbox2;
-	QHBoxLayout *hbox;
-	QLabel *label;
-	QPushButton *button;
-	SmartComboBox *combo;
-	SmartRadioButton *radio;
-	SmartCheckBox *check;
-
-	QVBoxLayout *bigvbox = new QVBoxLayout(this);
-	bigvbox->setSizeConstraint(QLayout::SetFixedSize);
-
-	// ---- general options ----
-	vbox2 = makeVFrame(bigvbox, "Automatic recording");
-
-	hbox = new QHBoxLayout;
-
-	vbox = new QVBoxLayout;
 	Preference &preference = preferences.get(Pref::AutoRecordDefault);
-	radio = new SmartRadioButton("Automatically &record calls", preference, "yes");
+	SmartRadioButton *radio = new SmartRadioButton("Automatically &record all calls", preference, "yes");
 	vbox->addWidget(radio);
-	radio = new SmartRadioButton("&Ask every time", preference, "ask");
+	radio = new SmartRadioButton("&Ask for every call", preference, "ask");
 	vbox->addWidget(radio);
 	radio = new SmartRadioButton("Do &not automatically record calls", preference, "no");
 	vbox->addWidget(radio);
 
-	hbox->addLayout(vbox);
-
-	button = new QPushButton("&Per caller preferences");
+	QPushButton *button = new QPushButton("Edit &per caller preferences");
 	connect(button, SIGNAL(clicked(bool)), this, SLOT(editPerCallerPreferences()));
-	hbox->addWidget(button, 0, Qt::AlignBottom);
+	vbox->addWidget(button);
 
-	vbox2->addLayout(hbox);
-	check = new SmartCheckBox("Show balloon notification when recording starts", preferences.get(Pref::NotifyRecordingStart));
-	vbox2->addWidget(check);
+	SmartCheckBox *check = new SmartCheckBox("Show &balloon notification when recording starts", preferences.get(Pref::NotifyRecordingStart));
+	vbox->addWidget(check);
 
-	// ---- output file name ----
-	vbox = makeVFrame(bigvbox, "Output file");
+	vbox->addStretch();
+	return widget;
+}
 
-	label = new QLabel("&Save recorded calls here:");
+QWidget *PreferencesDialog::createPathTab() {
+	QWidget *widget = new QWidget;
+	QVBoxLayout *vbox = new QVBoxLayout(widget);
+
+	QLabel *label = new QLabel("&Save recorded calls here:");
 	outputPathEdit = new SmartLineEdit(preferences.get(Pref::OutputPath));
 	label->setBuddy(outputPathEdit);
-	button = new QPushButton(QFileIconProvider().icon(QFileIconProvider::Folder), "");
+	QPushButton *button = new QPushButton(QFileIconProvider().icon(QFileIconProvider::Folder), "");
 	connect(button, SIGNAL(clicked(bool)), this, SLOT(browseOutputPath()));
-	hbox = new QHBoxLayout;
+	QHBoxLayout *hbox = new QHBoxLayout;
 	hbox->addWidget(outputPathEdit);
 	hbox->addWidget(button);
 	vbox->addWidget(label);
 	vbox->addLayout(hbox);
 
-	label = new QLabel("&File name:");
+	label = new QLabel("File &name:");
 	patternWidget = new SmartEditableComboBox(preferences.get(Pref::OutputPattern));
 	label->setBuddy(patternWidget);
 	patternWidget->addItem("%Y-%m-%d %H:%M:%S Call with &s");
@@ -172,21 +149,29 @@ PreferencesDialog::PreferencesDialog() {
 	vbox->addWidget(label);
 	vbox->addWidget(patternWidget);
 
-	// ---- output file format ----
-	vbox = makeVFrame(bigvbox, "Output file &format");
+	vbox->addStretch();
+	updatePatternToolTip("");
+	return widget;
+}
 
-	formatWidget = combo = new SmartComboBox(preferences.get(Pref::OutputFormat));
-	combo->addItem("WAV PCM", "wav");
-	combo->addItem("MP3", "mp3");
-	combo->addItem("Ogg Vorbis", "vorbis");
-	combo->setupDone();
-	connect(combo, SIGNAL(currentIndexChanged(int)), this, SLOT(updateFormatSettings()));
-	vbox->addWidget(combo);
+QWidget *PreferencesDialog::createFormatTab() {
+	QWidget *widget = new QWidget;
+	QVBoxLayout *vbox = new QVBoxLayout(widget);
+	QGridLayout *grid = new QGridLayout;
 
-	hbox = new QHBoxLayout;
+	QLabel *label = new QLabel("Fil&e format:");
+	formatWidget = new SmartComboBox(preferences.get(Pref::OutputFormat));
+	label->setBuddy(formatWidget);
+	formatWidget->addItem("WAV PCM", "wav");
+	formatWidget->addItem("MP3", "mp3");
+	formatWidget->addItem("Ogg Vorbis", "vorbis");
+	formatWidget->setupDone();
+	connect(formatWidget, SIGNAL(currentIndexChanged(int)), this, SLOT(updateFormatSettings()));
+	grid->addWidget(label, 0, 0);
+	grid->addWidget(formatWidget, 0, 1);
 
 	label = new QLabel("MP3 &bitrate:");
-	combo = new SmartComboBox(preferences.get(Pref::OutputFormatMp3Bitrate));
+	SmartComboBox *combo = new SmartComboBox(preferences.get(Pref::OutputFormatMp3Bitrate));
 	label->setBuddy(combo);
 	combo->addItem("8 kbps", 8);
 	combo->addItem("16 kbps", 16);
@@ -205,11 +190,8 @@ PreferencesDialog::PreferencesDialog() {
 	combo->setupDone();
 	mp3Settings.append(label);
 	mp3Settings.append(combo);
-	hbox->addWidget(label);
-	hbox->addWidget(combo);
-
-	vbox->addLayout(hbox);
-	hbox = new QHBoxLayout;
+	grid->addWidget(label, 1, 0);
+	grid->addWidget(combo, 1, 1);
 
 	label = new QLabel("Ogg Vorbis &quality:");
 	combo = new SmartComboBox(preferences.get(Pref::OutputFormatVorbisQuality));
@@ -229,18 +211,18 @@ PreferencesDialog::PreferencesDialog() {
 	combo->setupDone();
 	vorbisSettings.append(label);
 	vorbisSettings.append(combo);
-	hbox->addWidget(label);
-	hbox->addWidget(combo);
+	grid->addWidget(label, 2, 0);
+	grid->addWidget(combo, 2, 1);
 
-	vbox->addLayout(hbox);
+	vbox->addLayout(grid);
 
-	check = new SmartCheckBox("Save to s&tereo file", preferences.get(Pref::OutputStereo));
+	SmartCheckBox *check = new SmartCheckBox("Save to &stereo file", preferences.get(Pref::OutputStereo));
 	connect(check, SIGNAL(clicked(bool)), this, SLOT(updateStereoSettings(bool)));
 	vbox->addWidget(check);
 
-	stereoMixLabel = label = new QLabel("");
+	stereoMixLabel = new QLabel("");
 	SmartSlider *slider = new SmartSlider(preferences.get(Pref::OutputStereoMix));
-	label->setBuddy(slider);
+	stereoMixLabel->setBuddy(slider);
 	slider->setOrientation(Qt::Horizontal);
 	slider->setRange(0, 100);
 	slider->setSingleStep(1);
@@ -249,9 +231,9 @@ PreferencesDialog::PreferencesDialog() {
 	slider->setTickInterval(10);
 	slider->setupDone();
 	connect(slider, SIGNAL(valueChanged(int)), this, SLOT(updateStereoMixLabel(int)));
-	stereoSettings.append(label);
+	stereoSettings.append(stereoMixLabel);
 	stereoSettings.append(slider);
-	vbox->addWidget(label);
+	vbox->addWidget(stereoMixLabel);
 	vbox->addWidget(slider);
 
 	check = new SmartCheckBox("Save call &information in files", preferences.get(Pref::OutputSaveTags));
@@ -259,57 +241,80 @@ PreferencesDialog::PreferencesDialog() {
 	vorbisSettings.append(check);
 	vbox->addWidget(check);
 
-	// ---- advanced ----
-	vbox = makeVFrame(bigvbox, "Advanced");
+	vbox->addStretch();
+	updateFormatSettings();
+	updateStereoSettings(preferences.get(Pref::OutputStereo).toBool());
+	updateStereoMixLabel(preferences.get(Pref::OutputStereoMix).toInt());
+	return widget;
+}
 
-	check = new SmartCheckBox("Display a small main window (needs restart)", preferences.get(Pref::GuiWindowed));
-	check->setToolTip("Use this if your environment does not provide a system tray.");
+QWidget *PreferencesDialog::createMiscTab() {
+	QWidget *widget = new QWidget;
+	QVBoxLayout *vbox = new QVBoxLayout(widget);
+
+	SmartCheckBox *check = new SmartCheckBox("&Display a small main window.  Enable this if your\n"
+		"environment does not provide a system tray (needs restart)", preferences.get(Pref::GuiWindowed));
 	vbox->addWidget(check);
 
-	// ---- buttons ----
+	vbox->addStretch();
+	return widget;
+}
 
-	hbox = new QHBoxLayout;
-	button = new QPushButton("&Close");
+PreferencesDialog::PreferencesDialog() {
+	setWindowTitle(PROGRAM_NAME " - Preferences");
+	setAttribute(Qt::WA_DeleteOnClose);
+
+	QVBoxLayout *vbox = new QVBoxLayout(this);
+	vbox->setSizeConstraint(QLayout::SetFixedSize);
+
+	QTabWidget *tabWidget = new QTabWidget;
+	vbox->addWidget(tabWidget);
+
+	tabWidget->addTab(createRecordingTab(), "Au&tomatic Recording");
+	tabWidget->addTab(createPathTab(), "&File names");
+	tabWidget->addTab(createFormatTab(), "File F&ormat");
+	tabWidget->addTab(createMiscTab(), "&Misc");
+	tabWidget->setUsesScrollButtons(false);
+
+	QHBoxLayout *hbox = new QHBoxLayout;
+	QPushButton *button = new QPushButton("&Close");
 	button->setDefault(true);
 	connect(button, SIGNAL(clicked(bool)), this, SLOT(accept()));
 	hbox->addStretch();
 	hbox->addWidget(button);
-	bigvbox->addLayout(hbox);
+	vbox->addLayout(hbox);
 
-	updateFormatSettings();
-	updatePatternToolTip("");
-	updateStereoSettings(preferences.get(Pref::OutputStereo).toBool());
-	updateStereoMixLabel(preferences.get(Pref::OutputStereoMix).toInt());
+	show();
 }
 
 void PreferencesDialog::updateFormatSettings() {
 	QVariant v = formatWidget->itemData(formatWidget->currentIndex());
-	// hide
+	// disable
 	if (v != "mp3")
 		for (int i = 0; i < mp3Settings.size(); i++)
-			mp3Settings.at(i)->hide();
+			mp3Settings.at(i)->setEnabled(false);
 	if (v != "vorbis")
 		for (int i = 0; i < vorbisSettings.size(); i++)
-			vorbisSettings.at(i)->hide();
-	// show
+			vorbisSettings.at(i)->setEnabled(false);
+	// enable
 	if (v == "mp3")
 		for (int i = 0; i < mp3Settings.size(); i++)
-			mp3Settings.at(i)->show();
+			mp3Settings.at(i)->setEnabled(true);
 	if (v == "vorbis")
 		for (int i = 0; i < vorbisSettings.size(); i++)
-			vorbisSettings.at(i)->show();
+			vorbisSettings.at(i)->setEnabled(true);
 }
 
 void PreferencesDialog::updateStereoSettings(bool stereo) {
 	for (int i = 0; i < stereoSettings.size(); i++)
 		if (stereo)
-			stereoSettings.at(i)->show();
+			stereoSettings.at(i)->setEnabled(true);
 		else
-			stereoSettings.at(i)->hide();
+			stereoSettings.at(i)->setEnabled(false);
 }
 
 void PreferencesDialog::updateStereoMixLabel(int value) {
-	stereoMixLabel->setText(QString("Stereo &mix: (left channel: local %1%, remote %2%)").arg(100 - value).arg(value));
+	stereoMixLabel->setText(QString("Stereo mi&x: (left channel: local %1%, remote %2%)").arg(100 - value).arg(value));
 }
 
 void PreferencesDialog::editPerCallerPreferences() {
