@@ -227,6 +227,18 @@ bool Recorder::sanatizePreferencesGeneric() {
 		didSomething = true;
 	}
 
+	s = preferences.get(Pref::OutputPath).toString();
+	if (s.trimmed().isEmpty()) {
+		preferences.get(Pref::OutputPath).set("~/Skype Calls");
+		didSomething = true;
+	}
+
+	s = preferences.get(Pref::OutputPattern).toString();
+	if (s.trimmed().isEmpty()) {
+		preferences.get(Pref::OutputPattern).set("Calls with &s/Call with &s, %a %b %d %Y, %H:%M:%S");
+		didSomething = true;
+	}
+
 	if (didSomething)
 		debug("At least one preference has been reset to its default value, because it contained bogus data.");
 
