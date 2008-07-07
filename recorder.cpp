@@ -110,6 +110,14 @@ void Recorder::loadPreferences() {
 	preferences.load(getConfigFile());
 	int c = preferences.count();
 
+	// since Pref::PreferencesVersion did not exist from the first version
+	// on, some people might not have it; but we cannot just let it receive
+	// the default value, as those old settings must be updated.  If it is
+	// missing but Pref::OutputPath exists (which has always been around),
+	// then set Pref::PreferencesVersion to 1
+	if (!preferences.exists(Pref::PreferencesVersion) && preferences.exists(Pref::OutputPath))
+		preferences.get(Pref::PreferencesVersion).set(1);
+
 	#define X(n, v) preferences.get(n).setIfNotSet(v);
 	// default preferences
 	X(Pref::AutoRecordDefault,           "ask");         // "yes", "ask", "no"
@@ -126,7 +134,7 @@ void Recorder::loadPreferences() {
 	X(Pref::OutputSaveTags,              true);
 	X(Pref::SuppressLegalInformation,    false);
 	X(Pref::SuppressFirstRunInformation, false);
-	X(Pref::PreferencesVersion,          1);
+	X(Pref::PreferencesVersion,          2);
 	X(Pref::NotifyRecordingStart,        true)
 	X(Pref::GuiWindowed,                 false)
 	X(Pref::DebugWriteSyncFile,          false)
@@ -148,14 +156,43 @@ void Recorder::savePreferences() {
 void Recorder::sanatizePreferences() {
 	// this converts old preferences to new preferences
 
-	//int v = preferences.get(Pref::PreferencesVersion).toInt();
+	int v = preferences.get(Pref::PreferencesVersion).toInt();
+	bool didSomething = false;
 
-	// this is where v is checked and the preferences updated
+	switch (v) {
+		case 1:
+			didSomething |= convertSettingsToV2();
+	}
 
-	sanatizePreferencesGeneric();
+	didSomething |= sanatizePreferencesGeneric();
+
+	if (didSomething)
+		savePreferences();
 }
 
-void Recorder::sanatizePreferencesGeneric() {
+bool Recorder::convertSettingsToV2() {
+	debug("Converting settings from v1 to v2");
+
+	QString s = preferences.get("output.channelmode").toString();
+	preferences.remove("output.channelmode");
+
+	if (s == "stereo") {
+		preferences.get(Pref::OutputStereo).set(true);
+		preferences.get(Pref::OutputStereoMix).set(0);
+	} else if (s == "oerets") {
+		preferences.get(Pref::OutputStereo).set(true);
+		preferences.get(Pref::OutputStereoMix).set(100);
+	} else if (s == "mono") {
+		preferences.get(Pref::OutputStereo).set(false);
+		preferences.get(Pref::OutputStereoMix).set(0);
+	}
+
+	preferences.get(Pref::PreferencesVersion).set(2);
+
+	return true;
+}
+
+bool Recorder::sanatizePreferencesGeneric() {
 	QString s;
 	int i;
 	bool didSomething = false;
@@ -184,10 +221,16 @@ void Recorder::sanatizePreferencesGeneric() {
 		didSomething = true;
 	}
 
-	if (didSomething) {
-		debug("At least one preference has been reset to its default value, because it contained bogus data.");
-		savePreferences();
+	i = preferences.get(Pref::OutputStereoMix).toInt();
+	if (i < 0 || i > 100) {
+		preferences.get(Pref::OutputStereoMix).set(0);
+		didSomething = true;
 	}
+
+	if (didSomething)
+		debug("At least one preference has been reset to its default value, because it contained bogus data.");
+
+	return didSomething;
 }
 
 void Recorder::about() {

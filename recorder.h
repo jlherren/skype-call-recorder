@@ -63,7 +63,8 @@ private:
 	void setupSkype();
 	void setupCallHandler();
 	void sanatizePreferences();
-	void sanatizePreferencesGeneric();
+	bool convertSettingsToV2();
+	bool sanatizePreferencesGeneric();
 
 	QString getConfigFile() const;
 
