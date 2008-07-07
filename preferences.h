@@ -41,6 +41,7 @@ class QRadioButton;
 class SmartEditableComboBox;
 class SmartLineEdit;
 class QDateTime;
+class QLabel;
 
 // A single preference, with a name and a value
 
@@ -138,15 +139,19 @@ private slots:
 	void updateFormatSettings();
 	void editPerCallerPreferences();
 	void updatePatternToolTip(const QString &);
+	void updateStereoSettings(bool);
+	void updateStereoMixLabel(int);
 	void browseOutputPath();
 
 private:
 	QList<QWidget *> mp3Settings;
 	QList<QWidget *> vorbisSettings;
+	QList<QWidget *> stereoSettings;
 	SmartLineEdit *outputPathEdit;
 	SmartComboBox *formatWidget;
 	QPointer<PerCallerPreferencesDialog> perCallerDialog;
 	SmartEditableComboBox *patternWidget;
+	QLabel *stereoMixLabel;
 
 	DISABLE_COPY_AND_ASSIGNMENT(PreferencesDialog);
 };
@@ -216,7 +221,8 @@ X(OutputPattern,               output.pattern)
 X(OutputFormat,                output.format)
 X(OutputFormatMp3Bitrate,      output.format.mp3.bitrate)
 X(OutputFormatVorbisQuality,   output.format.vorbis.quality)
-X(OutputChannelMode,           output.channelmode)
+X(OutputStereo,                output.stereo)
+X(OutputStereoMix,             output.stereo.mix)
 X(OutputSaveTags,              output.savetags)
 X(SuppressLegalInformation,    suppress.legalinformation)
 X(SuppressFirstRunInformation, suppress.firstruninformation)

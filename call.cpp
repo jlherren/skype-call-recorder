@@ -288,14 +288,8 @@ void Call::startRecording(bool force) {
 	timeStartRecording = QDateTime::currentDateTime();
 	QString fn = constructFileName();
 
-	QString sm = preferences.get(Pref::OutputChannelMode).toString();
-
-	if (sm == "mono")
-		channelMode = 0;
-	else if (sm == "oerets")
-		channelMode = 2;
-	else /* if (sm == "stereo") */
-		channelMode = 1;
+	stereo = preferences.get(Pref::OutputStereo).toBool();
+	stereoMix = preferences.get(Pref::OutputStereoMix).toInt();
 
 	QString format = preferences.get(Pref::OutputFormat).toString();
 
@@ -309,7 +303,7 @@ void Call::startRecording(bool force) {
 	if (preferences.get(Pref::OutputSaveTags).toBool())
 		writer->setTags(constructCommentTag(), timeStartRecording);
 
-	bool b = writer->open(fn, skypeSamplingRate, channelMode != 0);
+	bool b = writer->open(fn, skypeSamplingRate, stereo);
 	fileName = writer->fileName();
 
 	if (!b) {
@@ -400,6 +394,21 @@ void Call::mixToMono(long samples) {
 		localData[i] = ((qint32)localData[i] + (qint32)remoteData[i]) / (qint32)2;
 }
 
+void Call::mixToStereo(long samples, int pan) {
+	qint16 *localData = reinterpret_cast<qint16 *>(bufferLocal.data());
+	qint16 *remoteData = reinterpret_cast<qint16 *>(bufferRemote.data());
+
+	qint32 fl = 100 - pan;
+	qint32 fr = pan;
+
+	for (long i = 0; i < samples; i++) {
+		qint16 newLocal = ((qint32)localData[i] * fl + (qint32)remoteData[i] * fr) / (qint32)100;
+		qint16 newRemote = ((qint32)localData[i] * fr + (qint32)remoteData[i] * fl) / (qint32)100;
+		localData[i] = newLocal;
+		remoteData[i] = newRemote;
+	}
+}
+
 long Call::padBuffers() {
 	// pads the shorter buffer with silence, so they are both the same
 	// length afterwards.  returns the new number of samples in each buffer
@@ -485,20 +494,21 @@ void Call::tryToWrite(bool flush) {
 
 	bool success;
 
-	if (channelMode == 0) {
+	if (!stereo) {
 		// mono
 		mixToMono(samples);
 		QByteArray dummy;
 		success = writer->write(bufferLocal, dummy, samples, flush);
 		bufferRemote.remove(0, samples * 2);
-	} else if (channelMode == 1) {
-		// stereo
+	} else if (stereoMix == 0) {
+		// local left, remote right
 		success = writer->write(bufferLocal, bufferRemote, samples, flush);
-	} else if (channelMode == 2) {
-		// oerets
+	} else if (stereoMix == 100) {
+		// local right, remote left
 		success = writer->write(bufferRemote, bufferLocal, samples, flush);
 	} else {
-		success = false;
+		mixToStereo(samples, stereoMix);
+		success = writer->write(bufferLocal, bufferRemote, samples, flush);
 	}
 
 	if (!success) {

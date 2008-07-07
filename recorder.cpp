@@ -121,7 +121,8 @@ void Recorder::loadPreferences() {
 	X(Pref::OutputFormat,                "mp3");         // "mp3", "vorbis" or "wav"
 	X(Pref::OutputFormatMp3Bitrate,      64);
 	X(Pref::OutputFormatVorbisQuality,   3);
-	X(Pref::OutputChannelMode,           "stereo");      // mono, stereo, oerets
+	X(Pref::OutputStereo,                true);
+	X(Pref::OutputStereoMix,             0);             // 0 .. 100
 	X(Pref::OutputSaveTags,              true);
 	X(Pref::SuppressLegalInformation,    false);
 	X(Pref::SuppressFirstRunInformation, false);
@@ -180,12 +181,6 @@ void Recorder::sanatizePreferencesGeneric() {
 	i = preferences.get(Pref::OutputFormatVorbisQuality).toInt();
 	if (i < -1 || i > 10) {
 		preferences.get(Pref::OutputFormatVorbisQuality).set(3);
-		didSomething = true;
-	}
-
-	s = preferences.get(Pref::OutputChannelMode).toString();
-	if (s != "stereo" && s != "oerets" && s != "mono") {
-		preferences.get(Pref::OutputChannelMode).set("stereo");
 		didSomething = true;
 	}
 

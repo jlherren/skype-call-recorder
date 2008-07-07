@@ -92,6 +92,7 @@ private:
 	QString constructFileName() const;
 	QString constructCommentTag() const;
 	void mixToMono(long);
+	void mixToStereo(long, int);
 	void setShouldRecord();
 	void ask();
 	void doSync(long);
@@ -104,7 +105,8 @@ private:
 	QString displayName;
 	AudioFileWriter *writer;
 	bool isRecording;
-	int channelMode;
+	int stereo;
+	int stereoMix;
 	int shouldRecord;
 	QString fileName;
 	QPointer<QObject> confirmation;

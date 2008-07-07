@@ -175,24 +175,14 @@ PreferencesDialog::PreferencesDialog() {
 	// ---- output file format ----
 	vbox = makeVFrame(bigvbox, "Output file &format");
 
-	hbox = new QHBoxLayout;
-
 	formatWidget = combo = new SmartComboBox(preferences.get(Pref::OutputFormat));
 	combo->addItem("WAV PCM", "wav");
 	combo->addItem("MP3", "mp3");
 	combo->addItem("Ogg Vorbis", "vorbis");
 	combo->setupDone();
 	connect(combo, SIGNAL(currentIndexChanged(int)), this, SLOT(updateFormatSettings()));
-	hbox->addWidget(combo);
+	vbox->addWidget(combo);
 
-	combo = new SmartComboBox(preferences.get(Pref::OutputChannelMode));
-	combo->addItem("Mix to mono channel", "mono");
-	combo->addItem("Stereo, local left, remote right", "stereo");
-	combo->addItem("Stereo, local right, remote left", "oerets");
-	combo->setupDone();
-	hbox->addWidget(combo);
-
-	vbox->addLayout(hbox);
 	hbox = new QHBoxLayout;
 
 	label = new QLabel("MP3 &bitrate:");
@@ -244,6 +234,26 @@ PreferencesDialog::PreferencesDialog() {
 
 	vbox->addLayout(hbox);
 
+	check = new SmartCheckBox("Save to s&tereo file", preferences.get(Pref::OutputStereo));
+	connect(check, SIGNAL(clicked(bool)), this, SLOT(updateStereoSettings(bool)));
+	vbox->addWidget(check);
+
+	stereoMixLabel = label = new QLabel("");
+	SmartSlider *slider = new SmartSlider(preferences.get(Pref::OutputStereoMix));
+	label->setBuddy(slider);
+	slider->setOrientation(Qt::Horizontal);
+	slider->setRange(0, 100);
+	slider->setSingleStep(1);
+	slider->setPageStep(10);
+	slider->setTickPosition(QSlider::TicksBelow);
+	slider->setTickInterval(10);
+	slider->setupDone();
+	connect(slider, SIGNAL(valueChanged(int)), this, SLOT(updateStereoMixLabel(int)));
+	stereoSettings.append(label);
+	stereoSettings.append(slider);
+	vbox->addWidget(label);
+	vbox->addWidget(slider);
+
 	check = new SmartCheckBox("Save call &information in files", preferences.get(Pref::OutputSaveTags));
 	mp3Settings.append(check);
 	vorbisSettings.append(check);
@@ -268,6 +278,8 @@ PreferencesDialog::PreferencesDialog() {
 
 	updateFormatSettings();
 	updatePatternToolTip("");
+	updateStereoSettings(preferences.get(Pref::OutputStereo).toBool());
+	updateStereoMixLabel(preferences.get(Pref::OutputStereoMix).toInt());
 }
 
 void PreferencesDialog::updateFormatSettings() {
@@ -286,6 +298,18 @@ void PreferencesDialog::updateFormatSettings() {
 	if (v == "vorbis")
 		for (int i = 0; i < vorbisSettings.size(); i++)
 			vorbisSettings.at(i)->show();
+}
+
+void PreferencesDialog::updateStereoSettings(bool stereo) {
+	for (int i = 0; i < stereoSettings.size(); i++)
+		if (stereo)
+			stereoSettings.at(i)->show();
+		else
+			stereoSettings.at(i)->hide();
+}
+
+void PreferencesDialog::updateStereoMixLabel(int value) {
+	stereoMixLabel->setText(QString("Stereo &mix: (left channel: local %1%, remote %2%)").arg(100 - value).arg(value));
 }
 
 void PreferencesDialog::editPerCallerPreferences() {

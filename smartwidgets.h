@@ -28,6 +28,7 @@
 #include <QCheckBox>
 #include <QLineEdit>
 #include <QComboBox>
+#include <QSlider>
 
 #include "common.h"
 #include "preferences.h"
@@ -138,6 +139,25 @@ public:
 
 private slots:
 	void set() { preference.set(lineEdit()->text()); }
+
+private:
+	Preference &preference;
+};
+
+// --------
+
+class SmartSlider : public QSlider {
+	Q_OBJECT
+public:
+	SmartSlider(Preference &p) : preference(p) {
+	}
+	void setupDone() {
+		setValue(preference.toInt());
+		connect(this, SIGNAL(valueChanged(int)), this, SLOT(set(int)));
+	}
+
+private slots:
+	void set(int value) { preference.set(value); }
 
 private:
 	Preference &preference;
