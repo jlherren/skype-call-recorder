@@ -96,9 +96,9 @@ bool VorbisWriter::open(const QString &fn, long sr, bool s) {
 	// incorrectly takes a char * instead of a const char *.  to prevent
 	// compiler warnings we use const_cast<>(), since it's known that
 	// libvorbis does not change the arguments.
-	vorbis_comment_add_tag(&pd->vc, const_cast<const char *>("COMMENT"), const_cast<const char *>(tagComment.toUtf8().constData()));
-	vorbis_comment_add_tag(&pd->vc, const_cast<const char *>("DATE"), const_cast<const char *>(tagTime.toString("yyyy-MM-dd hh:mm").toAscii().constData()));
-	vorbis_comment_add_tag(&pd->vc, const_cast<const char *>("GENRE"), const_cast<const char *>("Speech (Skype Call)"));
+	vorbis_comment_add_tag(&pd->vc, const_cast<char *>("COMMENT"), const_cast<char *>(tagComment.toUtf8().constData()));
+	vorbis_comment_add_tag(&pd->vc, const_cast<char *>("DATE"), const_cast<char *>(tagTime.toString("yyyy-MM-dd hh:mm").toAscii().constData()));
+	vorbis_comment_add_tag(&pd->vc, const_cast<char *>("GENRE"), const_cast<char *>("Speech (Skype Call)"));
 
 	vorbis_analysis_init(&pd->vd, &pd->vi);
 	vorbis_block_init(&pd->vd, &pd->vb);
