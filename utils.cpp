@@ -51,6 +51,7 @@ bool LockFile::lock(const QString &fn) {
 
 	if (flock(fd, LOCK_EX | LOCK_NB) != 0) {
 		close(fd);
+		fd = -1;
 		debug("ERROR: cannot get lock on lock file");
 		return false;
 	}
