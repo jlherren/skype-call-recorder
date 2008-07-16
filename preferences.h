@@ -144,6 +144,7 @@ private slots:
 	void updateStereoSettings(bool);
 	void updateStereoMixLabel(int);
 	void browseOutputPath();
+	void updateAbsolutePathWarning(const QString &);
 
 private:
 	QWidget *createRecordingTab();
@@ -160,6 +161,7 @@ private:
 	QPointer<PerCallerPreferencesDialog> perCallerDialog;
 	SmartEditableComboBox *patternWidget;
 	QLabel *stereoMixLabel;
+	QLabel *absolutePathWarningLabel;
 
 	DISABLE_COPY_AND_ASSIGNMENT(PreferencesDialog);
 };

@@ -129,7 +129,8 @@ QWidget *PreferencesDialog::createPathTab() {
 	QLabel *label = new QLabel("&Save recorded calls here:");
 	outputPathEdit = new SmartLineEdit(preferences.get(Pref::OutputPath));
 	label->setBuddy(outputPathEdit);
-	QPushButton *button = new QPushButton(QFileIconProvider().icon(QFileIconProvider::Folder), "");
+	connect(outputPathEdit, SIGNAL(textChanged(const QString &)), this, SLOT(updateAbsolutePathWarning(const QString &)));
+	QPushButton *button = new QPushButton(QFileIconProvider().icon(QFileIconProvider::Folder), "Browse");
 	connect(button, SIGNAL(clicked(bool)), this, SLOT(browseOutputPath()));
 	QHBoxLayout *hbox = new QHBoxLayout;
 	hbox->addWidget(outputPathEdit);
@@ -150,7 +151,13 @@ QWidget *PreferencesDialog::createPathTab() {
 	vbox->addWidget(patternWidget);
 
 	vbox->addStretch();
+
+	absolutePathWarningLabel = new QLabel("<b>Warning:</b> The path you have entered is not an absolute path!");
+	vbox->addWidget(absolutePathWarningLabel);
+
 	updatePatternToolTip("");
+	updateAbsolutePathWarning(preferences.get(Pref::OutputPath).toString());
+
 	return widget;
 }
 
@@ -339,6 +346,13 @@ void PreferencesDialog::browseOutputPath() {
 	if (path.endsWith('/') || path.endsWith('\\'))
 		path.chop(1);
 	outputPathEdit->setText(path);
+}
+
+void PreferencesDialog::updateAbsolutePathWarning(const QString &string) {
+	if (string.startsWith('/') || string.startsWith('~'))
+		absolutePathWarningLabel->hide();
+	else
+		absolutePathWarningLabel->show();
 }
 
 void PreferencesDialog::hideEvent(QHideEvent *event) {
