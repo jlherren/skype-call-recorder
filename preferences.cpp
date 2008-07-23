@@ -706,7 +706,7 @@ bool BasePreferences::load(const QString &filename) {
 		qint64 len = file.readLine(buf, sizeof(buf));
 		if (len == -1)
 			break;
-		QString line(buf);
+		QString line = QString::fromUtf8(buf);
 		line = line.trimmed();
 		if (line.at(0) == '#')
 			continue;
