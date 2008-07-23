@@ -38,7 +38,7 @@
 #include "skype.h"
 #include "call.h"
 
-Recorder::Recorder(int argc, char **argv) :
+Recorder::Recorder(int &argc, char **argv) :
 	QApplication(argc, argv)
 {
 	recorderInstance = this;

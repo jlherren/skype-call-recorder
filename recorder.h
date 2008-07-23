@@ -40,7 +40,7 @@ class AboutDialog;
 class Recorder : public QApplication {
 	Q_OBJECT
 public:
-	Recorder(int, char **);
+	Recorder(int &, char **);
 	virtual ~Recorder();
 
 	void debugMessage(const QString &);
