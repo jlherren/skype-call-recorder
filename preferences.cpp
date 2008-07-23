@@ -50,7 +50,7 @@ Preferences preferences;
 
 QString getOutputPath() {
 	QString path = preferences.get(Pref::OutputPath).toString();
-	if (path.startsWith('~'))
+	if (path.startsWith("~/") || path == "~")
 		path.replace(0, 1, QDir::homePath());
 	return path;
 }
@@ -329,19 +329,17 @@ void PreferencesDialog::editPerCallerPreferences() {
 }
 
 void PreferencesDialog::browseOutputPath() {
-	QString home = QDir::homePath();
-	QString path = outputPathEdit->text();
-	if (path.startsWith('~'))
-		path.replace(0, 1, QDir::homePath());
-	QFileDialog dialog(this, "Select output path", path);
+	preferences.get(Pref::OutputPath).set(outputPathEdit->text());
+	QFileDialog dialog(this, "Select output path", getOutputPath());
 	dialog.setFileMode(QFileDialog::DirectoryOnly);
 	if (!dialog.exec())
 		return;
 	QStringList list = dialog.selectedFiles();
 	if (!list.size())
 		return;
-	path = list.at(0);
-	if (path.startsWith(home))
+	QString path = list.at(0);
+	QString home = QDir::homePath();
+	if (path.startsWith(home + '/') || path == home)
 		path.replace(0, home.size(), '~');
 	if (path.endsWith('/') || path.endsWith('\\'))
 		path.chop(1);
@@ -349,7 +347,7 @@ void PreferencesDialog::browseOutputPath() {
 }
 
 void PreferencesDialog::updateAbsolutePathWarning(const QString &string) {
-	if (string.startsWith('/') || string.startsWith('~'))
+	if (string.startsWith('/') || string.startsWith("~/") || string == "~")
 		absolutePathWarningLabel->hide();
 	else
 		absolutePathWarningLabel->show();
