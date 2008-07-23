@@ -1,0 +1,17 @@
+#!/bin/sh
+
+# this configures cmake to use the static libraries in the
+# directory 'static/'.  please note that these variable are
+# sticky!  even if you invoke cmake directly later on, they will
+# stay.  run "rm -rf CMakeFiles CMakeCache.txt" to
+# fix this.
+
+test -z "$BASE" && BASE=$(pwd)
+
+cmake \
+	-DID3_INCLUDE_DIR:string=$BASE/static/include \
+	-DID3_LIBRARY:string=$BASE/static/lib/libid3.a \
+	-DLAME_INCLUDE_DIR:string=$BASE/static/include \
+	-DLAME_LIBRARY:string=$BASE/static/lib/libmp3lame.a \
+	"$@"
+

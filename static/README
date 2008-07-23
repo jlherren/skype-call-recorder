@@ -1,0 +1,22 @@
+
+when you build statically, this directory is supposed to contain
+the static versions of libid3 and libmp3lame.  subdirs lib/ and
+include/ are expected.  use "utils/cmake-static ." to compile a
+static version
+
+follow these instructions to build the static libraries.  this
+assumes $BASE points to the base source directory
+
+instructions for building static libid3:
+	# Unpack id3lib-x.x.x.tar.gz
+	./configure --enable-static --disable-shared --prefix=$BASE/static
+	( cd src && make install-strip )
+	( cd include && make install )
+
+instructions for building static libmp3lame:
+	# unpack lame-x.xx.tar.gz
+	./configure --enable-static --disable-shared --prefix=$BASE/static
+	( cd mpglib && make )
+	( cd libmp3lame && make install-strip )
+	( cd include && make install )
+

@@ -1,11 +1,22 @@
 #!/bin/sh
 
-if test "$1" = ''; then
-	echo "Usage: $0 <version>"
+target=ubuntu
+version=''
+
+while test $# != 0; do
+	case "$1" in
+		-e) target=eee ;;
+		-u) target=ubuntu ;;
+		-*) echo "Unknown option $1" && exit 1 ;;
+		*) version="$1" ;;
+	esac
+	shift
+done
+
+if test -z "$version"; then
+	echo "Usage: $0 [ -e | -u ] <version>"
 	exit 1
 fi
-
-version=$1
 
 if git tag -l | grep -q "^$version\$" > /dev/null 2> /dev/null; then
 	:
@@ -15,18 +26,29 @@ else
 	exit 1
 fi
 
-execdir=${0%/*}
+export BASE=$(pwd)
+
+if test $target = eee; then
+	controlflags=eee
+	cmake="$BASE/utils/cmake-static"
+elif test $target = ubuntu; then
+	controlflags=ubuntu
+	cmake=cmake
+else
+	echo "Unknown target: $target"
+	exit 1
+fi
 
 tmp=tmp-deb-build
 rm -rf "$tmp"
 mkdir "$tmp"
 
-$execdir/snapshot $version "$tmp/tarball.tar.gz" || exit 1
+$BASE/utils/snapshot $version "$tmp/tarball.tar.gz" || exit 1
 tar -xzf "$tmp/tarball.tar.gz" -C "$tmp"
 
 (
 	cd "$tmp/skype-call-recorder-$version"
-	cmake .
+	$cmake .
 	make
 	make DESTDIR=../root install
 )
@@ -35,13 +57,27 @@ echo -n "Package size: "
 size=`du -sk "$tmp/root" | cut -f1`
 echo "$size KB"
 
-mkdir "$tmp/root/DEBIAN"
-sed -e "s/@version@/$version/g" \
-	-e "s/@size@/$size/g" \
-	< "$tmp/skype-call-recorder-$version/skype-call-recorder.control" \
-	> "$tmp/root/DEBIAN/control"
+echo -n "Generate control file: "
 
-dpkg-deb -b -Zbzip2 -z9 "$tmp/root" .
+mkdir "$tmp/root/DEBIAN"
+cp "$tmp/skype-call-recorder-$version/skype-call-recorder.control" "$tmp/root/DEBIAN/control"
+
+for flag in $controlflags; do
+	sed -i -e "s/^@@$flag\s\+//" "$tmp/root/DEBIAN/control"
+done
+
+sed -i \
+	-e "/^#/d" \
+	-e "/^@@\w\+\s/d" \
+	-e "s/@version@/$version/g" \
+	-e "s/@size@/$size/g" \
+	"$tmp/root/DEBIAN/control"
+
+arch=$(sed -ne 's/^Architecture: //p' "$tmp/root/DEBIAN/control")
+
+echo Done
+
+dpkg-deb -b -Zbzip2 -z9 "$tmp/root" "skype-call-recorder-${target}_${version}_$arch.deb"
 
 rm -rf "$tmp"
 

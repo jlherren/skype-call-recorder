@@ -1,10 +1,16 @@
-
+# this is the control file for .deb packages.  it will get
+# preprocessed as follows: comments like this one will be removed.
+# lines starting with "@@flag ..." will only be kept (with the
+# "@@flag " removed) if that flag is enabled.  @variable@ are
+# substituted variables.
+#
 Package: skype-call-recorder
 Version: @version@
 Section: contrib/net
 Priority: optional
 Architecture: i386
-Depends: libqt4-gui (>= 4.3), liblame0 (>= 3.97), libid3-3.8.3c2a, libvorbisenc2, dbus, dbus-x11
+@@ubuntu Depends: libqt4-gui (>= 4.3), liblame0 (>= 3.97), libid3-3.8.3c2a, libvorbisenc2, dbus, dbus-x11
+@@eee    Depends: libqt4-gui (>= 4.3), libvorbisenc2, dbus
 Installed-Size: @size@
 Provides: skype-call-recorder
 Maintainer: jlh <jlh@gmx.ch>
