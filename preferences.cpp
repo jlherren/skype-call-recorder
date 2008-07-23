@@ -52,6 +52,8 @@ QString getOutputPath() {
 	QString path = preferences.get(Pref::OutputPath).toString();
 	if (path.startsWith("~/") || path == "~")
 		path.replace(0, 1, QDir::homePath());
+	else if (!path.startsWith('/'))
+		path.prepend(QDir::currentPath() + '/');
 	return path;
 }
 

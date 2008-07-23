@@ -276,29 +276,14 @@ void Recorder::closePerCallerDialog() {
 }
 
 void Recorder::browseCalls() {
-	QString program;
-	QStringList arguments;
-
-	const char *v = std::getenv("GNOME_DESKTOP_SESSION_ID");
-	if (v && *v) {
-		// GNOME is running
-		program = "gnome-open";
-	} else {
-		// otherwise, just launch kfmclient.  KDE could be detected via
-		// KDE_FULL_SESSION=true
-		program = "kfmclient";
-		arguments << "exec";
-	}
-
 	QString path = getOutputPath();
 	QDir().mkpath(path);
-	arguments << path;
-	int ret = QProcess::execute(program, arguments);
+	QUrl url = QUrl(QString("file://") + path);
+	bool ret = QDesktopServices::openUrl(url);
 
-	if (ret != 0) {
-		QMessageBox::information(NULL, PROGRAM_NAME, QString("Failed to launch '%1 %2', exit code %3").
-			arg(program, arguments.join(" ")).arg(ret));
-	}
+	if (!ret)
+		QMessageBox::information(NULL, PROGRAM_NAME,
+			QString("Failed to open URL %1").arg(QString(url.toEncoded())));
 }
 
 void Recorder::quitConfirmation() {
