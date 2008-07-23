@@ -39,6 +39,16 @@ else
 	exit 1
 fi
 
+uname_m=$(uname -m)
+case "$uname_m" in
+	i[3456]86) arch=i386 ;;
+	x86_64) arch=amd64 ;;
+	*)
+		echo "Unrecognized output of 'uname -m': $uname_m"
+		exit 1
+		;;
+esac
+
 tmp=tmp-deb-build
 rm -rf "$tmp"
 mkdir "$tmp"
@@ -71,9 +81,8 @@ sed -i \
 	-e "/^@@\w\+\s/d" \
 	-e "s/@version@/$version/g" \
 	-e "s/@size@/$size/g" \
+	-e "s/@arch@/$arch/g" \
 	"$tmp/root/DEBIAN/control" || exit 1
-
-arch=$(sed -ne 's/^Architecture: //p' "$tmp/root/DEBIAN/control")
 
 echo Done
 

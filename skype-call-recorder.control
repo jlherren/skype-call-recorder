@@ -8,7 +8,7 @@ Package: skype-call-recorder
 Version: @version@
 Section: contrib/net
 Priority: optional
-Architecture: i386
+Architecture: @arch@
 @@ubuntu Depends: libqt4-gui (>= 4.3), liblame0 (>= 3.97), libid3-3.8.3c2a, libvorbisenc2, dbus, dbus-x11
 @@eee    Depends: libqt4-gui (>= 4.3), libvorbisenc2, dbus
 Installed-Size: @size@
