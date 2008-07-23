@@ -16,8 +16,8 @@ if test -e "$src/.git"; then
 		( cd "$src"; git diff --quiet HEAD; ) || { commit="$commit (dirty)"; version="$version (dirty)"; }
 	fi
 fi
-test -z "$commit" -a -e "$src/gitcommit" && commit=`< "$src/gitcommit"`
-test -z "$version" -a -e "$src/version" && version=`< "$src/version"`
+test -z "$commit" -a -e "$src/gitcommit" && commit=`cat "$src/gitcommit"`
+test -z "$version" -a -e "$src/version" && version=`cat "$src/version"`
 test -z "$commit" && commit=unknown
 test -z "$version" && version=unknown
 cat > "$output-new" <<EOF
