@@ -31,13 +31,13 @@ mkdir "$tmp"
 # there's no simple way to add the gitcommit file under the right name using
 # tar -A in a pipe.
 
-git archive --format=tar --prefix="$base/" "$tree" | tar -x -C "$tmp"
+git archive --format=tar --prefix="$base/" "$tree" | tar -x -C "$tmp" || exit 1
 
-rm -f "$tmp/$base/.gitignore"
-rm -rf "$tmp/$base/utils/"{makedeb,snapshot}
-git rev-parse "$tree" > "$tmp/$base/gitcommit"
-git describe --tags "$tree" 2> /dev/null > "$tmp/$base/version" || cp "$tmp/$base/gitcommit" "$tmp/$base/version"
-tar -C "$tmp" -c "$base" | gzip -9 > "$outfile"
+rm -f "$tmp/$base/.gitignore" && \
+rm -rf "$tmp/$base/utils/"{makedeb,snapshot} && \
+git rev-parse "$tree" > "$tmp/$base/gitcommit" && \
+{ git describe --tags "$tree" 2> /dev/null > "$tmp/$base/version" || cp "$tmp/$base/gitcommit" "$tmp/$base/version"; } && \
+tar -C "$tmp" -c "$base" | gzip -9 > "$outfile" || exit 1
 
 rm -rf "$tmp"
 echo "$outfile created"

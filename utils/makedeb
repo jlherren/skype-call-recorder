@@ -44,14 +44,14 @@ rm -rf "$tmp"
 mkdir "$tmp"
 
 $BASE/utils/snapshot $version "$tmp/tarball.tar.gz" || exit 1
-tar -xzf "$tmp/tarball.tar.gz" -C "$tmp"
+tar -xzf "$tmp/tarball.tar.gz" -C "$tmp" || exit 1
 
 (
-	cd "$tmp/skype-call-recorder-$version"
-	$cmake .
-	make
+	cd "$tmp/skype-call-recorder-$version" && \
+	$cmake . && \
+	make && \
 	make DESTDIR=../root install
-)
+) || exit 1
 
 echo -n "Package size: "
 size=`du -sk "$tmp/root" | cut -f1`
@@ -59,11 +59,11 @@ echo "$size KB"
 
 echo -n "Generate control file: "
 
-mkdir "$tmp/root/DEBIAN"
-cp "$tmp/skype-call-recorder-$version/skype-call-recorder.control" "$tmp/root/DEBIAN/control"
+mkdir "$tmp/root/DEBIAN" && \
+cp "$tmp/skype-call-recorder-$version/skype-call-recorder.control" "$tmp/root/DEBIAN/control" || exit 1
 
 for flag in $controlflags; do
-	sed -i -e "s/^@@$flag\s\+//" "$tmp/root/DEBIAN/control"
+	sed -i -e "s/^@@$flag\s\+//" "$tmp/root/DEBIAN/control" || exit 1
 done
 
 sed -i \
@@ -71,7 +71,7 @@ sed -i \
 	-e "/^@@\w\+\s/d" \
 	-e "s/@version@/$version/g" \
 	-e "s/@size@/$size/g" \
-	"$tmp/root/DEBIAN/control"
+	"$tmp/root/DEBIAN/control" || exit 1
 
 arch=$(sed -ne 's/^Architecture: //p' "$tmp/root/DEBIAN/control")
 
