@@ -254,7 +254,11 @@ void Recorder::about() {
 }
 
 void Recorder::openWebsite() {
-	QDesktopServices::openUrl(QUrl::fromEncoded(websiteURL));
+	bool ret = QDesktopServices::openUrl(QUrl::fromEncoded(websiteURL));
+
+	if (!ret)
+		QMessageBox::information(NULL, PROGRAM_NAME,
+			QString("Failed to open URL %1").arg(websiteURL));
 }
 
 void Recorder::openPreferences() {
