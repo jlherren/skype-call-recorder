@@ -7,6 +7,7 @@ Skype Call Recorder - Installation
     To build and use Skype Call Recorder you will need:
 
       - A C++ compiler
+      - make
       - cmake, at least version 2.4.8
       - Qt 4, at least version 4.3
       - libmp3lame, for encoding to mp3 files
