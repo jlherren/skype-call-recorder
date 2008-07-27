@@ -1,20 +1,21 @@
 #!/bin/sh
 
-target=ubuntu
+target=none
 version=''
 
 while test $# != 0; do
 	case "$1" in
 		-e) target=eee ;;
 		-u) target=ubuntu ;;
+		-d) target=debian ;;
 		-*) echo "Unknown option $1" && exit 1 ;;
 		*) version="$1" ;;
 	esac
 	shift
 done
 
-if test -z "$version"; then
-	echo "Usage: $0 [ -e | -u ] <version>"
+if test -z "$version" -o $target = none; then
+	echo "Usage: $0 { -d | -e | -u } <version>"
 	exit 1
 fi
 
@@ -33,6 +34,9 @@ if test $target = eee; then
 	cmake="$BASE/utils/cmake-static"
 elif test $target = ubuntu; then
 	controlflags=ubuntu
+	cmake=cmake
+elif test $target = debian; then
+	controlflags=debian
 	cmake=cmake
 else
 	echo "Unknown target: $target"
