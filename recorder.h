@@ -70,9 +70,9 @@ private:
 
 private:
 	Skype *skype;
-	CallHandler *callHandler;
+	QPointer<CallHandler> callHandler;
 	QPointer<PreferencesDialog> preferencesDialog;
-	TrayIcon *trayIcon;
+	QPointer<TrayIcon> trayIcon;
 	QPointer<AboutDialog> aboutDialog;
 	LockFile lockFile;
 
