@@ -60,7 +60,15 @@ Recorder::Recorder(int &argc, char **argv) :
 }
 
 Recorder::~Recorder() {
+	// the Recorder object must still exist while the child objects are
+	// being destroyed, because debug() must still be available.  Qt would
+	// do it automatically but only after Recorder ceased to exist, in the
+	// QObject destructor
+
 	delete preferencesDialog;
+	delete callHandler;
+	delete skype;
+	delete trayIcon;
 }
 
 void Recorder::setupGUI() {
