@@ -69,7 +69,7 @@ private:
 	QString getConfigFile() const;
 
 private:
-	Skype *skype;
+	QPointer<Skype> skype;
 	QPointer<CallHandler> callHandler;
 	QPointer<PreferencesDialog> preferencesDialog;
 	QPointer<TrayIcon> trayIcon;
