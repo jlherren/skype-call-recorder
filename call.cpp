@@ -178,7 +178,8 @@ bool Call::statusDone() const {
 		status == "FAILED" ||
 		status == "FINISHED" ||
 		status == "MISSED" ||
-		status == "REFUSED";
+		status == "REFUSED" ||
+		status == "VM_FAILED";
 	// TODO: see what the deal is with REDIAL_PENDING (protocol 8)
 }
 
