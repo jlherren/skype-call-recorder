@@ -10,7 +10,7 @@ SET(CMAKE_BUILD_TYPE RELEASE)
 
 # compiler flags
 
-SET(CMAKE_CXX_FLAGS "-Wall -W -pipe -fno-rtti -fno-exceptions")
+SET(CMAKE_CXX_FLAGS "-Wall -W -pipe -fno-exceptions")
 SET(CMAKE_CXX_FLAGS_DEBUG "-ggdb")
 SET(CMAKE_CXX_FLAGS_RELEASE "-O2 -s")
 
