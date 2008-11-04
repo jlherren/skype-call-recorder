@@ -86,7 +86,7 @@ QString getFileName(const QString &skypeName, const QString &displayName,
 	time_t t = timestamp.toTime_t();
 	struct tm *tm = std::localtime(&t);
 	std::strftime(buf, fileName.size() + 1024, fileName.toUtf8().constData(), tm);
-	fileName = buf;
+	fileName = QString::fromLocal8Bit(buf);
 	delete[] buf;
 
 	return getOutputPath() + '/' + fileName;
