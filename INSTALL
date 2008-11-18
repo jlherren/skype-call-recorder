@@ -49,7 +49,8 @@ Skype Call Recorder - Installation
 (5) Use it
 
     Your desktop's menu should contain a new entry in the
-    'Utilities' section.  If it doesn't, you can start it with
+    'Utilities' or 'Accessories' section.  If it doesn't, you can
+    start it with
 
         $ skype-call-recorder &
 
