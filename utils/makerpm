@@ -35,7 +35,7 @@ $BASE/utils/snapshot $v "$tmp/SOURCES/$scr-$v.tar.gz" || exit 1
 
 git show -p $v:$scr.spec | sed -e "s/@version@/$v/g" > "$tmp/spec" || exit 1
 
-rpmbuild -bb --define "_topdir $tmp" "$tmp/spec" || exit 1
+rpmbuild -bb --define "_topdir $tmp" --define "buildroot $tmp/destdir" "$tmp/spec" || exit 1
 
 mv "$tmp"/RPMS/*/* . || exit 1
 
