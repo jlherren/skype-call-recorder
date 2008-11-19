@@ -29,7 +29,7 @@ export BASE=$(pwd)
 tmp="$BASE/tmp-rpm-build"
 rm -rf "$tmp" && \
 mkdir "$tmp" && \
-mkdir "$tmp"/{SOURCES,BUILD,RPMS} || exit 1
+mkdir "$tmp"/SOURCES "$tmp"/BUILD "$tmp"/RPMS || exit 1
 
 $BASE/utils/snapshot $v "$tmp/SOURCES/$scr-$v.tar.gz" || exit 1
 
