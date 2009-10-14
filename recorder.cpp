@@ -27,6 +27,7 @@
 #include <QTimer>
 #include <QDesktopServices>
 #include <QUrl>
+#include <QDateTime>
 #include <iostream>
 #include <cstdlib>
 
@@ -328,7 +329,8 @@ void Recorder::skypeConnectionFailed(const QString &reason) {
 }
 
 void Recorder::debugMessage(const QString &s) {
-	std::cout << s.toLocal8Bit().constData() << "\n";
+	std::cout << QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss ").toLocal8Bit().constData()
+		<< s.toLocal8Bit().constData() << "\n";
 }
 
 int main(int argc, char **argv) {
