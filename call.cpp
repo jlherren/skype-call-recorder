@@ -90,9 +90,10 @@ void AutoSync::reset() {
 
 // Call class
 
-Call::Call(QObject *p, Skype *sk, CallID i) :
-	QObject(p),
+Call::Call(CallHandler *h, Skype *sk, CallID i) :
+	QObject(h),
 	skype(sk),
+	handler(h),
 	id(i),
 	status("UNKNOWN"),
 	writer(NULL),
@@ -119,6 +120,13 @@ Call::Call(QObject *p, Skype *sk, CallID i) :
 		debug(QString("Call %1: cannot get partner display name").arg(id));
 		displayName = "Unnamed Caller";
 	}
+
+	// Skype does not properly send updates when the CONF_ID property
+	// changes.  since we need this information, check it now on all calls
+	handler->updateConfIDs();
+	// this call isn't yet in the list of calls, thus we need to
+	// explicitely check its CONF_ID
+	updateConfID();
 }
 
 Call::~Call() {
@@ -132,6 +140,10 @@ Call::~Call() {
 	setStatus("UNKNOWN");
 
 	// QT takes care of deleting servers and sockets
+}
+
+void Call::updateConfID() {
+	confID = skype->getObject(QString("CALL %1 CONF_ID").arg(id)).toLong();
 }
 
 bool Call::okToDelete() const {
@@ -269,6 +281,11 @@ void Call::startRecording(bool force) {
 
 	if (isRecording)
 		return;
+
+	if (handler->isConferenceRecording(confID)) {
+		debug(QString("Call %1: call is part of a conference that is already being recorded").arg(id));
+		return;
+	}
 
 	if (force) {
 		emit showLegalInformation();
@@ -587,6 +604,22 @@ CallHandler::~CallHandler() {
 	}
 
 	delete legalInformationDialog;
+}
+
+void CallHandler::updateConfIDs() {
+	QList<Call *> list = calls.values();
+	for (int i = 0; i < list.size(); i++)
+		list.at(i)->updateConfID();
+}
+
+bool CallHandler::isConferenceRecording(CallID id) const {
+	QList<Call *> list = calls.values();
+	for (int i = 0; i < list.size(); i++) {
+		Call *c = list.at(i);
+		if (c->getConfID() == id && c->getIsRecording())
+			return true;
+	}
+	return false;
 }
 
 void CallHandler::callCmd(const QStringList &args) {

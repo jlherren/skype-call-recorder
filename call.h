@@ -43,6 +43,8 @@ class QTcpServer;
 class QTcpSocket;
 class LegalInformationDialog;
 
+class CallHandler;
+
 typedef int CallID;
 
 class AutoSync {
@@ -68,18 +70,21 @@ private:
 class Call : public QObject {
 	Q_OBJECT
 public:
-	Call(QObject *, Skype *, CallID);
+	Call(CallHandler *, Skype *, CallID);
 	~Call();
 	void startRecording(bool = false);
 	void stopRecording(bool = true);
+	void updateConfID();
 	bool okToDelete() const;
 	void setStatus(const QString &);
 	QString getStatus() const { return status; }
 	bool statusDone() const;
 	bool statusActive() const;
 	CallID getID() const { return id; }
+	CallID getConfID() const { return confID; }
 	void removeFile();
 	void hideConfirmation(int);
+	bool getIsRecording() const { return isRecording; }
 
 signals:
 	void startedCall(int, const QString &);
@@ -99,10 +104,12 @@ private:
 
 private:
 	Skype *skype;
+	CallHandler *handler;
 	CallID id;
 	QString status;
 	QString skypeName;
 	QString displayName;
+	CallID confID;
 	AudioFileWriter *writer;
 	bool isRecording;
 	int stereo;
@@ -140,6 +147,8 @@ class CallHandler : public QObject {
 public:
 	CallHandler(QObject *, Skype *);
 	~CallHandler();
+	void updateConfIDs();
+	bool isConferenceRecording(CallID) const;
 	void callCmd(const QStringList &);
 
 signals:
