@@ -2,6 +2,10 @@
 # versions before 2.4.8 do not seem to know about Qt's DBus
 CMAKE_MINIMUM_REQUIRED(VERSION 2.4.8 FATAL_ERROR)
 
+IF(COMMAND CMAKE_POLICY)
+	CMAKE_POLICY(SET CMP0003 NEW)
+ENDIF(COMMAND CMAKE_POLICY)
+
 PROJECT(skype-call-recorder)
 SET(TARGET skype-call-recorder)
 
