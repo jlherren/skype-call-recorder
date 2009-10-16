@@ -61,25 +61,38 @@ namespace {
 QString escape(const QString &s) {
 	QString out = s;
 	out.replace('%', "%%");
-	out.replace('&', "&&");
+	out.replace('/', '_');
 	return out;
 }
 }
 
 QString getFileName(const QString &skypeName, const QString &displayName,
-	const QString &mySkypeName, const QString &myDisplayName, const QDateTime &timestamp, const QString &pattern)
+	const QString &mySkypeName, const QString &myDisplayName, const QDateTime &timestamp, const QString &pat)
 {
+	QString pattern = pat.isEmpty() ? preferences.get(Pref::OutputPattern).toString() : pat;
 	QString fileName;
-	if (pattern.isEmpty())
-		fileName = preferences.get(Pref::OutputPattern).toString();
-	else
-		fileName = pattern;
 
-	fileName.replace("&s", escape(skypeName));
-	fileName.replace("&d", escape(displayName));
-	fileName.replace("&t", escape(mySkypeName));
-	fileName.replace("&e", escape(myDisplayName));
-	fileName.replace("&&", "&");
+	for (int i = 0; i < pattern.size(); i++) {
+		if (pattern.at(i) == QChar('&') && i + 1 < pattern.size()) {
+			i++;
+			if (pattern.at(i) == QChar('s'))
+				fileName += escape(skypeName);
+			else if (pattern.at(i) == QChar('d'))
+				fileName += escape(displayName);
+			else if (pattern.at(i) == QChar('t'))
+				fileName += escape(mySkypeName);
+			else if (pattern.at(i) == QChar('e'))
+				fileName += escape(myDisplayName);
+			else if (pattern.at(i) == QChar('&'))
+				fileName += QChar('&');
+			else {
+				fileName += QChar('&');
+				fileName += pattern.at(i);
+			}
+		} else {
+			fileName += pattern.at(i);
+		}
+	}
 
 	// TODO: uhm, does QT provide any time formatting the strftime() way?
 	char *buf = new char[fileName.size() + 1024];
