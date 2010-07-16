@@ -28,6 +28,7 @@ SET(SOURCES
 	preferences.cpp
 	recorder.cpp
 	skype.cpp
+	skype-dbus.cpp
 	trayicon.cpp
 	utils.cpp
 	version.cpp
@@ -42,6 +43,7 @@ SET(MOC_HEADERS
 	preferences.h
 	recorder.h
 	skype.h
+	skype-dbus.h
 	smartwidgets.h
 	trayicon.h
 )

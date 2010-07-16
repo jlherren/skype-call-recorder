@@ -21,37 +21,62 @@
 	http://www.fsf.org/
 */
 
-#ifndef SKYPE_H
-#define SKYPE_H
+#ifndef SKYPE_DBUS_H
+#define SKYPE_DBUS_H
 
 #include <QObject>
+#include <QDBusConnection>
+#include <QDBusAbstractAdaptor>
 #include <QString>
 
 #include "common.h"
+#include "skype.h"
 
-class Skype : public QObject {
+class SkypeExport;
+class QTimer;
+class QDBusError;
+class QDBusMessage;
+
+class SkypeDBus : public Skype {
 	Q_OBJECT
 public:
-	Skype(QObject *);
-	virtual QString sendWithReply(const QString &, int = 10000) = 0;
-	virtual void send(const QString &) = 0;
-	QString getObject(const QString &);
-	const QString &getSkypeName() const { return skypeName; }
+	friend class SkypeExport;
 
-signals:
-	void notify(const QString &) const;
-	void connected(bool) const;
-	void connectionFailed(const QString &) const;
+	SkypeDBus(QObject *);
+	virtual QString sendWithReply(const QString &, int = 10000);
+	virtual void send(const QString &);
 
-protected:
-	virtual void sendWithAsyncReply(const QString &) = 0;
-	void doNotify(const QString &);
+protected slots:
+	void connectToSkype();
+	void methodCallback(const QDBusMessage &);
+	void methodError(const QDBusError &, const QDBusMessage &);
+	void serviceOwnerChanged(const QString &, const QString &, const QString &);
+	void poll();
 
 protected:
-	int connectionState;
-	QString skypeName;
+	virtual void sendWithAsyncReply(const QString &);
 
-	DISABLE_COPY_AND_ASSIGNMENT(Skype);
+protected:
+	QDBusConnection dbus;
+	SkypeExport *exported;
+	QTimer *timer;
+
+	DISABLE_COPY_AND_ASSIGNMENT(SkypeDBus);
+};
+
+class SkypeExport : public QDBusAbstractAdaptor {
+	Q_OBJECT
+	Q_CLASSINFO("D-Bus Interface", "com.Skype.API.Client")
+public:
+	SkypeExport(SkypeDBus *);
+
+public slots:
+	Q_NOREPLY void Notify(const QString &);
+
+private:
+	SkypeDBus *parent;
+
+	DISABLE_COPY_AND_ASSIGNMENT(SkypeExport);
 };
 
 #endif

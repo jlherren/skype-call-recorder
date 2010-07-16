@@ -36,7 +36,11 @@
 #include "gui.h"
 #include "trayicon.h"
 #include "preferences.h"
-#include "skype.h"
+#ifdef WIN32
+	#include "skype-win32.h"
+#else
+	#include "skype-dbus.h"
+#endif
 #include "call.h"
 
 Recorder::Recorder(int &argc, char **argv) :
@@ -90,7 +94,11 @@ void Recorder::setupGUI() {
 }
 
 void Recorder::setupSkype() {
-	skype = new Skype(this);
+#ifdef WIN32
+	skype = new SkypeWin32(this);
+#else
+	skype = new SkypeDBus(this);
+#endif
 	connect(skype, SIGNAL(notify(const QString &)),           this, SLOT(skypeNotify(const QString &)));
 	connect(skype, SIGNAL(connected(bool)),                   this, SLOT(skypeConnected(bool)));
 	connect(skype, SIGNAL(connectionFailed(const QString &)), this, SLOT(skypeConnectionFailed(const QString &)));
