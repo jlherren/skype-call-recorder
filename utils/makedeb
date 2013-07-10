@@ -62,7 +62,7 @@ tar -xzf "$tmp/tarball.tar.gz" -C "$tmp" || exit 1
 
 (
 	cd "$tmp/skype-call-recorder-$version" && \
-	$cmake . && \
+	$cmake -DCMAKE_INSTALL_PREFIX:PATH=/usr . && \
 	make && \
 	make DESTDIR=../root install
 ) || exit 1
