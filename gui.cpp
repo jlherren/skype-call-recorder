@@ -1,6 +1,6 @@
 /*
 	Skype Call Recorder
-	Copyright 2008 - 2009 by jlh (jlh at gmx dot ch)
+	Copyright 2008-2010, 2013, 2015 by jlh (jlh at gmx dot ch)
 
 	This program is free software; you can redistribute it and/or modify it
 	under the terms of the GNU General Public License as published by the
@@ -198,7 +198,7 @@ AboutDialog::AboutDialog() {
 	QString str =
 		"<p><font face='Arial' size='20'><b>Skype Call Recorder</b></font></p>"
 
-		"<p>Copyright 2008 - 2009 by jlh (<a href='mailto:jlh@gmx.ch'>jlh@gmx.ch</a>)<br>"
+		"<p>Copyright 2008-2010, 2013, 2015 by jlh (<a href='mailto:jlh@gmx.ch'>jlh@gmx.ch</a>)<br>"
 		"Version: %1<br>"
 		"Website: <a href='%2'>%3</a></p>";
 	str = str.arg(recorderVersion).arg(websiteURL).arg(websiteURL);
