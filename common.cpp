@@ -27,6 +27,8 @@
 Recorder *recorderInstance = NULL;
 
 const char *const websiteURL = "http://atdot.ch/scr/";
+const char *const donateURL = "https://goo.gl/qhIeEN";
+const char *const flattrURL = "https://goo.gl/LzNn7V";
 
 void debug(const QString &s) {
 	if (recorderInstance)

@@ -48,6 +48,8 @@ extern const char *const recorderVersion;
 
 const long skypeSamplingRate = 16000;
 extern const char *const websiteURL;
+extern const char *const donateURL;
+extern const char *const flattrURL;
 
 #endif
 

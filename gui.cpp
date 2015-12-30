@@ -200,8 +200,9 @@ AboutDialog::AboutDialog() {
 
 		"<p>Copyright 2008-2010, 2013, 2015 by jlh (<a href='mailto:jlh@gmx.ch'>jlh@gmx.ch</a>)<br>"
 		"Version: %1<br>"
-		"Website: <a href='%2'>%3</a></p>";
-	str = str.arg(recorderVersion).arg(websiteURL).arg(websiteURL);
+		"Website: <a href='%2'>%3</a><br>"
+		"Say thanks: <a href='%4'>donate</a> or <a href='%5'>flattr</a></p>";
+	str = str.arg(recorderVersion, websiteURL, websiteURL, donateURL, flattrURL);
 	QLabel *label = new QLabel(str);
 	label->setTextInteractionFlags(Qt::TextSelectableByMouse | Qt::LinksAccessibleByMouse);
 	label->setTextFormat(Qt::RichText);
