@@ -1,0 +1,4 @@
+
+# for Debian and Ubuntu:
+sudo apt-get install g++ make cmake libqt4-dev libmp3lame-dev libid3-3.8.3-dev libvorbis-dev fakeroot git-core
+

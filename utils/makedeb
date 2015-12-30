@@ -90,7 +90,7 @@ sed -i \
 
 echo Done
 
-fakeroot dpkg-deb -b -Zbzip2 -z9 "$tmp/root" "skype-call-recorder-${target}_${version}_$arch.deb"
+fakeroot dpkg-deb -b -z9 "$tmp/root" "skype-call-recorder-${target}_${version}_$arch.deb"
 
 rm -rf "$tmp"
 
