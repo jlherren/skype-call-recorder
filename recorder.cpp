@@ -227,7 +227,7 @@ bool Recorder::sanatizePreferencesGeneric() {
 	}
 
 	i = preferences.get(Pref::OutputFormatMp3Bitrate).toInt();
-	if (i < 8 || (i < 64 && i % 8 != 0) || (i < 160 && i % 16 != 0) || i > 160) {
+	if (i < 8 || (i >= 8 && i <= 64 && i % 8 != 0) || (i > 64 && i <= 160 && i % 16 != 0) || i > 160) {
 		preferences.get(Pref::OutputFormatMp3Bitrate).set(64);
 		didSomething = true;
 	}
