@@ -10,7 +10,7 @@ Section: contrib/net
 Priority: optional
 Architecture: @arch@
 @@ubuntu Depends: libqt4-gui (>= 4.3), libmp3lame0 (>= 3.97) | liblame0 (>= 3.97), libid3-3.8.3c2a | libid3-3.8.3v5, libvorbisenc2, dbus, dbus-x11
-@@debian Depends: libqtgui4 (>= 4.3), libmp3lame0 (>= 3.97), libid3-3.8.3c2a | libid3-3.8.3v5, libvorbisenc2, dbus, dbus-x11
+@@debian Depends: libqtgui4 (>= 4.3), libqtdbus4 (>= 4.3), libqt4-network (>= 4.3), libmp3lame0 (>= 3.97), libid3-3.8.3c2a | libid3-3.8.3v5, libvorbisenc2, dbus, dbus-x11
 @@eee    Depends: libqt4-gui (>= 4.3), libvorbisenc2, dbus
 Installed-Size: @size@
 Provides: skype-call-recorder
